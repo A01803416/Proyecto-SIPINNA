@@ -1,15 +1,27 @@
-export default function Navbar()
-{
-return (
+import './Navbar.css';
+
+export const Navbar = () => {
+    return (
     <header className="navbar">
-    <div className="nav-left">
-        <span className="logo">RIETI</span>
-    </div>
-    <nav className="nav-links">
-        <button className="btn-animated">Iniciar Reporte</button>
-        <button className="btn-animated">¿Quiénes Somos?</button>
-        <button className="btn-animated">Iniciar Sesión</button>
-    </nav>
+      {/* Grupo izquierdo: Logo y ¿Quiénes Somos? */}
+        <div className="nav-left">
+        <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <span className="logo">RIETI</span>
+        </a>
+        <a href="/quienes-somos" className="btn-nav">
+            ¿Quiénes Somos?
+        </a>
+        </div>
+
+      {/* Grupo derecho: Procurador y Admin */}
+        <div className="nav-right">
+        <a href="/login-procurador" className="btn-login">
+            Procurador
+        </a>
+        <a href="/login-admin" className="btn-login">
+            Admin
+        </a>
+        </div>
     </header>
-);
-}
+    );
+};

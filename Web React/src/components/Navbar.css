@@ -1,0 +1,105 @@
+:root
+{
+--rosa: #f29191;
+--azul: #24b1b1;
+--crema: #ffeed6;
+--morado: #af719d;
+}
+
+.navbar
+{
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 15px 40px;
+background: linear-gradient(
+    135deg,
+    rgba(242, 145, 145, 0.85) 0%,
+    rgba(175, 113, 157, 0.85) 30%,
+    rgba(36, 177, 177, 0.85) 100%
+);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+position: sticky;
+top: 0;
+z-index: 1000;
+}
+
+.nav-left,
+.nav-right 
+{
+display: flex;
+gap: 15px;
+align-items: center;
+}
+
+.logo
+{
+font-weight: 900;
+font-size: 1.8rem;
+color: #ffffff;
+margin-right: 20px;
+letter-spacing: 1px;
+}
+
+/* Estilos de los botones animados */
+.btn-nav,
+.btn-login
+{
+padding: 0.7em 1.5em;
+background: none;
+border: 2px solid #fff;
+font-size: 0.95rem;
+color: #333;
+cursor: pointer;
+position: relative;
+overflow: hidden;
+transition: all 0.3s;
+border-radius: 12px;
+background-color: var(--crema);
+font-weight: bolder;
+box-shadow: 0 2px 0 2px #333;
+text-decoration: none;
+display: inline-block;
+text-align: center;
+z-index: 1;
+}
+
+.btn-nav:before,
+.btn-login::before
+{
+content: "";
+position: absolute;
+width: 100px;
+height: 120%;
+background-color: var(--rosa);
+top: 50%;
+transform: skewX(30deg) translate(-150%, -50%);
+transition: all 0.5s;
+z-index: -1;
+}
+
+.btn-nav:hover,
+.btn-login:hover
+{
+background-color: var(--azul);
+color: #fff;
+box-shadow: 0 2px 0 2px #167a7a;
+}
+
+.btn-nav:hover::before,
+.btn-login:hover::before
+{
+transform: skewX(30deg) translate(150%, -50%);
+transition-delay: 0.1s;
+}
+
+.btn-nav:active,
+.btn-login:active
+{
+transform: scale(0.9);
+background-color: var(--crema);
+color: #333;
+box-shadow: 0 2px 0 2px #333;
+}

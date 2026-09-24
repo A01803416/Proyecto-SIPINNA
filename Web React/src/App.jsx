@@ -1,12 +1,15 @@
-import './index.css';
-import Navbar from './components/Navbar';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { Footer } from './components/Footer';
+import './App.css';
 
 function App() {
   return (
-    <>
-      <div className="bg-blur-overlay"></div>
+    <div className="app-container">
       <Navbar />
-    </>
+      <Hero />
+      <Footer />
+    </div>
   );
 }
 
