@@ -1,14 +1,10 @@
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Footer } from './components/Footer';
+import { QuienesSomos } from './pages/QuienesSomos';
 import './App.css';
 
 function App() {
   return (
     <div className="app-container">
-      <Navbar />
-      <Hero />
-      <Footer />
+      <QuienesSomos />
     </div>
   );
 }
