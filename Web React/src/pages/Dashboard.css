@@ -1,0 +1,465 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #fcfcfc; /* Fondo un poco más claro y limpio */
+  font-family: inherit;
+  overflow: hidden;
+}
+
+/* --- BARRA LATERAL (SIDEBAR) --- */
+.sidebar {
+  width: 240px; /* Un poco más ancha para respirar mejor */
+  /* Degradado suave basado en tu imagen */
+  background: linear-gradient(180deg, rgba(230, 150, 160, 0.9) 0%, rgba(180, 120, 160, 0.9) 30%, rgba(90, 170, 180, 0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  color: white;
+  flex-shrink: 0;
+}
+
+.sidebar-logo-container {
+  background-color: transparent; /* El logo en la captura tiene fondo transparente o blanco integrado */
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-logo {
+  width: 120px;
+  height: auto;
+  background-color: white;
+  padding: 10px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  flex: 1;
+}
+
+.sidebar-nav a:hover, .nav-btn:hover, .nav-btn.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffeed6; /* Cambia el texto al color beige/crema */
+}
+
+.sidebar-nav a, .nav-btn {
+  color: white;
+  text-decoration: none;
+  padding: 15px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: background 0.3s;
+  background: transparent;
+  border: none;
+  text-align: center; /* Texto centrado como en la imagen */
+  cursor: pointer;
+  font-family: inherit;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Línea separadora sutil */
+}
+
+/* La primera opción lleva línea arriba también */
+.sidebar-nav a:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-nav a:hover, .nav-btn:hover, .nav-btn.active {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.sidebar-bottom {
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar-rieti-text {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  letter-spacing: 1px;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* BOTÓN CERRAR SESIÓN ESTILO ORIGINAL */
+.btn-logout {
+  width: 100%;
+  padding: 0.7em 1.5em;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 800;
+  text-decoration: none;
+  text-align: center;
+  background-color: #ffeed6; /* Color crema */
+  border: 2px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 0 #333; /* Sombra inferior dura */
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background-color: #f2e3cb;
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 0 #333;
+}
+
+.btn-logout:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+/* --- CONTENIDO PRINCIPAL --- */
+.dashboard-main {
+  flex: 1;
+  padding: 30px 40px;
+  overflow-y: auto;
+}
+
+.dashboard-title {
+  font-size: 1.6rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+/* --- VISTA: TABLERO --- */
+.dashboard-top-section {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  height: 280px;
+}
+
+.top-left-widget {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+/* BORDES NEGROS Y ESQUINAS REDONDEADAS FINAS */
+.admin-map-widget, .full-map-widget, .users-widget, .full-table-widget, .table-widget {
+  background: white;
+  border: 1px solid #333; /* Borde oscuro definido */
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.admin-map-widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.map-filters, .map-filters-full, .report-filters-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #333; /* Separador oscuro */
+  background: #fff;
+}
+
+.map-filters select, .map-filters-full select, .report-filters-controls input, .report-filters-controls select {
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+/* BOTONES OSCUROS DE ACCIÓN (Filtrar, Buscar, Crear) */
+.btn-black {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-black:hover {
+  background: #555;
+}
+
+.btn-black.btn-large {
+  padding: 10px 25px;
+  font-size: 1rem;
+  margin-top: 20px;
+  border-radius: 20px; /* Botón de Crear Usuario muy redondeado */
+  display: inline-block;
+}
+
+.map-iframe-container {
+  flex: 1;
+}
+
+/* Alertas Procurador */
+.procurador-alerts-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+}
+
+.alert-box {
+  flex: 1;
+  border-radius: 6px;
+  padding: 20px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid;
+}
+
+.alert-box h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.alert-box p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.alert-box.danger-alert {
+  background-color: #fdf2f2;
+  border-color: #d9534f;
+  color: #d9534f;
+}
+
+.alert-box.warning-alert {
+  background-color: #fffdf5;
+  border-color: #f0ad4e;
+  color: #f0ad4e;
+}
+
+/* KPIs */
+.kpi-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 15px;
+}
+
+.kpi-card {
+  background: white;
+  border: 1px solid #333; /* Borde oscuro */
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.kpi-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* --- TABLAS --- */
+.table-widget, .full-table-widget {
+  padding: 20px;
+}
+
+.table-widget h2 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 700;
+}
+
+.report-filters-header {
+  justify-content: space-between;
+  border-bottom: none;
+  padding: 0 0 15px 0;
+}
+
+.report-filters-header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #333;
+}
+
+.report-filters-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table th, .data-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.data-table th {
+  font-weight: 700;
+  color: #333;
+  padding-bottom: 15px;
+}
+
+/* Badges de estado */
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  border: 1px solid;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+}
+
+.risk-high { color: #d9534f; border-color: #d9534f; background-color: rgba(217, 83, 79, 0.1); }
+.risk-medium { color: #f0ad4e; border-color: #f0ad4e; background-color: rgba(240, 173, 78, 0.1); }
+.status-citizen { color: #5bc0de; border-color: #5bc0de; background-color: rgba(91, 192, 222, 0.1); }
+.status-valid { color: #5cb85c; border-color: #5cb85c; background-color: rgba(92, 184, 92, 0.1); }
+.status-canalized { color: #af719d; border-color: #af719d; background-color: rgba(175, 113, 157, 0.1); }
+
+/* Botones de acción en tabla */
+.btn-action, .btn-action-icon {
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* === BOTÓN DE CERRAR SESIÓN ANIMADO === */
+.btn-logout {
+  padding: 0.7em 1.5em;
+  background: none;
+  border: 2px solid #fff;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  border-radius: 12px;
+  background-color: #FFEED6;
+  font-weight: bolder;
+  box-shadow: 0 2px 0 2px #333;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  z-index: 1;
+}
+
+.btn-logout:before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 120%;
+  background-color: #F29191;
+  top: 50%;
+  transform: skewX(30deg) translate(-150%, -50%);
+  transition: all 0.5s;
+  z-index: -1;
+}
+
+.btn-logout:hover {
+  background-color: #24B1B1;
+  color: #fff;
+  box-shadow: 0 2px 0 2px #167a7a;
+}
+
+.btn-logout:hover::before {
+  transform: skewX(30deg) translate(150%, -50%);
+  transition-delay: 0.1s;
+}
+
+.btn-logout:active {
+  transform: scale(0.9);
+  background-color: #FFEED6;
+  color: #333;
+  box-shadow: 0 2px 0 2px #333;
+}
+
+/* --- VISTAS INTERNAS ESPÉCIFICAS --- */
+.full-map-widget {
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
+.map-iframe-container-full {
+  flex: 1;
+}
+
+/* Formulario de Usuarios */
+.users-widget {
+  padding: 25px;
+}
+
+.users-widget h2 {
+  font-size: 1.2rem;
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 700;
+}
+
+.users-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.input-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.input-box-clean {
+  padding: 10px 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.input-box-clean:focus {
+  border-color: #333;
+}
