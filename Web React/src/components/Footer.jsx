@@ -1,12 +1,12 @@
 import './Footer.css';
 
 export const Footer = () =>{
-  // Creamos un arreglo del 1 al 16 para cargar las imágenes de los mnunicipios dinámicamente
-const municipios = Array.from({ length: 16 }, (_, i) => i + 1);
+  // Creamos un arreglo del 1 al 15 para cargar las imágenes de los mnunicipios dinámicamente
+const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
 
     return (
     <footer className="footer">
-        <p className="footer-title">Alianza con 16 Municipios</p>
+        <p className="footer-title">Alianza con 15 Municipios</p>
     
         <div className="carousel-container">
         <div className="carousel-track">

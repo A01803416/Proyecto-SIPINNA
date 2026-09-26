@@ -23,12 +23,14 @@ color: #fff;
 
 .carousel-container
 {
-width: 45%; 
-max-width: 45%;
+flex: 1;
+margin-left: 40px;
 overflow: hidden; 
 position: relative;
 display: flex;
 align-items: center;
+-webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
 .carousel-track
