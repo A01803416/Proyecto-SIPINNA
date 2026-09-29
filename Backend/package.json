@@ -1,0 +1,20 @@
+{
+  "name": "rieti-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "app.mjs",
+  "scripts": {
+    "start": "node --env-file=.env app.mjs",
+    "dev": "node --watch --env-file=.env app.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@codegenie/serverless-express": "^5.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4"
+  }
+}

@@ -1,8 +1,6 @@
--- =============================================
 -- base de datos proteccion_menores
 -- script 2: funciones, triggers y procedures
--- (correr DESPUÉS del script 1)
--- =============================================
+
 USE proteccion_menores;
 
 DROP FUNCTION IF EXISTS fn_es_estatus_final;
@@ -23,9 +21,8 @@ DROP PROCEDURE IF EXISTS sp_fusionar_reportes;
 
 DELIMITER $$
 
--- =============================================
+
 -- FUNCIONES
--- =============================================
 
 -- regresa TRUE si el estatus significa que el reporte está cerrado
 CREATE FUNCTION fn_es_estatus_final(p_estatus VARCHAR(50))
@@ -35,9 +32,9 @@ BEGIN
     RETURN p_estatus IN ('Concluido', 'Archivado', 'Cancelado');
 END $$
 
+
 -- genera el siguiente folio del municipio con formato RIETI-ATZ-000001
 -- el consecutivo es independiente para cada municipio
--- READS SQL DATA: no es determinista porque depende de lo que haya en las tablas
 CREATE FUNCTION fn_generar_folio(p_id_municipio INT)
 RETURNS VARCHAR(20)
 READS SQL DATA
@@ -55,9 +52,8 @@ BEGIN
     RETURN CONCAT('RIETI-', v_clave, '-', LPAD(v_siguiente, 6, '0'));
 END $$
 
--- =============================================
+
 -- TRIGGERS
--- =============================================
 
 -- todo reporte nace con su bitácora
 CREATE TRIGGER trg_reporte_crear_bitacora
@@ -66,6 +62,7 @@ FOR EACH ROW
 BEGIN
     INSERT INTO Bitacora (id_folio_reporte) VALUES (NEW.id_folio_reporte);
 END $$
+
 
 -- fecha_cierre se llena sola al cerrar y se limpia al reabrir
 -- al cerrar, la marca de posible duplicado se apaga porque ya no se puede fusionar
@@ -81,6 +78,7 @@ BEGIN
         SET NEW.detalles_cierre = NULL;
     END IF;
 END $$
+
 
 -- cada cambio relevante de un reporte queda como entrada en su bitácora
 CREATE TRIGGER trg_reporte_auditar
@@ -118,6 +116,7 @@ BEGIN
     END IF;
 END $$
 
+
 -- el estatus de un caso siempre se copia a todos sus reportes
 CREATE TRIGGER trg_caso_propagar_estatus
 AFTER UPDATE ON Casos
@@ -130,9 +129,8 @@ BEGIN
     END IF;
 END $$
 
--- =============================================
+
 -- PROCEDURES: CIUDADANO (app)
--- =============================================
 
 -- registra un reporte nuevo y regresa su folio
 -- p_id_municipio lo resuelve el backend a partir de latitud y longitud
@@ -187,9 +185,8 @@ BEGIN
     );
 END $$
 
--- =============================================
+
 -- PROCEDURES: PROCURADOR
--- =============================================
 
 -- cambiar estatus, cerrar y reabrir
 -- si el nuevo estatus es de cierre, p_detalles_cierre es obligatorio
@@ -265,6 +262,7 @@ BEGIN
     COMMIT;
 END $$
 
+
 -- registrar nota de avance
 -- si el reporte está fusionado, la nota se guarda a nivel del caso
 CREATE PROCEDURE sp_registrar_nota(
@@ -302,6 +300,7 @@ BEGIN
         VALUES (p_descripcion_avance, p_descripcion_publica, NOW(), NULL, v_id_caso);
     END IF;
 END $$
+
 
 -- corregir el municipio de un reporte mal catalogado
 -- el reporte pasa automáticamente al procurador del nuevo municipio
@@ -352,6 +351,7 @@ BEGIN
     WHERE id_folio_reporte = p_folio;
 END $$
 
+
 -- marcar o desmarcar un reporte como posible duplicado
 -- sirve de aviso para que el administrador revise y decida si fusiona
 CREATE PROCEDURE sp_marcar_posible_duplicado(
@@ -398,9 +398,8 @@ BEGIN
     UPDATE Reporte SET posible_duplicado = p_valor WHERE id_folio_reporte = p_folio;
 END $$
 
--- =============================================
+
 -- PROCEDURES: ADMINISTRADOR
--- =============================================
 
 -- asignar o reasignar un procurador a un municipio
 -- los reportes y casos del municipio pasan al procurador nuevo
@@ -457,13 +456,14 @@ BEGIN
 
     -- 4. los reportes y casos del municipio pasan al procurador nuevo
     UPDATE Reporte SET id_procurador = p_id_procurador WHERE id_municipio = p_id_municipio;
-    IF v_procurador_anterior IS NOT NULL THEN
-        UPDATE Casos SET id_procurador_responsable = p_id_procurador
-        WHERE id_procurador_responsable = v_procurador_anterior;
-    END IF;
+    -- los casos se buscan por los reportes del municipio, asi entran tambien los que quedaron sin responsable
+    UPDATE Casos SET id_procurador_responsable = p_id_procurador
+    WHERE id_caso IN (SELECT id_caso FROM Reporte
+                      WHERE id_municipio = p_id_municipio AND id_caso IS NOT NULL);
 
     COMMIT;
 END $$
+
 
 -- fusionar dos reportes duplicados en un caso
 -- si uno de los dos ya pertenece a un caso, el otro se suma a ese caso

@@ -1,15 +1,12 @@
--- =============================================
 -- base de datos proteccion_menores
 -- script 1: tablas
--- =============================================
 
 DROP DATABASE IF EXISTS proteccion_menores;
 CREATE DATABASE proteccion_menores;
 USE proteccion_menores;
 
--- =============================================
+
 -- catálogo base
--- =============================================
 
 CREATE TABLE Administrador (
     id_administrador INT AUTO_INCREMENT PRIMARY KEY,
@@ -17,12 +14,14 @@ CREATE TABLE Administrador (
     contrasena_administrador VARCHAR(255) NOT NULL
 );
 
+
 -- clave_municipio: se usa para formar el folio (RIETI-ATZ-000001)
 CREATE TABLE Municipio (
     id_municipio INT AUTO_INCREMENT PRIMARY KEY,
     nombre_municipio VARCHAR(100) NOT NULL UNIQUE,
     clave_municipio VARCHAR(5) NOT NULL UNIQUE
 );
+
 
 -- tabla intermedia N:M
 CREATE TABLE Administrador_Municipio (
@@ -33,6 +32,7 @@ CREATE TABLE Administrador_Municipio (
     FOREIGN KEY (id_municipio) REFERENCES Municipio(id_municipio)
 );
 
+
 -- UNIQUE en id_municipio: un solo procurador por municipio
 CREATE TABLE Procurador (
     id_procurador INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,9 +42,8 @@ CREATE TABLE Procurador (
     FOREIGN KEY (id_municipio) REFERENCES Municipio(id_municipio)
 );
 
--- =============================================
+
 -- reportes y casos
--- =============================================
 
 CREATE TABLE Casos (
     id_caso INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,6 +53,7 @@ CREATE TABLE Casos (
     id_procurador_responsable INT,
     FOREIGN KEY (id_procurador_responsable) REFERENCES Procurador(id_procurador)
 );
+
 
 CREATE TABLE Reporte (
     id_folio_reporte VARCHAR(20) PRIMARY KEY,
@@ -84,6 +84,7 @@ CREATE TABLE Reporte (
     FOREIGN KEY (id_caso) REFERENCES Casos(id_caso)
 );
 
+
 -- una nota pertenece a un reporte o a un caso, nunca a ninguno
 CREATE TABLE Notas_Avance_Reporte (
     id_avance INT AUTO_INCREMENT PRIMARY KEY,
@@ -98,9 +99,8 @@ CREATE TABLE Notas_Avance_Reporte (
     CHECK (id_folio_reporte IS NOT NULL OR id_caso IS NOT NULL)
 );
 
--- =============================================
+
 -- auditoría
--- =============================================
 
 -- UNIQUE en id_folio_reporte: una sola bitácora por reporte
 CREATE TABLE Bitacora (
@@ -108,6 +108,7 @@ CREATE TABLE Bitacora (
     id_folio_reporte VARCHAR(20) NOT NULL UNIQUE,
     FOREIGN KEY (id_folio_reporte) REFERENCES Reporte(id_folio_reporte)
 );
+
 
 CREATE TABLE Entrada (
     id_entrada INT AUTO_INCREMENT PRIMARY KEY,
