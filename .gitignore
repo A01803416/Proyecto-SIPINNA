@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variables de entorno (cualquier subcarpeta)
+.env
+.env.*
+
+# Documentos locales de apoyo (nunca se suben)
+/docs-local/
