@@ -23,9 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Variables de entorno (cualquier subcarpeta)
+# Variables de entorno
 .env
 .env.*
 
-# Documentos locales de apoyo (nunca se suben)
+# Documentos locales
 /docs-local/

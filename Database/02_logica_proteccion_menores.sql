@@ -29,6 +29,7 @@ CREATE FUNCTION fn_es_estatus_final(p_estatus VARCHAR(50))
 RETURNS BOOLEAN
 DETERMINISTIC
 BEGIN
+-- Comprueba si el estatus ingresado está en la lista de estatus finales
     RETURN p_estatus IN ('Concluido', 'Archivado', 'Cancelado');
 END $$
 
@@ -42,13 +43,18 @@ BEGIN
     DECLARE v_clave VARCHAR(5);
     DECLARE v_siguiente INT;
 
+    -- buscamos la clave del municipio según su ID
     SET v_clave = (SELECT clave_municipio FROM Municipio WHERE id_municipio = p_id_municipio);
 
+    -- buscamos el folio con el numero mas alto para ese municipio especifico
+    -- Extraemos la parte numerca con SUBSTRING_INDEX, la convertimos a número con CAST y luego tomamos el número máximo
+    -- si no existe ningun reporte registrado para ese municipio, IFNULL lo convierte en 0 y le suma 1
     SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(id_folio_reporte, '-', -1) AS UNSIGNED)), 0) + 1
     INTO v_siguiente
     FROM Reporte
     WHERE id_folio_reporte LIKE CONCAT('RIETI-', v_clave, '-%');
 
+    -- armamos el folio concatenando el prefijo, la clave y formateando el numero con 6 ceros a la izquierda 
     RETURN CONCAT('RIETI-', v_clave, '-', LPAD(v_siguiente, 6, '0'));
 END $$
 
@@ -60,6 +66,7 @@ CREATE TRIGGER trg_reporte_crear_bitacora
 AFTER INSERT ON Reporte
 FOR EACH ROW
 BEGIN
+    -- inserta en bitacora el id del folio recien creado
     INSERT INTO Bitacora (id_folio_reporte) VALUES (NEW.id_folio_reporte);
 END $$
 
@@ -70,12 +77,15 @@ CREATE TRIGGER trg_reporte_control_cierre
 BEFORE UPDATE ON Reporte
 FOR EACH ROW
 BEGIN
+        -- si el nuevo estatus es final y antes no lo era:
     IF fn_es_estatus_final(NEW.estatus) AND NOT fn_es_estatus_final(OLD.estatus) THEN
-        SET NEW.fecha_cierre = NOW();
-        SET NEW.posible_duplicado = FALSE;
+        SET NEW.fecha_cierre = NOW(); -- asigna automaticamente la fecha y hora de cierre actual
+        SET NEW.posible_duplicado = FALSE;  -- como ya se cerro, desactivamos la bandera de duplicado
+
+        -- si el nuevo estatus no es final y antes si lo era:
     ELSEIF NOT fn_es_estatus_final(NEW.estatus) AND fn_es_estatus_final(OLD.estatus) THEN
-        SET NEW.fecha_cierre = NULL;
-        SET NEW.detalles_cierre = NULL;
+        SET NEW.fecha_cierre = NULL; -- limpia la fecha de cierre
+        SET NEW.detalles_cierre = NULL; -- limpia los detalles de cierre
     END IF;
 END $$
 
@@ -87,29 +97,35 @@ FOR EACH ROW
 BEGIN
     DECLARE v_id_bitacora INT;
 
+    -- obtenemos el id de la bitacora correspondiente a este reporte
     SET v_id_bitacora = (SELECT id_bitacora FROM Bitacora
                          WHERE id_folio_reporte = NEW.id_folio_reporte);
 
+    -- para el estatus
     IF NOT (OLD.estatus <=> NEW.estatus) THEN
         INSERT INTO Entrada (campo_modificado, valor_anterior, valor_nuevo, fecha_cambio, id_bitacora)
         VALUES ('estatus', OLD.estatus, NEW.estatus, NOW(), v_id_bitacora);
     END IF;
 
+    -- para el municipio
     IF NOT (OLD.id_municipio <=> NEW.id_municipio) THEN
         INSERT INTO Entrada (campo_modificado, valor_anterior, valor_nuevo, fecha_cambio, id_bitacora)
         VALUES ('id_municipio', CAST(OLD.id_municipio AS CHAR), CAST(NEW.id_municipio AS CHAR), NOW(), v_id_bitacora);
     END IF;
 
+    -- para el procurador
     IF NOT (OLD.id_procurador <=> NEW.id_procurador) THEN
         INSERT INTO Entrada (campo_modificado, valor_anterior, valor_nuevo, fecha_cambio, id_bitacora)
         VALUES ('id_procurador', CAST(OLD.id_procurador AS CHAR), CAST(NEW.id_procurador AS CHAR), NOW(), v_id_bitacora);
     END IF;
 
+    -- para el caso
     IF NOT (OLD.id_caso <=> NEW.id_caso) THEN
         INSERT INTO Entrada (campo_modificado, valor_anterior, valor_nuevo, fecha_cambio, id_bitacora)
         VALUES ('id_caso', CAST(OLD.id_caso AS CHAR), CAST(NEW.id_caso AS CHAR), NOW(), v_id_bitacora);
     END IF;
 
+    -- para el posible duplicado
     IF NOT (OLD.posible_duplicado <=> NEW.posible_duplicado) THEN
         INSERT INTO Entrada (campo_modificado, valor_anterior, valor_nuevo, fecha_cambio, id_bitacora)
         VALUES ('posible_duplicado', CAST(OLD.posible_duplicado AS CHAR), CAST(NEW.posible_duplicado AS CHAR), NOW(), v_id_bitacora);
@@ -122,7 +138,9 @@ CREATE TRIGGER trg_caso_propagar_estatus
 AFTER UPDATE ON Casos
 FOR EACH ROW
 BEGIN
+    -- si el estatus del caso cambio
     IF NOT (OLD.estatus_caso <=> NEW.estatus_caso) THEN
+        -- le ponemos el mismo estatus a todos los reportes que pertenezcan a este caso
         UPDATE Reporte
         SET estatus = NEW.estatus_caso
         WHERE id_caso = NEW.id_caso;
@@ -133,8 +151,8 @@ END $$
 -- PROCEDURES: CIUDADANO (app)
 
 -- registra un reporte nuevo y regresa su folio
--- p_id_municipio lo resuelve el backend a partir de latitud y longitud
--- p_correo NULL o vacío = reporte anónimo (el backend no le entrega el folio)
+-- p_id_municipio el plan es que lo resuelva solo el backend a partir de latitud y longitud
+-- p_correo NULL o vacío = reporte anónimo, osea no le damos folio
 CREATE PROCEDURE sp_registrar_reporte(
     IN p_descripcion VARCHAR(255),
     IN p_tipo_actividad VARCHAR(100),
@@ -157,20 +175,24 @@ BEGIN
     DECLARE v_existe_municipio INT;
     DECLARE v_id_procurador INT;
 
+    -- verificar si el municipio existe
     SELECT COUNT(*) INTO v_existe_municipio FROM Municipio WHERE id_municipio = p_id_municipio;
     IF v_existe_municipio = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El municipio no existe';
     END IF;
 
+    -- verificar que el numero de ninos involucrados sea al menos 1
     IF p_numero_menores IS NULL OR p_numero_menores <= 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El número de menores debe ser mayor a cero';
     END IF;
 
-    -- el reporte queda asignado al procurador de su municipio (puede no haber)
+    -- el reporte queda asignado al procurador de su municipio 
     SET v_id_procurador = (SELECT id_procurador FROM Procurador WHERE id_municipio = p_id_municipio);
 
+    -- generacion del folio mediante la funcion
     SET p_folio = fn_generar_folio(p_id_municipio);
 
+    -- insertamos datos en la tabla
     INSERT INTO Reporte (
         id_folio_reporte, descripcion, tipo_actividad, edad_aproximada, numero_menores,
         horario, nombre_lugar, frecuencia, colonia, latitud, longitud, correo,
@@ -209,28 +231,34 @@ BEGIN
         RESIGNAL;
     END;
 
+    -- verificamos que el reporte existe
     SELECT COUNT(*) INTO v_existe FROM Reporte WHERE id_folio_reporte = p_folio;
     IF v_existe = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El reporte no existe';
     END IF;
 
+    -- obtenemos el estatus, el procurador asignado y el caso del reporte
     SELECT estatus, id_procurador, id_caso
     INTO v_estatus_actual, v_id_procurador_reporte, v_id_caso
     FROM Reporte WHERE id_folio_reporte = p_folio;
 
+    -- verificamos que el procurador que ejecuta tiene permisos sobre este reporte
     IF v_id_procurador_reporte IS NULL OR v_id_procurador_reporte <> p_id_procurador THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El reporte no pertenece al municipio de este procurador';
     END IF;
 
+    -- verificamos que el nuevo estatus enviado es valido dentro de la lista oficial
     IF p_nuevo_estatus NOT IN ('Registrado', 'En revisión', 'En seguimiento', 'Canalizado',
                                'Concluido', 'Archivado', 'Cancelado', 'Reincidente') THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El estatus no pertenece al catálogo oficial';
     END IF;
 
+    -- verificamos que no se intento cambiar al mismo estatus que ya tenia
     IF p_nuevo_estatus = v_estatus_actual THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El reporte ya tiene ese estatus';
     END IF;
 
+    -- verificamos que si es un estatus de cierre, se especifique el motivo de cierre
     IF fn_es_estatus_final(p_nuevo_estatus) AND (p_detalles_cierre IS NULL OR TRIM(p_detalles_cierre) = '') THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Para cerrar un reporte se requiere el motivo de cierre';
     END IF;
@@ -244,7 +272,7 @@ BEGIN
             detalles_cierre = CASE WHEN fn_es_estatus_final(p_nuevo_estatus) THEN p_detalles_cierre ELSE NULL END
         WHERE id_folio_reporte = p_folio;
     ELSE
-        -- reporte fusionado: se cambia el caso y el trigger lo propaga a sus reportes
+        -- reporte fusionado: se cambia el caso y el trigger ya lo propaga a sus reportes
         UPDATE Casos
         SET estatus_caso = p_nuevo_estatus,
             fecha_cierre = CASE
@@ -254,6 +282,7 @@ BEGIN
                            END
         WHERE id_caso = v_id_caso;
 
+        -- actualizamos los detalles de cierre directamente en los reportes del caso
         UPDATE Reporte
         SET detalles_cierre = CASE WHEN fn_es_estatus_final(p_nuevo_estatus) THEN p_detalles_cierre ELSE NULL END
         WHERE id_caso = v_id_caso;
@@ -281,6 +310,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El reporte no existe';
     END IF;
 
+    -- obtenemos procurador y caso
     SELECT id_procurador, id_caso INTO v_id_procurador_reporte, v_id_caso
     FROM Reporte WHERE id_folio_reporte = p_folio;
 
@@ -292,6 +322,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La nota de avance no puede estar vacía';
     END IF;
 
+    -- si es un reporte individual, se enlaza al folio. si esta en un caso, se enlaza al caso.
     IF v_id_caso IS NULL THEN
         INSERT INTO Notas_Avance_Reporte (descripcion_avance, descripcion_publica, fecha_registro, id_folio_reporte, id_caso)
         VALUES (p_descripcion_avance, p_descripcion_publica, NOW(), p_folio, NULL);
@@ -343,8 +374,10 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede corregir el municipio de un reporte fusionado en un caso';
     END IF;
 
+    -- buscamos el procurador asignado al nuevo municipio
     SET v_id_procurador_nuevo = (SELECT id_procurador FROM Procurador WHERE id_municipio = p_id_municipio_nuevo);
 
+    -- transferimos el reporte al nuevo municipio y al nuevo procurador
     UPDATE Reporte
     SET id_municipio = p_id_municipio_nuevo,
         id_procurador = v_id_procurador_nuevo
@@ -395,6 +428,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede marcar como duplicado un reporte cerrado';
     END IF;
 
+    -- actualizamos la marca de duplicado
     UPDATE Reporte SET posible_duplicado = p_valor WHERE id_folio_reporte = p_folio;
 END $$
 
@@ -429,6 +463,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El municipio no existe';
     END IF;
 
+    -- obtenemos asignaciones previas
     SET v_municipio_anterior = (SELECT id_municipio FROM Procurador WHERE id_procurador = p_id_procurador);
     SET v_procurador_anterior = (SELECT id_procurador FROM Procurador WHERE id_municipio = p_id_municipio);
 
@@ -439,22 +474,21 @@ BEGIN
     SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
     START TRANSACTION;
 
-    -- 1. el municipio destino se libera de su procurador anterior
+    -- el municipio destino se libera de su procurador anterior
     IF v_procurador_anterior IS NOT NULL THEN
         UPDATE Procurador SET id_municipio = NULL WHERE id_procurador = v_procurador_anterior;
     END IF;
 
-    -- 2. el municipio que deja el procurador se queda sin responsable
+    -- el municipio que deja el procurador se queda sin responsable
     IF v_municipio_anterior IS NOT NULL THEN
         UPDATE Reporte SET id_procurador = NULL WHERE id_municipio = v_municipio_anterior;
-        UPDATE Casos SET id_procurador_responsable = NULL
-        WHERE id_procurador_responsable = p_id_procurador;
+        UPDATE Casos SET id_procurador_responsable = NULL WHERE id_procurador_responsable = p_id_procurador;
     END IF;
 
-    -- 3. se asigna el procurador a su nuevo municipio
+    -- se asigna el procurador a su nuevo municipio
     UPDATE Procurador SET id_municipio = p_id_municipio WHERE id_procurador = p_id_procurador;
 
-    -- 4. los reportes y casos del municipio pasan al procurador nuevo
+    -- los reportes y casos del municipio pasan al procurador nuevo
     UPDATE Reporte SET id_procurador = p_id_procurador WHERE id_municipio = p_id_municipio;
     -- los casos se buscan por los reportes del municipio, asi entran tambien los que quedaron sin responsable
     UPDATE Casos SET id_procurador_responsable = p_id_procurador
@@ -522,24 +556,27 @@ BEGIN
         END IF;
     END IF;
 
+    -- identificamos al procurador del municipio
     SET v_id_procurador = (SELECT id_procurador FROM Procurador WHERE id_municipio = v_municipio1);
 
     SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
     START TRANSACTION;
 
+    -- la logica para la fusion
     IF v_caso1 IS NULL AND v_caso2 IS NULL THEN
         -- caso nuevo, nace en Registrado
         INSERT INTO Casos (estatus_caso, fecha_creacion, fecha_cierre, id_procurador_responsable)
         VALUES ('Registrado', CURDATE(), NULL, v_id_procurador);
+        -- guardamos el id del nuevo caso recien creado
         SET v_id_caso = LAST_INSERT_ID();
     ELSE
-        -- uno ya tenía caso: el otro se suma a ese
+        -- si uno ya tenía caso el otro se suma a ese
         SET v_id_caso = IFNULL(v_caso1, v_caso2);
     END IF;
 
     SET v_estatus_caso = (SELECT estatus_caso FROM Casos WHERE id_caso = v_id_caso);
 
-    -- los reportes que se suman toman el caso y su estatus
+    -- unificamos los reportes asignandoles el id del caso, el estatus actual y apagando la bandera de duplicado
     UPDATE Reporte
     SET id_caso = v_id_caso,
         estatus = v_estatus_caso,

@@ -1,21 +1,53 @@
-import { armarFiltros, convertirBooleanos } from './general_db.mjs';
-
-
 //nunca se ven reportes de otro municipio
 
 // reportes
 
 // solo reportes sueltos, los fusionados se ven desde casos
 export async function getReportes(connection, idProcurador, query) {
-  const { condiciones, valores } = armarFiltros(query);
-  const sql = `
+  let sql = `
     SELECT id_folio_reporte, tipo_actividad, estatus, nivel_riesgo, peligro_inmediato,
            posible_duplicado, fecha_registro, id_caso
     FROM Reporte
-    WHERE ${['id_procurador = ?', 'id_caso IS NULL', ...condiciones].join(' AND ')}
-    ORDER BY peligro_inmediato DESC, fecha_registro DESC`;
-  const [rows] = await connection.execute(sql, [idProcurador ?? null, ...valores]);
-  return rows.map(convertirBooleanos);
+    WHERE id_procurador = ? AND id_caso IS NULL`;
+  const valores = [idProcurador ?? null];
+
+  if (query.estatus) {
+    sql += ' AND estatus = ?';
+    valores.push(query.estatus);
+  }
+  if (query.desde) {
+    sql += ' AND fecha_registro >= ?';
+    valores.push(query.desde);
+  }
+  // menor al dia siguiente para que entre todo el dia de hasta
+  if (query.hasta) {
+    sql += ' AND fecha_registro < DATE_ADD(?, INTERVAL 1 DAY)';
+    valores.push(query.hasta);
+  }
+  if (query.nivel_riesgo) {
+    sql += ' AND nivel_riesgo = ?';
+    valores.push(query.nivel_riesgo);
+  }
+  // en la url llega el texto true o false y la columna guarda 1 o 0
+  if (query.peligro_inmediato) {
+    sql += ' AND peligro_inmediato = ?';
+    valores.push(query.peligro_inmediato === 'true' || query.peligro_inmediato === '1' ? 1 : 0);
+  }
+  if (query.posible_duplicado) {
+    sql += ' AND posible_duplicado = ?';
+    valores.push(query.posible_duplicado === 'true' || query.posible_duplicado === '1' ? 1 : 0);
+  }
+
+  sql += ' ORDER BY peligro_inmediato DESC, fecha_registro DESC';
+
+  const [rows] = await connection.execute(sql, valores);
+
+  // mysql regresa los boolean como 0 y 1, la pagina necesita true y false
+  return rows.map((r) => {
+    r.peligro_inmediato = r.peligro_inmediato === 1;
+    r.posible_duplicado = r.posible_duplicado === 1;
+    return r;
+  });
 }
 
 
@@ -33,17 +65,24 @@ export async function getReporte(connection, idProcurador, folio) {
   const [rows] = await connection.execute(sql, [folio, idProcurador ?? null]);
   if (rows.length === 0) return null;
 
-  // tambien trae las notas del caso si el reporte esta fusionado
-  const sqlNotas = `
+  const reporte = rows[0];
+  reporte.peligro_inmediato = reporte.peligro_inmediato === 1;
+  reporte.posible_duplicado = reporte.posible_duplicado === 1;
+  return reporte;
+}
+
+
+// tambien trae las notas del caso si el reporte esta fusionado
+export async function getNotasReporte(connection, idProcurador, folio) {
+  const sql = `
     SELECT n.id_avance, n.descripcion_avance, n.descripcion_publica, n.fecha_registro,
            n.id_folio_reporte, n.id_caso
     FROM Notas_Avance_Reporte n
     JOIN Reporte r ON n.id_folio_reporte = r.id_folio_reporte OR n.id_caso = r.id_caso
     WHERE r.id_folio_reporte = ? AND r.id_procurador = ?
     ORDER BY n.fecha_registro DESC`;
-  const [notas] = await connection.execute(sqlNotas, [folio, idProcurador ?? null]);
-
-  return { ...convertirBooleanos(rows[0]), notas };
+  const [rows] = await connection.execute(sql, [folio, idProcurador ?? null]);
+  return rows;
 }
 
 
@@ -51,26 +90,26 @@ export async function getReporte(connection, idProcurador, folio) {
 
 export async function cambiarEstatus(connection, idProcurador, folio, estatus, motivo) {
   const sql = 'CALL sp_cambiar_estatus_reporte(?, ?, ?, ?)';
-  await connection.execute(sql, [folio, idProcurador, estatus ?? null, motivo ?? null]);
+  await connection.query(sql, [folio, idProcurador, estatus ?? null, motivo ?? null]);
 }
 
 
 export async function registrarNota(connection, idProcurador, folio, descripcionAvance, descripcionPublica) {
   const sql = 'CALL sp_registrar_nota(?, ?, ?, ?)';
   // una nota publica vacia se guarda como null para que el ciudadano no vea una nota en blanco
-  await connection.execute(sql, [folio, idProcurador, descripcionAvance ?? null, descripcionPublica || null]);
+  await connection.query(sql, [folio, idProcurador, descripcionAvance ?? null, descripcionPublica || null]);
 }
 
 
 export async function corregirMunicipio(connection, idProcurador, folio, idMunicipio) {
   const sql = 'CALL sp_corregir_municipio(?, ?, ?)';
-  await connection.execute(sql, [folio, idProcurador, idMunicipio ?? null]);
+  await connection.query(sql, [folio, idProcurador, idMunicipio ?? null]);
 }
 
 
 export async function marcarDuplicado(connection, idProcurador, folio, valor) {
   const sql = 'CALL sp_marcar_posible_duplicado(?, ?, ?)';
-  await connection.execute(sql, [folio, idProcurador, valor ?? null]);
+  await connection.query(sql, [folio, idProcurador, valor ?? null]);
 }
 
 
@@ -98,25 +137,35 @@ export async function getCaso(connection, idProcurador, idCaso) {
     WHERE c.id_procurador_responsable = ? AND c.id_caso = ?
     GROUP BY c.id_caso, c.estatus_caso, c.fecha_creacion, c.fecha_cierre`;
   const [rows] = await connection.execute(sql, [idProcurador ?? null, idCaso]);
-  if (rows.length === 0) return null;
+  return rows[0] ?? null;
+}
 
-  const sqlReportes = `
+
+export async function getReportesCaso(connection, idProcurador, idCaso) {
+  const sql = `
     SELECT r.id_folio_reporte, r.tipo_actividad, r.estatus, r.nivel_riesgo,
            r.peligro_inmediato, r.fecha_registro
     FROM Reporte r
     JOIN Casos c ON r.id_caso = c.id_caso
     WHERE c.id_caso = ? AND c.id_procurador_responsable = ?`;
-  const [reportes] = await connection.execute(sqlReportes, [idCaso, idProcurador]);
+  const [rows] = await connection.execute(sql, [idCaso, idProcurador]);
 
-  const sqlNotas = `
+  return rows.map((r) => {
+    r.peligro_inmediato = r.peligro_inmediato === 1;
+    return r;
+  });
+}
+
+
+export async function getNotasCaso(connection, idProcurador, idCaso) {
+  const sql = `
     SELECT n.id_avance, n.descripcion_avance, n.descripcion_publica, n.fecha_registro
     FROM Notas_Avance_Reporte n
     JOIN Casos c ON n.id_caso = c.id_caso
     WHERE c.id_caso = ? AND c.id_procurador_responsable = ?
     ORDER BY n.fecha_registro DESC`;
-  const [notas] = await connection.execute(sqlNotas, [idCaso, idProcurador]);
-
-  return { ...rows[0], reportes: reportes.map(convertirBooleanos), notas };
+  const [rows] = await connection.execute(sql, [idCaso, idProcurador]);
+  return rows;
 }
 
 
@@ -130,7 +179,7 @@ export async function getFolioDeCaso(connection, idProcurador, idCaso) {
     WHERE c.id_caso = ? AND c.id_procurador_responsable = ? AND r.id_procurador = ?
     LIMIT 1`;
   const [rows] = await connection.execute(sql, [idCaso, idProcurador ?? null, idProcurador ?? null]);
-  return rows[0]?.id_folio_reporte ?? null;
+  return rows.length > 0 ? rows[0].id_folio_reporte : null;
 }
 
 
@@ -143,26 +192,30 @@ export async function getMapa(connection, idProcurador) {
     FROM Reporte
     WHERE id_procurador = ?`;
   const [rows] = await connection.execute(sql, [idProcurador ?? null]);
-  return rows.map(convertirBooleanos);
+
+  return rows.map((r) => {
+    r.peligro_inmediato = r.peligro_inmediato === 1;
+    return r;
+  });
 }
 
 
 export async function getMetricas(connection, idProcurador) {
   const id = idProcurador ?? null;
 
-  const [[total]] = await connection.execute(
+  const [filasTotal] = await connection.execute(
     'SELECT COUNT(*) AS total_reportes FROM Reporte WHERE id_procurador = ?', [id]);
 
   const [porEstatus] = await connection.execute(
     'SELECT estatus, COUNT(*) AS total FROM Reporte WHERE id_procurador = ? GROUP BY estatus', [id]);
 
-  const [[tiempo]] = await connection.execute(`
+  const [filasTiempo] = await connection.execute(`
     SELECT COUNT(*) AS reportes_cerrados,
            ROUND(AVG(TIMESTAMPDIFF(MINUTE, fecha_registro, fecha_cierre)) / 60, 1) AS promedio_horas
     FROM Reporte
     WHERE id_procurador = ? AND fecha_cierre IS NOT NULL`, [id]);
 
-  const [[conteos]] = await connection.execute(`
+  const [filasConteos] = await connection.execute(`
     SELECT IFNULL(SUM(estatus = 'Registrado'), 0) AS reportes_nuevos,
            IFNULL(SUM(posible_duplicado), 0) AS posibles_duplicados,
            IFNULL(SUM(numero_menores), 0) AS ninos_identificados,
@@ -170,10 +223,15 @@ export async function getMetricas(connection, idProcurador) {
     FROM Reporte
     WHERE id_procurador = ?`, [id]);
 
+  const conteos = filasConteos[0];
+
   return {
-    total_reportes: total.total_reportes,
+    total_reportes: filasTotal[0].total_reportes,
     reportes_por_estatus: porEstatus,
-    tiempo_promedio_atencion: tiempo,
-    ...conteos
+    tiempo_promedio_atencion: filasTiempo[0],
+    reportes_nuevos: conteos.reportes_nuevos,
+    posibles_duplicados: conteos.posibles_duplicados,
+    ninos_identificados: conteos.ninos_identificados,
+    riesgo_alto: conteos.riesgo_alto
   };
 }

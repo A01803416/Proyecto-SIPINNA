@@ -1,12 +1,8 @@
--- base de datos proteccion_menores
--- script 1: tablas
 
 DROP DATABASE IF EXISTS proteccion_menores;
 CREATE DATABASE proteccion_menores;
 USE proteccion_menores;
 
-
--- catálogo base
 
 CREATE TABLE Administrador (
     id_administrador INT AUTO_INCREMENT PRIMARY KEY,

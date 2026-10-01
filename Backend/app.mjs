@@ -118,9 +118,11 @@ app.get('/procurador/reportes/:folio', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await procurador.getReporte(connection, idProcurador, folio);
-    if (result) {
-      res.json(result);
+    const reporte = await procurador.getReporte(connection, idProcurador, folio);
+    if (reporte) {
+      const notas = await procurador.getNotasReporte(connection, idProcurador, folio);
+      reporte.notas = notas;
+      res.json(reporte);
     } else {
       res.status(404).json({ message: 'El reporte no existe' });
     }
@@ -273,9 +275,13 @@ app.get('/procurador/casos/:id', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await procurador.getCaso(connection, idProcurador, idCaso);
-    if (result) {
-      res.json(result);
+    const caso = await procurador.getCaso(connection, idProcurador, idCaso);
+    if (caso) {
+      const reportes = await procurador.getReportesCaso(connection, idProcurador, idCaso);
+      const notas = await procurador.getNotasCaso(connection, idProcurador, idCaso);
+      caso.reportes = reportes;
+      caso.notas = notas;
+      res.json(caso);
     } else {
       res.status(404).json({ message: 'El caso no existe' });
     }
@@ -413,9 +419,13 @@ app.get('/admin/reportes/:folio', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await admin.getReporte(connection, folio);
-    if (result) {
-      res.json(result);
+    const reporte = await admin.getReporte(connection, folio);
+    if (reporte) {
+      const notas = await admin.getNotasReporte(connection, folio);
+      const bitacora = await admin.getBitacora(connection, folio);
+      reporte.notas = notas;
+      reporte.bitacora = bitacora;
+      res.json(reporte);
     } else {
       res.status(404).json({ message: 'El reporte no existe' });
     }
@@ -495,9 +505,13 @@ app.get('/admin/casos/:id', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await admin.getCaso(connection, idCaso);
-    if (result) {
-      res.json(result);
+    const caso = await admin.getCaso(connection, idCaso);
+    if (caso) {
+      const reportes = await admin.getReportesCaso(connection, idCaso);
+      const notas = await admin.getNotasCaso(connection, idCaso);
+      caso.reportes = reportes;
+      caso.notas = notas;
+      res.json(caso);
     } else {
       res.status(404).json({ message: 'El caso no existe' });
     }
@@ -692,13 +706,13 @@ app.post('/admin/administradores', async (req, res) => {
 // cierre
 
 app.use((req, res) => {
-  res.status(404).json({ message: `Not Found: ${ req.originalUrl }` });
+  res.status(404).json({ message: `Not Found: ${req.originalUrl}` });
 });
 
-
+// para cuando probemos las cosas localmente
 if (process.env.AWS_LAMBDA_FUNCTION_NAME === undefined) {
   app.listen(port, () => {
-    console.log(`Servidor esperando en: http://localhost:${ port }`);
+    console.log(`Servidor esperando en: http://localhost:${port}`);
   });
 }
 
