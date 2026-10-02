@@ -1,15 +1,14 @@
 import './Hero.css';
 
-export const Hero = () => {
+export default function Hero() {
   return (
     <main className="hero-section">
       <div className="content-left">
         <div className="text-wrapper">
           <h1>Registrar<br />Trabajo Infantil</h1>
           <p>
-            Si usted vio o quiere registrar a niños en situación de calle trabajando.
+            ¿Viste un caso de trabajo infantil? Descarga la app para reportarlo de forma segura y anónima.
           </p>
-          <a href="/reporte" className="btn-reporte">Iniciar Reporte</a>
         </div>
       </div>
 
@@ -24,4 +23,4 @@ export const Hero = () => {
       </div>
     </main>
   );
-};
+}

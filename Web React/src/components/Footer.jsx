@@ -1,6 +1,6 @@
 import './Footer.css';
 
-export const Footer = () =>{
+export default function Footer() {
   // Creamos un arreglo del 1 al 15 para cargar las imágenes de los mnunicipios dinámicamente
 const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
 
@@ -22,4 +22,4 @@ const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
         </div>
     </footer>
     );
-};
+}

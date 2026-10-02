@@ -1,6 +1,6 @@
 import './QuienesSomos.css';
 
-export const QuienesSomos = () => {
+export default function QuienesSomos() {
   return (
     <div className="about-page-container">
       {/* Capa de desenfoque de fondo */}
@@ -50,4 +50,4 @@ export const QuienesSomos = () => {
       </main>
     </div>
   );
-};
+}

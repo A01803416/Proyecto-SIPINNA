@@ -1,6 +1,6 @@
 import './Navbar.css';
 
-export const Navbar = () => {
+export default function Navbar() {
     return (
     <header className="navbar">
       {/* Grupo izquierdo: Logo y ¿Quiénes Somos? */}
@@ -24,4 +24,4 @@ export const Navbar = () => {
         </div>
     </header>
     );
-};
+}

@@ -74,7 +74,7 @@
   border-radius: 50%;
 }
 
-.btn-reporte, .btn-descarga {
+.btn-descarga {
   padding: 0.7em 1.5em;
   background-color: #FFEED6;
   border: 2px solid #fff;
@@ -92,10 +92,9 @@
   z-index: 1;
 }
 
-.btn-reporte { font-size: 1.2rem; padding: 15px 35px; }
 .btn-descarga { font-size: 1.1rem; }
 
-.btn-reporte:before, .btn-descarga:before {
+.btn-descarga:before {
   content: "";
   position: absolute;
   width: 100px;
@@ -107,13 +106,13 @@
   z-index: -1; 
 }
 
-.btn-reporte:hover, .btn-descarga:hover {
+.btn-descarga:hover {
   background-color: #24B1B1; 
   color: #fff;
   box-shadow: 0 2px 0 2px #167a7a; 
 }
 
-.btn-reporte:hover::before, .btn-descarga:hover::before {
+.btn-descarga:hover::before {
   transform: skewX(30deg) translate(150%, -50%);
   transition-delay: 0.1s;
 }
