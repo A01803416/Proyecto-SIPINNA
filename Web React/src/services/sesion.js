@@ -13,6 +13,7 @@ export function leerSesion() {
   }
 }
 
-export function borrarSesion() {
+export function borrarSesion()
+{
   localStorage.removeItem(CLAVE);
 }
