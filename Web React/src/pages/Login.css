@@ -172,6 +172,16 @@
   border-color: var(--azul);
 }
 
+.login-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: rgba(242, 145, 145, 0.2);
+  border-left: 4px solid var(--rosa);
+  color: #8a2c2c;
+  font-size: 0.9rem;
+}
+
 .btn-submit-large {
   width: 100%;
   padding: 12px;
