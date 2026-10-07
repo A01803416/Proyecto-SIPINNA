@@ -9,7 +9,8 @@ const app = express();
 const port = process.env.PORT ?? 8080;
 
 app.use(cors());
-app.use(express.json());
+// como vamos a mandar las fotos desde la app le subo para que podamos mandar json mas grandes
+app.use(express.json({ limit: '5mb' }));
 
 
 // los errores de los procedures llegan con su mensaje tal cual a la pagina
@@ -90,6 +91,33 @@ app.get('/municipios', async (req, res) => {
 
 
 // para la app
+
+// si el reporte es anonimo no se regresa el folio porque nadie podria consultarlo
+app.post('/reportes', async (req, res) => {
+  const datos = req.body ?? {};
+  const correo = datos.correo;
+  let connection;
+
+  try {
+    connection = await connect();
+    // la foto ahorita no la mando, la dejo pendiente para ahorita que haga el como mandar las fotos al bucket de s3
+    const folio = await appDb.registrarReporte(connection, datos, null);
+    if (correo && correo.trim() !== '') {
+      res.status(201).json({ folio });
+    } else {
+      res.status(201).json({ ok: true });
+    }
+
+  } catch (err) {
+    manejarError(res, err);
+
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
 
 // mismo mensaje si falla el folio o el correo para no dar pistas
 app.post('/reportes/consulta', async (req, res) => {
