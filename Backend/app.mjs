@@ -3,6 +3,7 @@ import cors from 'cors';
 import { connect, loginProcurador, loginAdministrador, getMunicipios } from './general_db.mjs';
 import * as procurador from './procurador_db.mjs';
 import * as admin from './admin_db.mjs';
+import * as appDb from './app_db.mjs';
 
 const app = express();
 const port = process.env.PORT ?? 8080;
@@ -76,6 +77,33 @@ app.get('/municipios', async (req, res) => {
     connection = await connect();
     const result = await getMunicipios(connection);
     res.json(result);
+
+  } catch (err) {
+    manejarError(res, err);
+
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+
+// para la app
+
+// mismo mensaje si falla el folio o el correo para no dar pistas
+app.post('/reportes/consulta', async (req, res) => {
+  const { folio, correo } = req.body ?? {};
+  let connection;
+
+  try {
+    connection = await connect();
+    const result = await appDb.consultarReporte(connection, folio, correo);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).json({ message: 'Folio o correo incorrectos' });
+    }
 
   } catch (err) {
     manejarError(res, err);
