@@ -1,6 +1,6 @@
 import { leerSesion } from './sesion';
 
-export const API_URL = 'http://localhost:3000';
+export const API_URL = 'http://localhost:8080';
 
 // todos los fetch usan estos headers, si entra un procurador el backend lo identifica por su id
 export function encabezados() {

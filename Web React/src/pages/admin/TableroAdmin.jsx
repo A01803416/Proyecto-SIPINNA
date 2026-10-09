@@ -2,15 +2,26 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import TablaReportesAdmin from './TablaReportesAdmin';
 import DetalleReporteAdmin from './DetalleReporteAdmin';
+import MapaCalor from '../../components/MapaCalor';
 
 export default function TableroAdmin() {
   const [metricas, setMetricas] = useState(null);
   const [reportes, setReportes] = useState([]);
   const [municipios, setMunicipios] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
+  const [puntosMapa, setPuntosMapa] = useState([]);
 
   async function cargarDatos() {
     try {
+      const resMapa = await fetch(`${API_URL}/admin/mapa`, {
+        headers: encabezados()
+      });
+
+      const dataMapa = await resMapa.json();
+      if (resMapa.ok) {
+        setPuntosMapa(dataMapa);
+      }
+
       const resMetricas = await fetch(`${API_URL}/admin/metricas`, {
         headers: encabezados()
       });
@@ -60,7 +71,11 @@ export default function TableroAdmin() {
             <div className="map-filters">
               <select defaultValue="">
                 <option value="">Todos los Municipios</option>
-                {municipios.map((m) => <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>)}
+                {municipios.map((m) => (
+                  <option key={m.id_municipio} value={m.id_municipio}>
+                    {m.nombre_municipio}
+                  </option>
+                ))}
               </select>
               <select defaultValue="">
                 <option>Últimos 3 meses</option>
@@ -74,14 +89,9 @@ export default function TableroAdmin() {
               <button className="btn-black">Filtrar</button>
             </div>
             <div className="map-iframe-container">
-              <iframe
-                width="100%"
-                height="100%"
-                scrolling="no"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=-99.28%2C19.53%2C-99.24%2C19.57&amp;layer=mapnik"
-                style={{ border: "none" }}
-                title="Mapa Admin"
-              ></iframe>
+              <div style={{ height: '350px', width: '100%' }}>
+                <MapaCalor puntos={puntosMapa} />
+              </div>
             </div>
           </div>
         </div>
@@ -103,7 +113,7 @@ export default function TableroAdmin() {
             <span className="kpi-label">Riesgo Alto</span>
             <span className="kpi-value">{metricas.riesgo_alto}</span>
           </div>
-          <div className="kpi-card" style={{gridColumn: 'span 2'}}>
+          <div className="kpi-card" style={{ gridColumn: 'span 2' }}>
             <span className="kpi-label">Total de Reportes</span>
             <span className="kpi-value">{metricas.total_reportes}</span>
           </div>
