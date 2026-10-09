@@ -1,0 +1,158 @@
+<resources>
+    <string name="app_name">RIETI</string>
+    <string name="titulo_reporte">Reportar un caso</string>
+
+    <!-- Paso 1: Ubicación -->
+    <string name="paso1_instrucciones">Marca en el mapa el lugar exacto donde observaste la situación.</string>
+    <string name="label_municipio">Municipio</string>
+    <string name="label_colonia">Colonia</string>
+    <string name="placeholder_colonia">Ej. Centro, Lázaro Cárdenas</string>
+    <string name="boton_usar_ubicacion">Usar mi ubicación</string>
+    <string name="label_referencia_lugar">Referencia del lugar / establecimiento</string>
+    <string name="placeholder_referencia_lugar">Ej. Esquina frente al Oxxo, local de ropa</string>
+    <string name="label_tipo_actividad">Tipo de trabajo infantil observado</string>
+    <string name="label_otro_tipo_actividad">Especifica el tipo de trabajo infantil</string>
+    <string name="placeholder_otro_tipo_actividad">Ej. Venta ambulante, recolección...</string>
+    <string name="ubicacion_buscando">Buscando tu ubicación…</string>
+
+    <!-- Paso 2: Detalles -->
+    <string name="paso2_instrucciones">Cuéntanos más detalles sobre lo que viste.</string>
+    <string name="label_descripcion">Descripción detallada de la situación</string>
+    <string name="placeholder_descripcion">Describe la situación, vestimenta, qué actividad realizaban...</string>
+    <string name="label_numero_menores">Número de niñas, niños o adolescentes involucrados</string>
+    <string name="label_edad_aproximada">Edad aproximada</string>
+    <string name="placeholder_edad_aproximada">Ej. 8 a 10 años</string>
+    <string name="label_horario">Horario en que ocurre la situación</string>
+    <string name="label_frecuencia_texto">Frecuencia con la que ocurre</string>
+    <string name="placeholder_frecuencia_texto">Ej. Los veo cada sábado</string>
+    <string name="label_nivel_riesgo">Nivel de riesgo</string>
+    <string name="label_peligro_inmediato">¿Situación de peligro inmediato?</string>
+    <string name="opcion_si">Sí</string>
+    <string name="opcion_no">No</string>
+
+    <!-- Paso 3: Evidencia y Contacto -->
+    <string name="paso3_instrucciones">Información de contacto y evidencia adicional.</string>
+    <string name="label_tipo_envio">Elegir tipo de envío</string>
+    <string name="label_correo">Correo electrónico</string>
+    <string name="placeholder_correo">tu@correo.com</string>
+    <string name="nota_anonimato">Para el reporte con seguimiento solicitamos tu correo únicamente para enviarte tu folio.</string>
+
+    <!-- Revisión -->
+    <string name="titulo_revision">Revisa tu reporte</string>
+    <string name="label_editar">Editar</string>
+    <string name="seccion_ubicacion">Ubicación</string>
+    <string name="seccion_detalles">Detalles</string>
+    <string name="seccion_contacto">Envío y Contacto</string>
+
+    <!-- Confirmación -->
+    <string name="titulo_exito">¡Reporte enviado!</string>
+    <string name="instrucciones_folio">Guarda tu folio para consultar el estatus de tu reporte más adelante.</string>
+    <string name="mensaje_exito_anonimo">Tu reporte anónimo ha sido enviado correctamente. Gracias por proteger los derechos de las niñas, niños y adolescentes.</string>
+    <string name="folio_copiado">Folio copiado al portapapeles</string>
+
+    <!-- Inicio -->
+    <string name="home_hero_titulo">RIETI</string>
+    <string name="home_hero_subtitulo">Ruta Intermunicipal para la Erradicación del Trabajo Infantil. Reporta de forma segura.</string>
+    <string name="home_boton_reportar">Reportar un caso</string>
+    <string name="home_boton_consultar">Consultar mi folio</string>
+    <string name="home_link_info">¿Qué es RIETI y cómo funciona?</string>
+    <string name="home_emergencia_titulo">Números de Emergencia</string>
+    <string name="home_emergencia_911">911 - Emergencias</string>
+    <string name="home_emergencia_sipinna">Línea SIPINNA: 55591484607</string>
+
+    <!-- Información -->
+    <string name="info_titulo">Sobre SIPINNA y RIETI</string>
+    <string name="info_que_es_sipinna_titulo">¿Qué es SIPINNA?</string>
+    <string name="info_que_es_sipinna_desc">Es el Sistema Nacional de Protección Integral de Niñas, Niños y Adolescentes. En Atizapán trabajamos para garantizar sus derechos.</string>
+    <string name="info_trabajo_infantil_titulo">¿Qué es el Trabajo Infantil?</string>
+    <string name="info_trabajo_infantil_desc">Se refiere a cualquier trabajo que priva a las niñas, niños y adolescentes de su niñez, su potencial y su dignidad, y que es perjudicial para su desarrollo físico y mental.</string>
+    <string name="info_proceso_titulo">¿Qué pasa después de reportar?</string>
+    <string name="info_proceso_desc">Tu reporte es recibido por la procuraduría especializada, quienes realizarán una visita de verificación para salvaguardar la integridad de las niñas, niños y adolescentes.</string>
+
+    <!-- Consulta de Folio -->
+    <string name="lookup_titulo">Consultar Estatus</string>
+    <string name="lookup_instrucciones">Ingresa el folio RIETI-ATZ-000001 y el correo con el que registraste tu reporte.</string>
+    <string name="lookup_label_folio">Folio de seguimiento</string>
+    <string name="lookup_placeholder_folio">RIETI-ATZ-000001</string>
+    <string name="lookup_label_correo">Correo electrónico de registro</string>
+    <string name="lookup_placeholder_correo">tu@correo.com</string>
+    <string name="lookup_resultado_titulo">Estado del Reporte</string>
+    <string name="lookup_label_fecha">Fecha de registro</string>
+    <string name="lookup_label_estatus">Estatus actual</string>
+    <string name="lookup_label_ultima_nota">Última nota pública del procurador</string>
+
+    <!-- Tipo de Actividad -->
+    <string name="tipo_agricultura">Agricultura</string>
+    <string name="tipo_construccion">Construcción</string>
+    <string name="tipo_comercio_informal">Comercio informal</string>
+    <string name="tipo_trabajo_domestico">Trabajo doméstico</string>
+    <string name="tipo_manufactura">Manufactura</string>
+    <string name="tipo_otro">Otro</string>
+
+    <!-- Horario -->
+    <string name="horario_matutino">Matutino</string>
+    <string name="horario_vespertino">Vespertino</string>
+    <string name="horario_nocturno">Nocturno</string>
+    <string name="horario_variable">Variable</string>
+
+    <!-- Nivel de Riesgo -->
+    <string name="riesgo_bajo">Bajo</string>
+    <string name="riesgo_medio">Medio</string>
+    <string name="riesgo_alto">Alto</string>
+
+    <!-- Tipo de Envío -->
+    <string name="envio_seguimiento">Reporte con seguimiento</string>
+    <string name="envio_anonimo">Reporte anónimo</string>
+
+    <!-- Estatus del Reporte -->
+    <string name="estatus_registrado">Registrado</string>
+    <string name="estatus_en_revision">En revisión</string>
+    <string name="estatus_en_seguimiento">En seguimiento</string>
+    <string name="estatus_canalizado">Canalizado</string>
+    <string name="estatus_concluido">Concluido</string>
+    <string name="estatus_archivado">Archivado</string>
+    <string name="estatus_cancelado">Cancelado</string>
+    <string name="estatus_reincidente">Reincidente</string>
+
+    <!-- Errores y Validaciones -->
+    <string name="error_folio_no_encontrado">Folio o correo incorrectos</string>
+    <string name="lookup_error_credenciales">Folio o correo incorrectos</string>
+    <string name="error_correo_invalido">Ingresa un correo electrónico válido.</string>
+    <string name="error_envio_reporte">Hubo un problema al enviar tu reporte. Intenta de nuevo.</string>
+    <string name="validan_min_caracteres">%1$d/%2$d caracteres mínimos</string>
+
+    <!-- Mapa -->
+    <string name="mapa_coordenadas">Lat: %1$.4f, Lon: %2$.4f</string>
+    <string name="mapa_placeholder_titulo">Mapa Placeholder</string>
+    <string name="mapa_placeholder_subtitulo">(Próximamente integración GPS)</string>
+
+    <!-- Estados de Pantalla -->
+    <string name="estado_cargando">Cargando...</string>
+    <string name="estado_vacio">No hay datos para mostrar.</string>
+    <string name="estado_error">Ha ocurrido un error inesperado.</string>
+
+    <!-- Evidencia -->
+    <string name="advertencia_evidencia">Está estrictamente prohibido fotografiar o grabar el rostro o cuerpo de las niñas, niños o adolescentes. Por favor, sube únicamente fotos del lugar o entorno que sirvan como referencia.</string>
+    <string name="entendido_checkbox">He leído y entiendo la advertencia sobre la privacidad de las niñas, niños o adolescentes.</string>
+    <string name="adjuntar_evidencia">Adjuntar evidencia (opcional)</string>
+    <string name="quitar_archivo">Quitar archivo</string>
+
+    <!-- Indicadores -->
+    <string name="paso_indicador">Paso %1$d de %2$d</string>
+
+    <!-- Botones y Acciones -->
+    <string name="boton_continuar">Continuar</string>
+    <string name="boton_enviar">Enviar reporte</string>
+    <string name="boton_regresar">Regresar</string>
+    <string name="boton_copiar">Copiar folio</string>
+    <string name="label_copiar_folio">Folio RIETI</string>
+    <string name="boton_entendido">Entendido</string>
+    <string name="boton_consultar">Consultar</string>
+    <string name="boton_disminuir">Disminuir</string>
+    <string name="boton_aumentar">Aumentar</string>
+
+    <!-- Zoom Mapa -->
+    <string name="zoom_acercar">Acercar el mapa</string>
+    <string name="zoom_alejar">Alejar el mapa</string>
+    <string name="error_ubicacion_no_disponible">No pudimos obtener tu ubicación. Revisa que el GPS esté encendido o mueve el mapa para marcar el lugar.</string>
+</resources>
