@@ -4,6 +4,7 @@ import { connect, loginProcurador, loginAdministrador, getMunicipios } from './g
 import * as procurador from './procurador_db.mjs';
 import * as admin from './admin_db.mjs';
 import * as appDb from './app_db.mjs';
+import * as fotos from './fotos_s3.mjs';
 
 const app = express();
 const port = process.env.PORT ?? 8080;
@@ -100,8 +101,12 @@ app.post('/reportes', async (req, res) => {
 
   try {
     connection = await connect();
-    // la foto ahorita no la mando, la dejo pendiente para ahorita que haga el como mandar las fotos al bucket de s3
-    const folio = await appDb.registrarReporte(connection, datos, null);
+    let ligaFoto = null;
+    // puse este if para que, ademas de que en caso de que el reporte llegue sin foto funcione, tambien podamos seguir haciendo pruebas en local sin que exista el bucket
+    if (datos.foto && process.env.BUCKET_FOTOS) {
+      ligaFoto = await fotos.guardarFoto(datos.foto);
+    }
+    const folio = await appDb.registrarReporte(connection, datos, ligaFoto);
     if (correo && correo.trim() !== '') {
       res.status(201).json({ folio });
     } else {
