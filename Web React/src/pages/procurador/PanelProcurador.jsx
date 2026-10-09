@@ -22,7 +22,6 @@ export default function PanelProcurador() {
           />
         </div>
         <nav className="sidebar-nav">
-          <a href="/">Inicio</a>
           <button
             className={`nav-btn ${activeTab === 'tablero' ? 'active' : ''}`}
             onClick={() => setActiveTab('tablero')}

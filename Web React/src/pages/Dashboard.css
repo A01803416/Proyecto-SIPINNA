@@ -599,18 +599,36 @@
 }
 
 @media print {
-  body * {
-    visibility: hidden;
+  /* Ocultar la barra lateral y todos los botones */
+  .sidebar,
+  button,
+  .btn-black,
+  .btn-logout {
+    display: none !important;
   }
-  #metricas-report,
-  #metricas-report * {
-    visibility: visible;
+
+  /* Ajustar el fondo */
+  body, 
+  .dashboard-layout,
+  .dashboard-main {
+    background-color: white !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
-  #metricas-report {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
+
+  /* Limpiar la tarjeta de métricas para impresión */
+  .metricas-widget {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  /* El título no quede pegado al borde superior del PDF */
+  .dashboard-title {
+    margin-top: 0 !important;
   }
 }
 
@@ -734,3 +752,4 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
