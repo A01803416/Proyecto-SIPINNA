@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
 
-// los errores de los procedures llegan con su mensaje tal cual a la pagina
+// los errores de los procuradores llegan con su mensaje tal cual a la pagina
 function manejarError(res, err) {
   if (err.sqlState === '45000') {
     res.status(400).json({ message: err.sqlMessage });
