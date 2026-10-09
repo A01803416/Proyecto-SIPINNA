@@ -2,9 +2,29 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
+/**
+ * Vista principal del mapa de calor para el panel del procurador.
+ *
+ * Este componente obtiene los puntos de reportes desde el backend y los envía al
+ * componente de mapa de calor para visualizar la distribución geográfica de incidencias.
+ * También renderiza un conjunto de filtros visuales del panel, aunque actualmente se
+ * encuentran estáticos y no tienen lógica de filtrado implementada.
+ *
+ * @returns {JSX.Element} Panel completo con filtros y mapa de calor.
+ */
 export default function MapaProcurador() {
   const [puntosMapa, setPuntosMapa] = useState([]);
 
+  /**
+   * Carga los puntos geográficos que se muestran en el mapa de calor para el procurador.
+   *
+   * Realiza una petición al endpoint de mapa del procurador usando los encabezados
+   * de autenticación configurados en la aplicación y guarda la respuesta en el estado.
+   *
+   * @async
+   * @returns {Promise<void>} Promesa que finaliza cuando los puntos han sido cargados o
+   * el error ha sido registrado en consola.
+   */
   async function cargarPuntosProcurador() {
     try {
       // Endpoint que trae los reportes filtrados para el procurador
