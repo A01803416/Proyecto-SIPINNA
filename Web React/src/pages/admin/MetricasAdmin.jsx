@@ -1,9 +1,45 @@
 import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 
+/**
+ * @typedef {Object} TiempoAtencionMunicipio
+ * @property {string} nombre_municipio Nombre del municipio.
+ * @property {number|null} promedio_horas Promedio de atención en horas, o null si no hay cierres.
+ * @property {number} reportes_cerrados Cantidad de reportes cerrados considerados.
+ */
+
+/**
+ * @typedef {Object} ConteoPorEstatus
+ * @property {string} estatus Estatus de los reportes.
+ * @property {number} total Cantidad de reportes con ese estatus.
+ */
+
+/**
+ * @typedef {Object} ConteoPorMunicipio
+ * @property {string} nombre_municipio Nombre del municipio.
+ * @property {number} total Cantidad de reportes del municipio.
+ */
+
+/**
+ * @typedef {Object} MetricasGlobalesAdmin
+ * @property {TiempoAtencionMunicipio[]} tiempo_promedio_atencion_por_municipio Promedios de atención por municipio.
+ * @property {ConteoPorEstatus[]} reportes_por_estatus Conteos de reportes agrupados por estatus.
+ * @property {ConteoPorMunicipio[]} reportes_por_municipio Conteos de reportes agrupados por municipio.
+ * @property {number} total_reportes Total de reportes considerados en las métricas.
+ */
+
+/**
+ * Presenta las métricas globales de atención, estatus y reportes por municipio.
+ * Permite imprimir la vista para guardarla o exportarla como PDF.
+ * @returns {JSX.Element|null} Panel de métricas, o null mientras carga la información.
+ */
 export default function MetricasAdmin() {
   const [metricas, setMetricas] = useState(null);
 
+  /**
+   * Obtiene las métricas globales administrativas desde la API.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   */
   async function cargarMetricas() {
     try {
       const res = await fetch(`${API_URL}/admin/metricas`, {
@@ -25,6 +61,10 @@ export default function MetricasAdmin() {
     cargarMetricas();
   }, []);
 
+  /**
+   * Abre el diálogo de impresión del navegador para guardar la vista como PDF.
+   * @returns {void}
+   */
   function handleExportPDF() {
     window.print();
   }

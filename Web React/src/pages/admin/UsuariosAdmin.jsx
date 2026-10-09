@@ -1,6 +1,33 @@
 import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 
+/**
+ * @typedef {Object} MunicipioAdmin
+ * @property {number} id_municipio Identificador del municipio.
+ * @property {string} nombre_municipio Nombre del municipio.
+ * @property {string} clave_municipio Clave oficial del municipio.
+ * @property {number|null} [id_procurador] Identificador del procurador asignado.
+ * @property {string|null} [correo_procurador] Correo del procurador asignado.
+ */
+
+/**
+ * @typedef {Object} ProcuradorAdmin
+ * @property {number} id_procurador Identificador del procurador.
+ * @property {string} correo_procurador Correo institucional del procurador.
+ * @property {number|null} id_municipio Identificador del municipio asignado, si existe.
+ */
+
+/**
+ * @typedef {Object} AdministradorAdmin
+ * @property {number} id_administrador Identificador del administrador.
+ * @property {string} correo_administrador Correo institucional del administrador.
+ */
+
+/**
+ * Panel para crear usuarios y municipios, reasignar procuradores y consultar
+ * los registros actuales de municipios, procuradores y administradores.
+ * @returns {JSX.Element} Interfaz de administración de usuarios y municipios.
+ */
 export default function UsuariosAdmin() {
   const [municipios, setMunicipios] = useState([]);
   const [procuradores, setProcuradores] = useState([]);
@@ -20,6 +47,10 @@ export default function UsuariosAdmin() {
   const [procuradorElegido, setProcuradorElegido] = useState('');
   const [municipioNuevo, setMunicipioNuevo] = useState('');
 
+  /**
+   * Carga los catálogos de municipios, procuradores y administradores.
+   * @returns {Promise<void>} Promesa que se resuelve al completar las solicitudes.
+   */
   async function cargarDatos() {
     try {
       const resMunicipios = await fetch(`${API_URL}/admin/municipios`, {
@@ -61,12 +92,24 @@ export default function UsuariosAdmin() {
     cargarDatos();
   }, []);
 
+  /**
+   * Busca el nombre de un municipio por su identificador.
+   * @param {number} idMunicipio Identificador del municipio.
+   * @returns {string} Nombre del municipio o "Sin municipio" si no existe.
+   */
   function nombreDeMunicipio(idMunicipio) {
     const encontrados = municipios.filter((m) => m.id_municipio === idMunicipio);
     return encontrados.length > 0 ? encontrados[0].nombre_municipio : 'Sin municipio';
   }
 
   // si el municipio ya tiene procurador, el nuevo lo desplaza y hay que avisar antes
+  /**
+   * Confirma si se puede asignar un procurador al municipio, avisando cuando
+   * la asignación reemplazará a otro procurador.
+   * @param {number} idMunicipio Identificador del municipio que se asignará.
+   * @param {number|null} idProcurador Identificador del procurador que se asignará, o null al crear uno.
+   * @returns {boolean} Indica si se puede continuar con la asignación.
+   */
   function confirmarReemplazo(idMunicipio, idProcurador) {
     const encontrados = municipios.filter((m) => m.id_municipio === idMunicipio);
     if (encontrados.length === 0) return true;
@@ -81,6 +124,10 @@ export default function UsuariosAdmin() {
     );
   }
 
+  /**
+   * Registra un procurador o administrador según el rol seleccionado.
+   * @returns {Promise<void>} Promesa que se resuelve al completar la creación.
+   */
   async function crearUsuario() {
     try {
       let res;
@@ -119,6 +166,10 @@ export default function UsuariosAdmin() {
     cargarDatos();
   }
 
+  /**
+   * Registra un municipio con el nombre y la clave capturados en el formulario.
+   * @returns {Promise<void>} Promesa que se resuelve al completar el registro.
+   */
   async function crearMunicipio() {
     try {
       const res = await fetch(`${API_URL}/admin/municipios`, {
@@ -141,6 +192,11 @@ export default function UsuariosAdmin() {
     }
   }
 
+  /**
+   * Asigna el municipio seleccionado al procurador elegido, previa confirmación
+   * si el municipio ya tiene otro responsable.
+   * @returns {Promise<void>} Promesa que se resuelve al completar la reasignación.
+   */
   async function reasignarProcurador() {
     if (!procuradorElegido || !municipioNuevo) {
       alert('Elige un procurador y un municipio.');

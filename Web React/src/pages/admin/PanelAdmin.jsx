@@ -9,6 +9,12 @@ import CasosAdmin from './CasosAdmin';
 import MetricasAdmin from './MetricasAdmin';
 import UsuariosAdmin from './UsuariosAdmin';
 
+/**
+ * Renderiza el panel de administración y su navegación lateral.
+ * Muestra la sección activa y permite cerrar sesión eliminando los datos
+ * de sesión almacenados.
+ * @returns {JSX.Element} Estructura del panel administrativo.
+ */
 export default function PanelAdmin() {
   const [activeTab, setActiveTab] = useState('tablero');
 

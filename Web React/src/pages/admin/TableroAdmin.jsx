@@ -4,6 +4,32 @@ import TablaReportesAdmin from './TablaReportesAdmin';
 import DetalleReporteAdmin from './DetalleReporteAdmin';
 import MapaCalor from '../../components/MapaCalor';
 
+/**
+ * @typedef {Object} ResumenTableroAdmin
+ * @property {number} reportes_nuevos Cantidad de reportes nuevos.
+ * @property {number} posibles_duplicados Cantidad de posibles duplicados.
+ * @property {number} ninos_identificados Cantidad de menores identificados.
+ * @property {number} riesgo_alto Cantidad de reportes con riesgo alto.
+ * @property {number} total_reportes Cantidad total de reportes.
+ */
+
+/**
+ * @typedef {Object} MunicipioTableroAdmin
+ * @property {number|string} id_municipio Identificador del municipio.
+ * @property {string} nombre_municipio Nombre visible del municipio.
+ */
+
+/**
+ * @typedef {Object} PuntoMapaTableroAdmin
+ * @property {number|string} latitud Latitud del punto del mapa.
+ * @property {number|string} longitud Longitud del punto del mapa.
+ */
+
+/**
+ * Muestra el resumen administrativo con indicadores, mapa y reportes recientes.
+ * Los datos se cargan al montar el componente y el detalle abre el reporte elegido.
+ * @returns {JSX.Element|null} Tablero administrativo, o null mientras cargan las métricas.
+ */
 export default function TableroAdmin() {
   const [metricas, setMetricas] = useState(null);
   const [reportes, setReportes] = useState([]);
@@ -11,6 +37,10 @@ export default function TableroAdmin() {
   const [folioAbierto, setFolioAbierto] = useState(null);
   const [puntosMapa, setPuntosMapa] = useState([]);
 
+  /**
+   * Obtiene puntos del mapa, métricas, reportes y municipios desde la API.
+   * @returns {Promise<void>} Promesa que se resuelve al completar las solicitudes.
+   */
   async function cargarDatos() {
     try {
       const resMapa = await fetch(`${API_URL}/admin/mapa`, {

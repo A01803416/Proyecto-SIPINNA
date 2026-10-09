@@ -3,10 +3,29 @@ import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus } from "../procurador/estatus";
 import DetalleCasoAdmin from "./DetalleCasoAdmin";
 
+/**
+ * Datos de un caso fusionado mostrados en la tabla de administración.
+ * @typedef {Object} CasoAdmin
+ * @property {number|string} id_caso Identificador del caso.
+ * @property {string} fecha_creacion Fecha en que se creó el caso.
+ * @property {string} estatus_caso Estatus actual del caso.
+ * @property {string|null} responsable Nombre del procurador responsable, si existe.
+ * @property {number|string} total_reportes Cantidad de reportes asociados.
+ */
+
+/**
+ * Muestra los casos fusionados disponibles para administración y permite
+ * consultar el detalle de cada caso.
+ * @returns {JSX.Element} Vista de la tabla de casos y su detalle seleccionado.
+ */
 export default function CasosAdmin() {
   const [casos, setCasos] = useState([]);
   const [casoAbierto, setCasoAbierto] = useState(null);
 
+  /**
+   * Obtiene los casos desde la API y actualiza la tabla; informa si ocurre un error.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   */
   async function cargarCasos() {
     try {
       const res = await fetch(`${API_URL}/admin/casos`, {

@@ -4,6 +4,18 @@ import { ESTATUS } from '../procurador/estatus';
 import TablaReportesAdmin from './TablaReportesAdmin';
 import DetalleReporteAdmin from './DetalleReporteAdmin';
 
+/**
+ * @typedef {Object} MunicipioFiltroAdmin
+ * @property {number|string} id_municipio Identificador del municipio.
+ * @property {string} nombre_municipio Nombre visible del municipio.
+ */
+
+/**
+ * Presenta el listado administrativo de reportes con filtros por fecha,
+ * municipio, estatus, riesgo y peligro inmediato. También permite consultar
+ * el detalle y fusionar dos reportes.
+ * @returns {JSX.Element} Panel de filtros y tabla de reportes.
+ */
 export default function ReportesAdmin() {
   const [reportes, setReportes] = useState([]);
   const [municipios, setMunicipios] = useState([]);
@@ -17,6 +29,10 @@ export default function ReportesAdmin() {
   const [filterRiesgo, setFilterRiesgo] = useState('');
   const [filterPeligro, setFilterPeligro] = useState(false);
 
+  /**
+   * Solicita los reportes a la API aplicando los filtros activos.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   */
   async function cargarReportes() {
     let url = `${API_URL}/admin/reportes?`;
     if (filterDesde) url += `desde=${filterDesde}&`;
@@ -42,6 +58,10 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Obtiene el catálogo de municipios para las opciones del filtro.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   */
   async function cargarMunicipios() {
     try {
       const res = await fetch(`${API_URL}/municipios`, {
@@ -69,6 +89,11 @@ export default function ReportesAdmin() {
   }, []);
 
   // la fusion es siempre de dos reportes, no se deja elegir un tercero
+  /**
+   * Agrega o quita un folio de la selección, que admite como máximo dos.
+   * @param {number|string} folio Folio del reporte que se selecciona o deselecciona.
+   * @returns {void}
+   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
@@ -79,6 +104,11 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Envía los dos reportes seleccionados para fusionarlos en un mismo caso.
+   * Si la operación tiene éxito, limpia la selección y actualiza el listado.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la fusión.
+   */
   async function fusionar() {
     const folio1 = seleccionados[0];
     const folio2 = seleccionados[1];
@@ -104,6 +134,10 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Restablece los filtros de fecha, municipio, estatus, riesgo y peligro.
+   * @returns {void}
+   */
   function limpiarFiltros() {
     setFilterDesde('');
     setFilterHasta('');

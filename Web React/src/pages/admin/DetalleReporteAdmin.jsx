@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 
-// la bitacora guarda el nombre de la columna, aqui se muestra uno legible
+/** Nombres legibles para los campos registrados en la bitácora. @type {Record<string, string>} */
 const NOMBRES_CAMPO = {
   estatus: 'Estatus',
   posible_duplicado: 'Posible duplicado',
@@ -10,12 +10,75 @@ const NOMBRES_CAMPO = {
   id_caso: 'Caso'
 };
 
-// solo lectura, los cambios los hace el procurador
+/**
+ * @typedef {Object} NotaReporteAdmin
+ * @property {number|string} id_avance Identificador de la nota.
+ * @property {string} fecha_registro Fecha en que se registró la nota.
+ * @property {string} descripcion_avance Descripción privada del avance.
+ * @property {string|null} [descripcion_publica] Descripción pública opcional.
+ */
+
+/**
+ * @typedef {Object} CambioBitacoraReporte
+ * @property {string} fecha_cambio Fecha en que ocurrió el cambio.
+ * @property {string} campo_modificado Nombre del campo modificado.
+ * @property {string|null} valor_anterior Valor previo al cambio.
+ * @property {string|null} valor_nuevo Valor nuevo del campo.
+ * @property {string|null} [responsable_en_ese_momento] Responsable del cambio.
+ */
+
+/** @typedef {Object} MunicipioCatalogoAdmin
+ * @property {number} id_municipio Identificador del municipio.
+ * @property {string} nombre_municipio Nombre del municipio.
+ */
+
+/** @typedef {Object} ProcuradorCatalogoAdmin
+ * @property {number} id_procurador Identificador del procurador.
+ * @property {string} correo_procurador Correo del procurador.
+ */
+
+/**
+ * @typedef {Object} ReporteAdmin
+ * @property {number|string} id_folio_reporte Folio del reporte.
+ * @property {string} fecha_registro Fecha de registro.
+ * @property {string} nombre_municipio Nombre del municipio asociado.
+ * @property {string|null} [colonia] Colonia donde se detectó la situación.
+ * @property {string|null} [nombre_lugar] Referencia del lugar.
+ * @property {string} descripcion Descripción de los hechos.
+ * @property {string} tipo_actividad Actividad detectada.
+ * @property {string|number} edad_aproximada Edad aproximada de los menores.
+ * @property {number} numero_menores Cantidad de menores involucrados.
+ * @property {string} horario Horario en que ocurre la situación.
+ * @property {string} frecuencia Frecuencia de la situación.
+ * @property {string} nivel_riesgo Nivel de riesgo asignado.
+ * @property {string|null} [evidencia_fotografica] URL o ruta de la evidencia.
+ * @property {string} estatus Estatus actual del reporte.
+ * @property {string|null} [correo_procurador] Correo del procurador responsable.
+ * @property {string|null} [detalles_cierre] Motivo o detalles del cierre.
+ * @property {boolean} [peligro_inmediato] Indica si existe peligro inmediato.
+ * @property {boolean} [posible_duplicado] Indica si se marcó como posible duplicado.
+ * @property {number|null} [id_caso] Caso al que fue fusionado, si existe.
+ * @property {NotaReporteAdmin[]} notas Notas registradas para el reporte.
+ * @property {CambioBitacoraReporte[]} bitacora Historial de cambios del reporte.
+ */
+
+/**
+ * Muestra en modo de solo lectura la información, las notas y los cambios
+ * registrados de un reporte.
+ * @param {Object} props Propiedades del componente.
+ * @param {number|string} props.folio Folio del reporte que se va a consultar.
+ * @param {() => void} props.onClose Callback para cerrar el modal.
+ * @returns {JSX.Element|null} Modal con el detalle del reporte, o null mientras carga.
+ */
 export default function DetalleReporteAdmin({ folio, onClose }) {
   const [reporte, setReporte] = useState(null);
   const [municipios, setMunicipios] = useState([]);
   const [procuradores, setProcuradores] = useState([]);
 
+  /**
+   * Obtiene de la API el reporte identificado por `folio`.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   */
   async function cargarReporte() {
     try {
       const res = await fetch(`${API_URL}/admin/reportes/${folio}`, {
@@ -34,6 +97,10 @@ export default function DetalleReporteAdmin({ folio, onClose }) {
   }
 
   // catalogos para cambiar los ids de la bitacora por nombres
+  /**
+   * Carga los catálogos de municipios y procuradores usados en la bitácora.
+   * @returns {Promise<void>} Promesa que se resuelve al terminar las solicitudes.
+   */
   async function cargarCatalogos() {
     try {
       const resMunicipios = await fetch(`${API_URL}/municipios`, {
@@ -70,6 +137,12 @@ export default function DetalleReporteAdmin({ folio, onClose }) {
   }, []);
 
   // la bitacora guarda todo como texto, por eso se compara con Number
+  /**
+   * Convierte un valor de bitácora a una etiqueta legible cuando corresponde.
+   * @param {string} campo Nombre del campo modificado.
+   * @param {string|null} valor Valor registrado en la bitácora.
+   * @returns {string} Etiqueta traducida o el valor original.
+   */
   function traducirValor(campo, valor) {
     if (valor === null || valor === '') {
       return campo === 'id_caso' ? 'Sin caso' : 'Sin asignar';

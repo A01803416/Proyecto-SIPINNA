@@ -1,13 +1,41 @@
 import { API_URL, encabezados } from '../../services/api_url';
 import { claseEstatus, claseRiesgo } from '../procurador/estatus';
 
+/**
+ * @typedef {Object} ReporteFilaAdmin
+ * @property {number|string} id_folio_reporte Folio del reporte.
+ * @property {string} fecha_registro Fecha en que se registró.
+ * @property {string} nombre_municipio Municipio asociado al reporte.
+ * @property {string|null} [correo_procurador] Correo del procurador responsable.
+ * @property {string} tipo_actividad Actividad detectada.
+ * @property {string} nivel_riesgo Nivel de riesgo asignado.
+ * @property {string} estatus Estatus actual del reporte.
+ * @property {boolean} [peligro_inmediato] Indica si existe peligro inmediato.
+ * @property {boolean} [posible_duplicado] Indica si se marcó como posible duplicado.
+ */
 
 // mostrarTodos en false deja solo los tres primeros, como en el tablero
 // mostrarFusion agrega la columna de casillas para elegir los reportes a fusionar
+/**
+ * Renderiza reportes administrativos y sus acciones de consulta, descarga y fusión.
+ * @param {Object} props Propiedades de la tabla.
+ * @param {ReporteFilaAdmin[]} props.reportes Reportes que se mostrarán.
+ * @param {(folio: number|string) => void} props.onVer Callback para abrir el detalle de un reporte.
+ * @param {boolean} props.mostrarTodos Indica si se muestran todos los reportes; si no, muestra los tres primeros.
+ * @param {boolean} props.mostrarFusion Indica si se habilitan las casillas de selección para fusión.
+ * @param {(number|string)[]} props.seleccionados Folios seleccionados para fusionar.
+ * @param {(folio: number|string) => void} props.onSeleccionar Callback al seleccionar o deseleccionar un folio.
+ * @returns {JSX.Element} Tabla de reportes con las columnas configuradas.
+ */
 export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, mostrarFusion, seleccionados, onSeleccionar }) {
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
 
   // abre la ventana antes del fetch para que el navegador no la bloquee
+  /**
+   * Obtiene los datos completos de un reporte y abre una vista imprimible.
+   * @param {number|string} folio Folio del reporte que se va a descargar.
+   * @returns {Promise<void>} Promesa que se resuelve al preparar la vista imprimible.
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
 

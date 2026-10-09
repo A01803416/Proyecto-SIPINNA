@@ -1,15 +1,29 @@
-/* src/App.css */
+/*
+ * Estilos globales de la aplicación.
+ * Este archivo define el reinicio básico y el contenedor principal.
+ */
+
+/*
+ * Selecciona todos los elementos para eliminar los márgenes y rellenos
+ * predeterminados del navegador. `border-box` incluye el borde y el relleno
+ * dentro del ancho y alto declarados para cada elemento.
+ */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/*
+ * Contenedor raíz: organiza el contenido en una columna y ocupa al menos
+ * la altura de la ventana. La imagen de fondo permanece fija, centrada y
+ * cubierta sobre el área disponible; la fuente se hereda como sans-serif.
+ */
 .app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Ruta actualizada con el nombre exacto de tu archivo */
+  /* Fondo centrado, sin repetición y fijo durante el desplazamiento. */
   background: url('/Fondo_Rieti.png') center/cover no-repeat fixed;
   font-family: sans-serif;
 }
