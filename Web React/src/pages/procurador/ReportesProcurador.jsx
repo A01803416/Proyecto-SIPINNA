@@ -4,6 +4,11 @@ import { ESTATUS } from './estatus';
 import TablaReportes from './TablaReportes';
 import DetalleReporte from './DetalleReporte';
 
+/**
+ * Muestra la lista de reportes del procurador con filtros y acceso al detalle.
+ * Cada filtro actualiza la consulta al servidor.
+ * @returns {import('react').JSX.Element} Vista filtrable de reportes.
+ */
 export default function ReportesProcurador() {
   const [reportes, setReportes] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
@@ -14,6 +19,10 @@ export default function ReportesProcurador() {
   const [filterRiesgo, setFilterRiesgo] = useState('');
   const [filterPeligro, setFilterPeligro] = useState(false);
 
+  /**
+   * Consulta los reportes aplicando los filtros seleccionados actualmente.
+   * @returns {Promise<void>}
+   */
   async function cargarReportes() {
     let url = `${API_URL}/procurador/reportes?`;
     if (filterDesde) url += `desde=${filterDesde}&`;
@@ -43,6 +52,10 @@ export default function ReportesProcurador() {
     cargarReportes();
   }, [filterDesde, filterHasta, filterEstatus, filterRiesgo, filterPeligro]);
 
+  /**
+   * Restablece todos los filtros a sus valores iniciales.
+   * @returns {void}
+   */
   function limpiarFiltros() {
     setFilterDesde('');
     setFilterHasta('');

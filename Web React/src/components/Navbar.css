@@ -1,3 +1,4 @@
+/* Paleta reutilizable por la barra y sus controles. */
 :root
 {
 --rosa: #f29191;
@@ -6,6 +7,7 @@
 --morado: #af719d;
 }
 
+/* Barra superior translúcida que permanece visible al desplazarse por la página. */
 .navbar
 {
 display: flex;
@@ -26,6 +28,7 @@ top: 0;
 z-index: 1000;
 }
 
+/* Distribución horizontal de los grupos de navegación. */
 .nav-left,
 .nav-right 
 {
@@ -34,6 +37,7 @@ gap: 15px;
 align-items: center;
 }
 
+/* Identidad de marca dentro del grupo izquierdo. */
 .logo
 {
 font-weight: 900;
@@ -43,7 +47,7 @@ margin-right: 20px;
 letter-spacing: 1px;
 }
 
-/* Estilos de los botones animados */
+/* Estilo compartido por los enlaces de navegación y acceso. */
 .btn-nav,
 .btn-login
 {
@@ -66,6 +70,7 @@ text-align: center;
 z-index: 1;
 }
 
+/* Capa inclinada que se desplaza al activar el estado hover. */
 .btn-nav:before,
 .btn-login::before
 {
@@ -80,6 +85,7 @@ transition: all 0.5s;
 z-index: -1;
 }
 
+/* Estado hover: cambia el contraste, el fondo y la sombra del control. */
 .btn-nav:hover,
 .btn-login:hover
 {
@@ -88,6 +94,7 @@ color: #fff;
 box-shadow: 0 2px 0 2px #167a7a;
 }
 
+/* Desplaza la capa decorativa para completar la animación hover. */
 .btn-nav:hover::before,
 .btn-login:hover::before
 {
@@ -95,6 +102,7 @@ transform: skewX(30deg) translate(150%, -50%);
 transition-delay: 0.1s;
 }
 
+/* Estado active: reduce brevemente el tamaño mientras se pulsa el control. */
 .btn-nav:active,
 .btn-login:active
 {

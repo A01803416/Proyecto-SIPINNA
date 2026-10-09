@@ -2,14 +2,36 @@ import { API_URL, encabezados } from '../../services/api_url';
 import { leerSesion } from '../../services/sesion';
 import { claseEstatus, claseRiesgo } from './estatus';
 
+/**
+ * Datos de un reporte usados por las filas de la tabla.
+ * @typedef {Object} ReporteTabla
+ * @property {number|string} id_folio_reporte Folio único del reporte.
+ * @property {string} fecha_registro Fecha de registro del reporte.
+ * @property {string} tipo_actividad Actividad detectada.
+ * @property {string} nivel_riesgo Nivel de riesgo asignado.
+ * @property {string} estatus Estatus actual del reporte.
+ * @property {boolean} peligro_inmediato Indica si el reporte contiene una alerta de peligro inmediato.
+ * @property {boolean} posible_duplicado Indica si se marcó como posible duplicado.
+ */
 
-// mostrarTodos en false deja solo los tres primeros, como en el tablero
+/**
+ * Renderiza reportes del procurador y sus acciones de consulta e impresión.
+ * @param {Object} props
+ * @param {ReporteTabla[]} props.reportes Reportes que se muestran en la tabla.
+ * @param {(folio: number|string) => void} props.onVer Abre el detalle del reporte indicado.
+ * @param {boolean} props.mostrarTodos Si es `false`, limita la tabla a los tres primeros reportes.
+ * @returns {import('react').JSX.Element} Tabla de reportes.
+ */
 export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
   const sesion = leerSesion();
   const municipio = sesion && sesion.municipio ? sesion.municipio.nombre_municipio : '';
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
 
-  // abre la ventana antes del fetch para que el navegador no la bloquee
+  /**
+   * Abre una ventana antes de solicitar los datos y prepara el reporte para imprimir.
+   * @param {number|string} folio Folio del reporte que se va a descargar.
+   * @returns {Promise<void>}
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
 

@@ -1,7 +1,12 @@
 import './Footer.css';
 
+/**
+ * Renderiza el pie de página con un carrusel animado de logotipos municipales.
+ * Usa los recursos muni1.png a muni15.png y duplica la secuencia para permitir
+ * que la animación CSS la desplace de forma continua.
+ * @returns {import('react').JSX.Element} El pie de página con los logotipos.
+ */
 export default function Footer() {
-  // Creamos un arreglo del 1 al 15 para cargar las imágenes de los mnunicipios dinámicamente
 const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
 
     return (
@@ -10,11 +15,9 @@ const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
     
         <div className="carousel-container">
         <div className="carousel-track">
-          {/* Primer set de 16 logos municipales */}
             {municipios.map((num) => (
             <img key={`muni-${num}`} src={`muni${num}.png`} alt={`Municipio ${num}`} className="carousel-logo" />
             ))}
-          {/* Segundo set duplicado para el loop infinito de los logos municipales */}
             {municipios.map((num) => (
             <img key={`muni-dup-${num}`} src={`muni${num}.png`} alt={`Municipio ${num}`} className="carousel-logo" />
             ))}

@@ -1,5 +1,10 @@
 import './Navbar.css';
 
+/**
+ * Renderiza la navegación principal de RIETI con enlaces a la información
+ * institucional y a los accesos de Procurador y Admin.
+ * @returns {import('react').JSX.Element} Encabezado con los enlaces principales.
+ */
 export default function Navbar() {
     return (
     <header className="navbar">

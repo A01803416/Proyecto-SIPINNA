@@ -2,11 +2,26 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { ESTATUS, esCierre, claseEstatus, claseRiesgo } from "./estatus";
 
+/**
+ * Presenta y permite gestionar un caso, sus reportes asociados y su bitácora.
+ * @param {Object} props
+ * @param {number|string} props.idCaso Identificador del caso que se consulta.
+ * @param {() => void} props.onClose Cierra el detalle del caso.
+ * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de casos.
+ * @param {(folio: number|string) => void} props.onVerReporte Abre el detalle del reporte indicado.
+ * @returns {import('react').ReactNode} Modal del caso o null mientras carga.
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+ */
 export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte }) {
   const [caso, setCaso] = useState(null);
   const [notaPrivada, setNotaPrivada] = useState("");
   const [notaPublica, setNotaPublica] = useState("");
 
+  /**
+   * Obtiene los datos del caso actual y actualiza el estado del componente.
+   * @returns {Promise<void>}
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
+   */
   async function cargarCaso() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}`, {
@@ -28,6 +43,12 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
     cargarCaso();
   }, [idCaso]);
 
+  /**
+   * Actualiza el estatus del caso; solicita un motivo si el nuevo estatus cierra el caso.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de estatus.
+   * @returns {Promise<void>}
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt
+   */
   async function cambiarEstatus(e) {
     const estatus = e.target.value;
     let motivo = null;
@@ -56,6 +77,11 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
     onCambio();
   }
 
+  /**
+   * Envía las notas privada y pública y las limpia si el servidor confirma el registro.
+   * @returns {Promise<void>}
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
+   */
   async function agregarNota() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}/notas`, {
@@ -82,7 +108,14 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
     onCambio();
   }
 
-  // --- Cambio 2: Descargar un reporte individual ---
+  /**
+   * Recupera un reporte individual y abre una ventana preparada para imprimirlo.
+   * @param {number|string} folio Folio del reporte que se va a descargar.
+   * @returns {Promise<void>}
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/open
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/write
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/print
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
     try {
@@ -141,7 +174,13 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
     }
   }
 
-  // --- Cambio 4: Imprimir todo el caso ---
+  /**
+   * Genera una vista imprimible con los datos, reportes y notas del caso actual.
+   * @returns {void}
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/open
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/write
+  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/print
+   */
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
     ventana.document.write(`

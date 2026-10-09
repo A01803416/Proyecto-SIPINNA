@@ -1,9 +1,26 @@
 import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 
+/**
+ * Datos de métricas que devuelve el endpoint de Procuraduría.
+ * @typedef {Object} MetricasProcuradorData
+ * @property {number} total_reportes Total de reportes incluidos en las métricas.
+ * @property {{ promedio_horas: number|null, reportes_cerrados: number }} tiempo_promedio_atencion Resumen del tiempo de atención.
+ * @property {Array<{ estatus: string, total: number }>} reportes_por_estatus Conteo de reportes agrupados por estatus.
+ */
+
+/**
+ * Muestra las métricas de atención y la distribución de reportes por estatus.
+ * @returns {import('react').ReactNode} Panel de métricas o null mientras se cargan.
+ */
 export default function MetricasProcurador() {
+  /** @type {[MetricasProcuradorData|null, import('react').Dispatch<import('react').SetStateAction<MetricasProcuradorData|null>>]} */
   const [metricas, setMetricas] = useState(null);
 
+  /**
+   * Consulta al servidor las métricas del área de Procuraduría.
+   * @returns {Promise<void>}
+   */
   async function cargarMetricas() {
     try {
       const res = await fetch(`${API_URL}/procurador/metricas`, {
@@ -25,6 +42,10 @@ export default function MetricasProcurador() {
     cargarMetricas();
   }, []);
 
+  /**
+   * Abre el diálogo de impresión del navegador para guardar o imprimir el panel.
+   * @returns {void}
+   */
   function handleExportPDF() {
     window.print();
   }

@@ -7,6 +7,11 @@ import ReportesProcurador from './ReportesProcurador';
 import CasosProcurador from './CasosProcurador';
 import MetricasProcurador from './MetricasProcurador';
 
+/**
+ * Renderiza el panel de Procuraduría con navegación entre tablero, mapa,
+ * reportes, casos y métricas, además de la acción para cerrar sesión.
+ * @returns {import('react').JSX.Element} Estructura del panel de Procurador.
+ */
 export default function PanelProcurador() {
   const [activeTab, setActiveTab] = useState('tablero');
 

@@ -1,3 +1,4 @@
+/* Colores reutilizables en la interfaz de autenticación. */
 :root {
   --rosa: #f29191;
   --azul: #24b1b1;
@@ -5,6 +6,7 @@
   --morado: #af719d;
 }
 
+/* Estructura de página a pantalla completa para el encabezado y el formulario. */
 .login-page-container {
   display: flex;
   flex-direction: column;
@@ -13,6 +15,7 @@
   overflow: hidden;
 }
 
+/* Capa fija que oscurece y desenfoca el fondo detrás del contenido. */
 .bg-blur-overlay {
   position: fixed;
   top: 0;
@@ -25,6 +28,7 @@
   z-index: -1;
 }
 
+/* Encabezado superior de la página de acceso. */
 .navbar-login {
   display: flex;
   justify-content: space-between;
@@ -43,6 +47,7 @@
   flex-shrink: 0;
 }
 
+/* Centra el formulario dentro del espacio disponible bajo el encabezado. */
 .login-main {
   flex: 1;
   display: flex;
@@ -51,7 +56,7 @@
   padding: 20px;
 }
 
-/* Tarjeta con borde degradado */
+/* Tarjeta de autenticación en dos columnas con borde degradado decorativo. */
 .auth-container {
   display: flex;
   flex-direction: row;
@@ -83,7 +88,7 @@
   pointer-events: none;
 }
 
-/* Mitad Izquierda */
+/* Columna informativa con título, descripción y logotipo. */
 .auth-left {
   flex: 1;
   background-color: rgba(224, 224, 224, 0.4);
@@ -121,7 +126,7 @@
   mix-blend-mode: multiply;
 }
 
-/* Mitad Derecha */
+/* Columna del formulario y sus elementos de entrada. */
 .auth-right {
   flex: 1;
   background-color: transparent;
@@ -195,7 +200,7 @@
   align-items: center;
 }
 
-/* Botón animado de regreso */
+/* Enlace de regreso con capa inclinada animada en los estados hover y active. */
 .btn-animated {
   padding: 0.7em 1.5em;
   background: none;

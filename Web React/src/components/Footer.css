@@ -29,6 +29,7 @@ overflow: hidden;
 position: relative;
 display: flex;
 align-items: center;
+/* Desvanece los extremos para integrar visualmente los logos al fondo. */
 -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
@@ -38,6 +39,7 @@ mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transpar
 display: flex;
 gap: 40px; 
 align-items: center;
+/* La pista duplicada se desplaza para crear el efecto de carrusel continuo. */
 animation: scroll-carousel 30s linear infinite;
 }
 

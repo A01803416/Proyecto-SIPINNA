@@ -1,3 +1,4 @@
+/* Contenedor de la aplicación: ocupa el alto de la ventana y deja el scroll al área principal. */
 .dashboard-layout {
   display: flex;
   height: 100vh;
@@ -6,7 +7,7 @@
   overflow: hidden;
 }
 
-/* --- BARRA LATERAL (SIDEBAR) --- */
+/* Barra lateral del dashboard, con navegación dispuesta en columna. */
 .sidebar {
   width: 240px; /* Un poco más ancha para respirar mejor */
   /* Degradado suave basado en tu imagen */
@@ -37,6 +38,7 @@
   padding: 10px;
 }
 
+/* Navegación vertical; enlaces y botones comparten estados hover y activo. */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -78,6 +80,7 @@
   background-color: rgba(255, 255, 255, 0.25);
 }
 
+/* Identidad y acción de cierre de sesión al pie de la barra lateral. */
 .sidebar-bottom {
   padding: 25px 20px;
   display: flex;
@@ -121,7 +124,7 @@
   box-shadow: none;
 }
 
-/* --- CONTENIDO PRINCIPAL --- */
+/* Área desplazable que muestra la vista seleccionada del dashboard. */
 .dashboard-main {
   flex: 1;
   padding: 30px 40px;
@@ -135,7 +138,7 @@
   font-weight: 700;
 }
 
-/* --- VISTA: TABLERO --- */
+/* Distribuye las alertas y los indicadores del resumen del tablero. */
 .dashboard-top-section {
   display: flex;
   gap: 20px;
@@ -149,7 +152,7 @@
   flex-direction: column;
 }
 
-/* BORDES NEGROS Y ESQUINAS REDONDEADAS FINAS */
+/* Superficie común para widgets, mapas y tablas principales. */
 .admin-map-widget,
 .full-map-widget,
 .users-widget,
@@ -167,6 +170,7 @@
   height: 100%;
 }
 
+/* Encabezados y controles compartidos por los filtros de mapa y reportes. */
 .map-filters,
 .map-filters-full,
 .report-filters-header {
@@ -189,7 +193,7 @@
   color: #333;
 }
 
-/* BOTONES OSCUROS DE ACCIÓN (Filtrar, Buscar, Crear) */
+/* Botón de acción oscuro, con una variante de mayor tamaño. */
 .btn-black {
   background: #333;
   color: white;
@@ -217,7 +221,7 @@
   flex: 1;
 }
 
-/* Alertas Procurador */
+/* Alertas apiladas del procurador y variantes visuales por nivel. */
 .procurador-alerts-widget {
   display: flex;
   flex-direction: column;
@@ -258,7 +262,7 @@
   color: #f0ad4e;
 }
 
-/* KPIs */
+/* Cuadrícula de indicadores clave y contenido de cada indicador. */
 .kpi-grid {
   flex: 1;
   display: grid;
@@ -291,7 +295,7 @@
   color: #222;
 }
 
-/* --- TABLAS --- */
+/* Espaciado y encabezados de las vistas de tabla. */
 .table-widget,
 .full-table-widget {
   padding: 20px;
@@ -344,7 +348,7 @@
   padding-bottom: 15px;
 }
 
-/* Badges de estado */
+/* Indicadores compactos para estatus y niveles de riesgo en las filas. */
 .badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -381,7 +385,7 @@
   background-color: rgba(175, 113, 157, 0.1);
 }
 
-/* Botones de acción en tabla */
+/* Botones compactos usados para acciones dentro de las tablas. */
 .btn-action,
 .btn-action-icon {
   background: white;
@@ -447,7 +451,7 @@
   box-shadow: 0 2px 0 2px #333;
 }
 
-/* --- VISTAS INTERNAS ESPÉCIFICAS --- */
+/* Dimensiones y distribución de las vistas internas específicas. */
 .full-map-widget {
   display: flex;
   flex-direction: column;
@@ -458,7 +462,7 @@
   flex: 1;
 }
 
-/* Formulario de Usuarios */
+/* Estructura del formulario de usuarios y sus grupos de campos. */
 .users-widget {
   padding: 25px;
 }
@@ -505,7 +509,7 @@
 .input-box-clean:focus {
   border-color: #333;
 }
-/* --- METRICAS --- */
+/* Panel de métricas, tarjetas y gráficas de barras. */
 .metricas-widget {
   background: white;
   border-radius: 12px;
@@ -599,7 +603,7 @@
 }
 
 @media print {
-  /* Ocultar la barra lateral y todos los botones */
+  /* Oculta controles interactivos para generar una salida de impresión limpia. */
   .sidebar,
   button,
   .btn-black,
@@ -607,7 +611,7 @@
     display: none !important;
   }
 
-  /* Ajustar el fondo */
+  /* Quita restricciones de pantalla y restablece el layout para imprimir. */
   body, 
   .dashboard-layout,
   .dashboard-main {
@@ -619,20 +623,20 @@
     margin: 0 !important;
   }
 
-  /* Limpiar la tarjeta de métricas para impresión */
+  /* Elimina decoración de la tarjeta de métricas en la salida impresa. */
   .metricas-widget {
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
   }
 
-  /* El título no quede pegado al borde superior del PDF */
+  /* Mantiene el título separado del borde superior al imprimir. */
   .dashboard-title {
     margin-top: 0 !important;
   }
 }
 
-/* --- MODAL --- */
+/* Capa superpuesta y estructura del modal con desplazamiento interno. */
 .modal-overlay {
   position: fixed;
   top: 0;

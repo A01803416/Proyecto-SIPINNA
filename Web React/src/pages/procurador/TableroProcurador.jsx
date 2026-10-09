@@ -3,11 +3,31 @@ import { API_URL, encabezados } from '../../services/api_url';
 import TablaReportes from './TablaReportes';
 import DetalleReporte from './DetalleReporte';
 
+/**
+ * Resumen que consume el tablero desde el endpoint de métricas.
+ * @typedef {Object} ResumenTableroProcurador
+ * @property {number} reportes_nuevos Cantidad de reportes nuevos.
+ * @property {number} posibles_duplicados Cantidad de reportes marcados como posibles duplicados.
+ * @property {number} ninos_identificados Cantidad de niños identificados.
+ * @property {number} riesgo_alto Cantidad de reportes con riesgo alto.
+ * @property {number} total_reportes Cantidad total de reportes.
+ */
+
+/**
+ * Presenta el resumen operativo de Procuraduría y los reportes recientes.
+ * Permite abrir el detalle de un reporte y actualizar los datos al realizar cambios.
+ * @returns {import('react').ReactNode} Tablero o null mientras se cargan las métricas.
+ */
 export default function TableroProcurador() {
+  /** @type {[ResumenTableroProcurador|null, import('react').Dispatch<import('react').SetStateAction<ResumenTableroProcurador|null>>]} */
   const [metricas, setMetricas] = useState(null);
   const [reportes, setReportes] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
 
+  /**
+   * Obtiene las métricas resumidas del tablero.
+   * @returns {Promise<void>}
+   */
   async function cargarMetricas() {
     try {
       const res = await fetch(`${API_URL}/procurador/metricas`, {
@@ -25,6 +45,10 @@ export default function TableroProcurador() {
     }
   }
 
+  /**
+   * Obtiene la lista de reportes recientes que se muestra en la tabla.
+   * @returns {Promise<void>}
+   */
   async function cargarReportes() {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes`, {
@@ -42,7 +66,10 @@ export default function TableroProcurador() {
     }
   }
 
-  // despues de un cambio en el modal se vuelven a pedir las dos cosas
+  /**
+   * Actualiza las métricas y los reportes, por ejemplo tras editar un reporte.
+   * @returns {Promise<void>}
+   */
   async function cargarDatos() {
     await cargarMetricas();
     await cargarReportes();

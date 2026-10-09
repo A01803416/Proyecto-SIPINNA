@@ -5,6 +5,12 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 
 // Componente secundario para dibujar la capa de calor de Leaflet
+/**
+ * Crea la capa de calor a partir de las coordenadas y la mantiene sincronizada
+ * con el mapa; la elimina cuando cambian los puntos o se desmonta el componente.
+ * @param {{ puntos: Array<{ latitud: number|string, longitud: number|string }> }} props
+ * @returns {null} No renderiza elementos React directamente.
+ */
 function CapaHeatmap({ puntos }) {
     const map = useMap();
 
@@ -36,6 +42,14 @@ function CapaHeatmap({ puntos }) {
 }
 
 // Componente principal del Mapa
+/**
+ * Renderiza un mapa de OpenStreetMap con una capa de calor para los puntos
+ * recibidos y permite configurar las coordenadas del centro.
+ * @param {Object} props
+ * @param {Array<{ latitud: number|string, longitud: number|string }>} [props.puntos=[]] Coordenadas que se representan en la capa de calor.
+ * @param {[number, number]} [props.centro=[19.5583, -99.252]] Latitud y longitud iniciales del mapa.
+ * @returns {import('react').JSX.Element} Mapa interactivo con la capa de calor.
+ */
 export default function MapaCalor({ puntos = [], centro = [19.5583, -99.252] }) {
     return (
     <MapContainer

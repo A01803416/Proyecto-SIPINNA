@@ -4,6 +4,12 @@ import { API_URL, encabezados } from '../services/api_url';
 import { guardarSesion } from '../services/sesion';
 import './Login.css';
 
+/**
+ * Renderiza el formulario de acceso para administrador o procurador.
+ * @param {Object} props
+ * @param {'admin'|'procurador'} props.role Determina el rol autenticado y el panel de destino.
+ * @returns {import('react').JSX.Element} Formulario de inicio de sesión.
+ */
 export default function Login({ role }) {
   const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
@@ -19,6 +25,11 @@ export default function Login({ role }) {
     ? 'Panel de Administración Municipal RIETI.'
     : 'Panel de Procuraduría RIETI.';
 
+  /**
+   * Envía las credenciales, guarda la sesión y redirige al panel autorizado.
+   * @param {import('react').FormEvent<HTMLFormElement>} e Evento de envío del formulario.
+   * @returns {Promise<void>}
+   */
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');

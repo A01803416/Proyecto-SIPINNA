@@ -3,10 +3,20 @@ import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus } from "./estatus";
 import DetalleCaso from "./DetalleCaso";
 
+/**
+ * Muestra los casos fusionados disponibles para el procurador y permite abrir
+ * el detalle de un caso para consultarlo o actualizarlo.
+ * @returns {import('react').JSX.Element} Tabla de casos y detalle seleccionado.
+ */
 export default function CasosProcurador() {
   const [casos, setCasos] = useState([]);
   const [casoAbierto, setCasoAbierto] = useState(null);
 
+  /**
+   * Solicita los casos al servidor y actualiza la tabla si la respuesta es exitosa.
+   * Muestra un aviso si el servidor responde con error o no está disponible.
+   * @returns {Promise<void>}
+   */
   async function cargarCasos() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos`, {

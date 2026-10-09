@@ -2,12 +2,24 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import { ESTATUS, esCierre } from './estatus';
 
+/**
+ * Muestra y permite gestionar un reporte, su estatus, municipio y bitácora.
+ * @param {Object} props
+ * @param {number|string} props.folio Folio del reporte que se consulta.
+ * @param {() => void} props.onClose Cierra el modal del reporte.
+ * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de reportes.
+ * @returns {import('react').ReactNode} Modal del reporte o null mientras carga.
+ */
 export default function DetalleReporte({ folio, onClose, onCambio }) {
   const [reporte, setReporte] = useState(null);
   const [municipios, setMunicipios] = useState([]);
   const [notaPrivada, setNotaPrivada] = useState('');
   const [notaPublica, setNotaPublica] = useState('');
 
+  /**
+   * Solicita los datos del reporte actual y actualiza el estado del modal.
+   * @returns {Promise<void>}
+   */
   async function cargarReporte() {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}`, {
@@ -25,6 +37,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     }
   }
 
+  /**
+   * Obtiene la lista de municipios disponible para transferir el reporte.
+   * @returns {Promise<void>}
+   */
   async function cargarMunicipios() {
     try {
       const res = await fetch(`${API_URL}/municipios`, {
@@ -50,6 +66,11 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     cargarMunicipios();
   }, []);
 
+  /**
+   * Actualiza el estatus del reporte y solicita un motivo si se va a cerrar.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de estatus.
+   * @returns {Promise<void>}
+   */
   async function cambiarEstatus(e) {
     const estatus = e.target.value;
     let motivo = null;
@@ -74,11 +95,15 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
       alert('No se pudo conectar con el servidor');
     }
 
-    // se refresca el modal y tambien la lista de atras
     cargarReporte();
     onCambio();
   }
 
+  /**
+   * Cambia la marca de posible duplicado del reporte.
+   * @param {import('react').ChangeEvent<HTMLInputElement>} e Evento del checkbox.
+   * @returns {Promise<void>}
+   */
   async function marcarDuplicado(e) {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}/duplicado`, {
@@ -99,7 +124,12 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     onCambio();
   }
 
-  // al cambiarlo de municipio deja de ser de este procurador, por eso se cierra el modal
+  /**
+   * Transfiere el reporte al municipio seleccionado; al confirmar la operación,
+   * actualiza la lista y cierra el modal porque deja de pertenecer al procurador.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de municipio.
+   * @returns {Promise<void>}
+   */
   async function corregirMunicipio(e) {
     const idMunicipio = Number(e.target.value);
     const elegidos = municipios.filter((m) => m.id_municipio === idMunicipio);
@@ -126,6 +156,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     }
   }
 
+  /**
+   * Envía las notas privada y pública y limpia los campos si el registro tiene éxito.
+   * @returns {Promise<void>}
+   */
   async function agregarNota() {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}/notas`, {
