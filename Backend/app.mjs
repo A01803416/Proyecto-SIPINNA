@@ -1,3 +1,13 @@
+/**
+ * @file Aplicación de Express con todas las rutas del backend: inicio de
+ * sesión, app móvil del ciudadano, procurador y administrador. Cada ruta abre
+ * su propia conexión a la base de datos y la cierra al terminar.
+ * Las rutas del procurador lo identifican con el encabezado id-procurador; si
+ * falta, no encuentran ningún dato. Las rutas del administrador no verifican
+ * quién hace la petición.
+ * @module app
+ */
+
 import express from 'express';
 import cors from 'cors';
 import { connect, loginProcurador, loginAdministrador, getMunicipios } from './general_db.mjs';
@@ -14,7 +24,16 @@ app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 
 
-// los errores de los procuradores llegan con su mensaje tal cual a la pagina
+/**
+ * Responde a un error atrapado en cualquier ruta. Los errores 45000 de los
+ * procedures traen un mensaje en español pensado para el usuario, así que se
+ * responden con código 400 y ese mensaje en message. Cualquier otro error se
+ * responde con código 500 y el name y message del error.
+ *
+ * @param {Object} res Respuesta de Express.
+ * @param {Error} err Error que se atrapó en la ruta.
+ * @returns {void}
+ */
 function manejarError(res, err) {
   if (err.sqlState === '45000') {
     res.status(400).json({ message: err.sqlMessage });
@@ -27,6 +46,24 @@ function manejarError(res, err) {
 
 // general
 
+/**
+ * POST /login
+ *
+ * Inicia la sesión de un procurador o de un administrador.
+ *
+ * Cuerpo: { correo, contrasena, rol }, donde rol es "procurador" o "administrador".
+ *
+ * Respuestas:
+ * - 200: si es procurador, { id, rol, correo, municipio }, donde municipio es
+ *   { id_municipio, nombre_municipio } o null si no tiene uno asignado.
+ *   Si es administrador, { id, rol, correo }.
+ * - 400: el rol no es "procurador" ni "administrador".
+ * - 401: el correo o la contraseña son incorrectos.
+ * - 500: cualquier otro error.
+ *
+ * @see module:general_db.loginProcurador
+ * @see module:general_db.loginAdministrador
+ */
 app.post('/login', async (req, res) => {
   const { correo, contrasena, rol } = req.body ?? {};
   let connection;
@@ -72,6 +109,17 @@ app.post('/login', async (req, res) => {
 });
 
 
+/**
+ * GET /municipios
+ *
+ * Regresa el catálogo de municipios, ordenado por nombre.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_municipio, nombre_municipio, clave_municipio }.
+ * - 500: cualquier error.
+ *
+ * @see module:general_db.getMunicipios
+ */
 app.get('/municipios', async (req, res) => {
   let connection;
 
@@ -93,7 +141,27 @@ app.get('/municipios', async (req, res) => {
 
 // para la app
 
-// si el reporte es anonimo no se regresa el folio porque nadie podria consultarlo
+/**
+ * POST /reportes
+ *
+ * Registra un reporte nuevo desde la app móvil. Si viene una foto y existe la
+ * variable de entorno BUCKET_FOTOS, la foto se sube a S3 y su liga se guarda
+ * en el reporte; si no, el reporte se guarda sin foto.
+ *
+ * Cuerpo: { id_municipio, latitud, longitud, colonia, nombre_lugar,
+ * tipo_actividad, descripcion, numero_menores, edad_aproximada, horario,
+ * frecuencia, nivel_riesgo, peligro_inmediato, correo, foto }. correo puede
+ * venir vacío o nulo si el reporte es anónimo, y foto es la imagen en base64.
+ *
+ * Respuestas:
+ * - 201: { folio } si el reporte trae correo. Si es anónimo, { ok: true }, sin
+ *   el folio, porque sin correo nadie podría consultarlo.
+ * - 400: el procedure rechazó el reporte; el motivo viene en message.
+ * - 500: cualquier otro error.
+ *
+ * @see module:app_db.registrarReporte
+ * @see module:fotos_s3.guardarFoto
+ */
 app.post('/reportes', async (req, res) => {
   const datos = req.body ?? {};
   const correo = datos.correo;
@@ -124,7 +192,22 @@ app.post('/reportes', async (req, res) => {
 });
 
 
-// mismo mensaje si falla el folio o el correo para no dar pistas
+/**
+ * POST /reportes/consulta
+ *
+ * Consulta el estado de un reporte desde la app móvil, con el folio y el
+ * correo con el que se registró.
+ *
+ * Cuerpo: { folio, correo }.
+ *
+ * Respuestas:
+ * - 200: { id_folio_reporte, estatus, fecha_registro, ultima_nota_publica }.
+ * - 404: "Folio o correo incorrectos". Es el mismo mensaje si falla el folio o
+ *   el correo, para no dar pistas a quien intente adivinar.
+ * - 500: cualquier otro error.
+ *
+ * @see module:app_db.consultarReporte
+ */
 app.post('/reportes/consulta', async (req, res) => {
   const { folio, correo } = req.body ?? {};
   let connection;
@@ -152,6 +235,22 @@ app.post('/reportes/consulta', async (req, res) => {
 // procurador
 // todas identifican al procurador con el header id-procurador
 
+/**
+ * GET /procurador/reportes
+ *
+ * Regresa los reportes sueltos del procurador, es decir, los que no están
+ * fusionados en un caso.
+ *
+ * Encabezado: id-procurador.
+ * Query, todos opcionales: estatus, desde, hasta, nivel_riesgo,
+ * peligro_inmediato y posible_duplicado.
+ *
+ * Respuestas:
+ * - 200: arreglo de reportes.
+ * - 500: cualquier error.
+ *
+ * @see module:procurador_db.getReportes
+ */
 app.get('/procurador/reportes', async (req, res) => {
   const idProcurador = req.get('id-procurador');
   let connection;
@@ -172,6 +271,22 @@ app.get('/procurador/reportes', async (req, res) => {
 });
 
 
+/**
+ * GET /procurador/reportes/:folio
+ *
+ * Regresa el detalle de un reporte del procurador con sus notas de avance.
+ *
+ * Parámetro de la ruta: folio.
+ * Encabezado: id-procurador.
+ *
+ * Respuestas:
+ * - 200: el reporte, sin el correo del ciudadano, con un arreglo notas.
+ * - 404: "El reporte no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.getReporte
+ * @see module:procurador_db.getNotasReporte
+ */
 app.get('/procurador/reportes/:folio', async (req, res) => {
   const folio = req.params.folio;
   const idProcurador = req.get('id-procurador');
@@ -199,8 +314,26 @@ app.get('/procurador/reportes/:folio', async (req, res) => {
 });
 
 
-// en las escrituras primero se revisa que el reporte sea suyo
-// asi responde igual si no existe o si es de otro municipio
+/**
+ * PUT /procurador/reportes/:folio/estatus
+ *
+ * Cambia el estatus de un reporte del procurador; también sirve para cerrarlo
+ * y reabrirlo. Antes de llamar al procedure revisa que el reporte sea suyo,
+ * así responde igual si no existe o si es de otro municipio.
+ *
+ * Parámetro de la ruta: folio.
+ * Encabezado: id-procurador.
+ * Cuerpo: { estatus, motivo }. motivo solo es obligatorio si el estatus nuevo
+ * es de cierre.
+ *
+ * Respuestas:
+ * - 200: { ok: true }.
+ * - 400: el procedure rechazó el cambio; el motivo viene en message.
+ * - 404: "El reporte no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.cambiarEstatus
+ */
 app.put('/procurador/reportes/:folio/estatus', async (req, res) => {
   const folio = req.params.folio;
   const idProcurador = req.get('id-procurador');
@@ -228,6 +361,25 @@ app.put('/procurador/reportes/:folio/estatus', async (req, res) => {
 });
 
 
+/**
+ * POST /procurador/reportes/:folio/notas
+ *
+ * Agrega una nota de avance a un reporte del procurador. Antes de llamar al
+ * procedure revisa que el reporte sea suyo.
+ *
+ * Parámetro de la ruta: folio.
+ * Encabezado: id-procurador.
+ * Cuerpo: { descripcion_avance, descripcion_publica }. descripcion_publica es
+ * opcional y es la única que puede ver el ciudadano.
+ *
+ * Respuestas:
+ * - 201: { ok: true }.
+ * - 400: el procedure rechazó la nota; el motivo viene en message.
+ * - 404: "El reporte no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.registrarNota
+ */
 app.post('/procurador/reportes/:folio/notas', async (req, res) => {
   const folio = req.params.folio;
   const idProcurador = req.get('id-procurador');
@@ -255,6 +407,25 @@ app.post('/procurador/reportes/:folio/notas', async (req, res) => {
 });
 
 
+/**
+ * PUT /procurador/reportes/:folio/municipio
+ *
+ * Corrige el municipio de un reporte del procurador. El reporte pasa al
+ * procurador del municipio nuevo. Antes de llamar al procedure revisa que el
+ * reporte sea suyo.
+ *
+ * Parámetro de la ruta: folio.
+ * Encabezado: id-procurador.
+ * Cuerpo: { id_municipio }.
+ *
+ * Respuestas:
+ * - 200: { ok: true }.
+ * - 400: el procedure rechazó el cambio; el motivo viene en message.
+ * - 404: "El reporte no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.corregirMunicipio
+ */
 app.put('/procurador/reportes/:folio/municipio', async (req, res) => {
   const folio = req.params.folio;
   const idProcurador = req.get('id-procurador');
@@ -282,6 +453,24 @@ app.put('/procurador/reportes/:folio/municipio', async (req, res) => {
 });
 
 
+/**
+ * PUT /procurador/reportes/:folio/duplicado
+ *
+ * Marca o desmarca un reporte del procurador como posible duplicado. Antes de
+ * llamar al procedure revisa que el reporte sea suyo.
+ *
+ * Parámetro de la ruta: folio.
+ * Encabezado: id-procurador.
+ * Cuerpo: { valor }, true para marcarlo y false para desmarcarlo.
+ *
+ * Respuestas:
+ * - 200: { ok: true }.
+ * - 400: el procedure rechazó el cambio; el motivo viene en message.
+ * - 404: "El reporte no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.marcarDuplicado
+ */
 app.put('/procurador/reportes/:folio/duplicado', async (req, res) => {
   const folio = req.params.folio;
   const idProcurador = req.get('id-procurador');
@@ -309,6 +498,19 @@ app.put('/procurador/reportes/:folio/duplicado', async (req, res) => {
 });
 
 
+/**
+ * GET /procurador/casos
+ *
+ * Regresa los casos de los que el procurador es responsable.
+ *
+ * Encabezado: id-procurador.
+ *
+ * Respuestas:
+ * - 200: arreglo de casos.
+ * - 500: cualquier error.
+ *
+ * @see module:procurador_db.getCasos
+ */
 app.get('/procurador/casos', async (req, res) => {
   const idProcurador = req.get('id-procurador');
   let connection;
@@ -329,6 +531,23 @@ app.get('/procurador/casos', async (req, res) => {
 });
 
 
+/**
+ * GET /procurador/casos/:id
+ *
+ * Regresa el detalle de un caso del procurador con sus reportes y sus notas.
+ *
+ * Parámetro de la ruta: id, el id del caso.
+ * Encabezado: id-procurador.
+ *
+ * Respuestas:
+ * - 200: el caso, con un arreglo reportes y un arreglo notas.
+ * - 404: "El caso no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.getCaso
+ * @see module:procurador_db.getReportesCaso
+ * @see module:procurador_db.getNotasCaso
+ */
 app.get('/procurador/casos/:id', async (req, res) => {
   const idCaso = req.params.id;
   const idProcurador = req.get('id-procurador');
@@ -358,7 +577,27 @@ app.get('/procurador/casos/:id', async (req, res) => {
 });
 
 
-// con cualquier folio del caso, el procedure detecta que esta fusionado y cambia todo el caso
+/**
+ * PUT /procurador/casos/:id/estatus
+ *
+ * Cambia el estatus de un caso del procurador. Como no hay procedures de
+ * casos, toma cualquier folio del caso y llama al procedure del reporte; el
+ * procedure detecta que el reporte está fusionado y cambia todo el caso.
+ *
+ * Parámetro de la ruta: id, el id del caso.
+ * Encabezado: id-procurador.
+ * Cuerpo: { estatus, motivo }. motivo solo es obligatorio si el estatus nuevo
+ * es de cierre.
+ *
+ * Respuestas:
+ * - 200: { ok: true }.
+ * - 400: el procedure rechazó el cambio; el motivo viene en message.
+ * - 404: "El caso no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.getFolioDeCaso
+ * @see module:procurador_db.cambiarEstatus
+ */
 app.put('/procurador/casos/:id/estatus', async (req, res) => {
   const idCaso = req.params.id;
   const idProcurador = req.get('id-procurador');
@@ -386,6 +625,26 @@ app.put('/procurador/casos/:id/estatus', async (req, res) => {
 });
 
 
+/**
+ * POST /procurador/casos/:id/notas
+ *
+ * Agrega una nota de avance a un caso del procurador. Igual que el cambio de
+ * estatus, usa cualquier folio del caso y el procedure guarda la nota en el caso.
+ *
+ * Parámetro de la ruta: id, el id del caso.
+ * Encabezado: id-procurador.
+ * Cuerpo: { descripcion_avance, descripcion_publica }. descripcion_publica es
+ * opcional y es la única que puede ver el ciudadano.
+ *
+ * Respuestas:
+ * - 201: { ok: true }.
+ * - 400: el procedure rechazó la nota; el motivo viene en message.
+ * - 404: "El caso no existe", si no existe o es de otro procurador.
+ * - 500: cualquier otro error.
+ *
+ * @see module:procurador_db.getFolioDeCaso
+ * @see module:procurador_db.registrarNota
+ */
 app.post('/procurador/casos/:id/notas', async (req, res) => {
   const idCaso = req.params.id;
   const idProcurador = req.get('id-procurador');
@@ -413,6 +672,20 @@ app.post('/procurador/casos/:id/notas', async (req, res) => {
 });
 
 
+/**
+ * GET /procurador/mapa
+ *
+ * Regresa la ubicación de todos los reportes del procurador, incluidos los
+ * fusionados, para pintarlos en el mapa.
+ *
+ * Encabezado: id-procurador.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus, peligro_inmediato }.
+ * - 500: cualquier error.
+ *
+ * @see module:procurador_db.getMapa
+ */
 app.get('/procurador/mapa', async (req, res) => {
   const idProcurador = req.get('id-procurador');
   let connection;
@@ -433,6 +706,19 @@ app.get('/procurador/mapa', async (req, res) => {
 });
 
 
+/**
+ * GET /procurador/metricas
+ *
+ * Regresa las métricas de los reportes del procurador.
+ *
+ * Encabezado: id-procurador.
+ *
+ * Respuestas:
+ * - 200: objeto con las métricas.
+ * - 500: cualquier error.
+ *
+ * @see module:procurador_db.getMetricas
+ */
 app.get('/procurador/metricas', async (req, res) => {
   const idProcurador = req.get('id-procurador');
   let connection;
@@ -455,6 +741,21 @@ app.get('/procurador/metricas', async (req, res) => {
 
 // administrador
 
+/**
+ * GET /admin/reportes
+ *
+ * Regresa los reportes sueltos de todos los municipios, es decir, los que no
+ * están fusionados en un caso.
+ *
+ * Query, todos opcionales: estatus, desde, hasta, nivel_riesgo,
+ * peligro_inmediato, posible_duplicado e id_municipio.
+ *
+ * Respuestas:
+ * - 200: arreglo de reportes.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getReportes
+ */
 app.get('/admin/reportes', async (req, res) => {
   let connection;
 
@@ -474,6 +775,23 @@ app.get('/admin/reportes', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/reportes/:folio
+ *
+ * Regresa el detalle de cualquier reporte con sus notas de avance y su bitácora.
+ *
+ * Parámetro de la ruta: folio.
+ *
+ * Respuestas:
+ * - 200: el reporte, sin el correo del ciudadano, con un arreglo notas y un
+ *   arreglo bitacora.
+ * - 404: "El reporte no existe".
+ * - 500: cualquier otro error.
+ *
+ * @see module:admin_db.getReporte
+ * @see module:admin_db.getNotasReporte
+ * @see module:admin_db.getBitacora
+ */
 app.get('/admin/reportes/:folio', async (req, res) => {
   const folio = req.params.folio;
   let connection;
@@ -502,6 +820,17 @@ app.get('/admin/reportes/:folio', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/duplicados
+ *
+ * Regresa los reportes que algún procurador marcó como posible duplicado.
+ *
+ * Respuestas:
+ * - 200: arreglo de reportes.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getDuplicados
+ */
 app.get('/admin/duplicados', async (req, res) => {
   let connection;
 
@@ -521,6 +850,20 @@ app.get('/admin/duplicados', async (req, res) => {
 });
 
 
+/**
+ * POST /admin/fusiones
+ *
+ * Fusiona dos reportes en un caso.
+ *
+ * Cuerpo: { folio1, folio2 }.
+ *
+ * Respuestas:
+ * - 201: { id_caso }, el caso donde quedaron los dos reportes.
+ * - 400: el procedure rechazó la fusión; el motivo viene en message.
+ * - 500: cualquier otro error.
+ *
+ * @see module:admin_db.fusionar
+ */
 app.post('/admin/fusiones', async (req, res) => {
   const { folio1, folio2 } = req.body ?? {};
   let connection;
@@ -541,6 +884,17 @@ app.post('/admin/fusiones', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/casos
+ *
+ * Regresa todos los casos con su procurador responsable.
+ *
+ * Respuestas:
+ * - 200: arreglo de casos.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getCasos
+ */
 app.get('/admin/casos', async (req, res) => {
   let connection;
 
@@ -560,6 +914,22 @@ app.get('/admin/casos', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/casos/:id
+ *
+ * Regresa el detalle de cualquier caso con sus reportes y sus notas.
+ *
+ * Parámetro de la ruta: id, el id del caso.
+ *
+ * Respuestas:
+ * - 200: el caso, con un arreglo reportes y un arreglo notas.
+ * - 404: "El caso no existe".
+ * - 500: cualquier otro error.
+ *
+ * @see module:admin_db.getCaso
+ * @see module:admin_db.getReportesCaso
+ * @see module:admin_db.getNotasCaso
+ */
 app.get('/admin/casos/:id', async (req, res) => {
   const idCaso = req.params.id;
   let connection;
@@ -588,6 +958,19 @@ app.get('/admin/casos/:id', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/mapa
+ *
+ * Regresa la ubicación de todos los reportes de todos los municipios,
+ * incluidos los fusionados, para pintarlos en el mapa.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus,
+ *   peligro_inmediato, nombre_municipio }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getMapa
+ */
 app.get('/admin/mapa', async (req, res) => {
   let connection;
 
@@ -607,6 +990,17 @@ app.get('/admin/mapa', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/metricas
+ *
+ * Regresa las métricas de todos los municipios.
+ *
+ * Respuestas:
+ * - 200: objeto con las métricas.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getMetricas
+ */
 app.get('/admin/metricas', async (req, res) => {
   let connection;
 
@@ -626,6 +1020,18 @@ app.get('/admin/metricas', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/municipios
+ *
+ * Regresa todos los municipios con el procurador asignado a cada uno.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_municipio, nombre_municipio, clave_municipio,
+ *   id_procurador, correo_procurador }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getMunicipios
+ */
 app.get('/admin/municipios', async (req, res) => {
   let connection;
 
@@ -645,6 +1051,19 @@ app.get('/admin/municipios', async (req, res) => {
 });
 
 
+/**
+ * POST /admin/municipios
+ *
+ * Da de alta un municipio. La clave se guarda en mayúsculas.
+ *
+ * Cuerpo: { nombre_municipio, clave_municipio }.
+ *
+ * Respuestas:
+ * - 201: { id_municipio, nombre_municipio, clave_municipio }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.crearMunicipio
+ */
 app.post('/admin/municipios', async (req, res) => {
   const { nombre_municipio, clave_municipio } = req.body ?? {};
   let connection;
@@ -665,6 +1084,17 @@ app.post('/admin/municipios', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/procuradores
+ *
+ * Regresa todos los procuradores, sin su contraseña.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_procurador, correo_procurador, id_municipio }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getProcuradores
+ */
 app.get('/admin/procuradores', async (req, res) => {
   let connection;
 
@@ -684,6 +1114,21 @@ app.get('/admin/procuradores', async (req, res) => {
 });
 
 
+/**
+ * POST /admin/procuradores
+ *
+ * Da de alta un procurador y, si viene id_municipio, se lo asigna.
+ *
+ * Cuerpo: { correo, contrasena, id_municipio }. id_municipio es opcional.
+ *
+ * Respuestas:
+ * - 201: { id_procurador, correo_procurador, id_municipio }.
+ * - 400: el procedure rechazó la asignación del municipio; el motivo viene en
+ *   message. En ese caso el procurador sí queda creado, pero sin municipio.
+ * - 500: cualquier otro error.
+ *
+ * @see module:admin_db.crearProcurador
+ */
 app.post('/admin/procuradores', async (req, res) => {
   const { correo, contrasena, id_municipio } = req.body ?? {};
   let connection;
@@ -704,6 +1149,21 @@ app.post('/admin/procuradores', async (req, res) => {
 });
 
 
+/**
+ * PUT /admin/procuradores/:id/municipio
+ *
+ * Asigna o reasigna un procurador a un municipio.
+ *
+ * Parámetro de la ruta: id, el id del procurador.
+ * Cuerpo: { id_municipio }.
+ *
+ * Respuestas:
+ * - 200: el procurador actualizado, { id_procurador, correo_procurador, id_municipio }.
+ * - 400: el procedure rechazó la asignación; el motivo viene en message.
+ * - 500: cualquier otro error.
+ *
+ * @see module:admin_db.asignarMunicipio
+ */
 app.put('/admin/procuradores/:id/municipio', async (req, res) => {
   const idProcurador = req.params.id;
   const { id_municipio } = req.body ?? {};
@@ -725,6 +1185,17 @@ app.put('/admin/procuradores/:id/municipio', async (req, res) => {
 });
 
 
+/**
+ * GET /admin/administradores
+ *
+ * Regresa todos los administradores, sin su contraseña.
+ *
+ * Respuestas:
+ * - 200: arreglo de { id_administrador, correo_administrador }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.getAdministradores
+ */
 app.get('/admin/administradores', async (req, res) => {
   let connection;
 
@@ -744,6 +1215,19 @@ app.get('/admin/administradores', async (req, res) => {
 });
 
 
+/**
+ * POST /admin/administradores
+ *
+ * Da de alta un administrador.
+ *
+ * Cuerpo: { correo, contrasena }.
+ *
+ * Respuestas:
+ * - 201: { id_administrador, correo_administrador }.
+ * - 500: cualquier error.
+ *
+ * @see module:admin_db.crearAdministrador
+ */
 app.post('/admin/administradores', async (req, res) => {
   const { correo, contrasena } = req.body ?? {};
   let connection;

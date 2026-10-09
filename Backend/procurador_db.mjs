@@ -1,8 +1,34 @@
-//nunca se ven reportes de otro municipio
+/**
+ * @file Consultas y llamadas a procedures del procurador: reportes, casos,
+ * mapa y métricas. Todas filtran por el id del procurador, así que nunca
+ * regresan datos de otro municipio.
+ * @module procurador_db
+ */
 
 // reportes
 
-// solo reportes sueltos, los fusionados se ven desde casos
+/**
+ * Obtiene los reportes sueltos del procurador, es decir, los que no están
+ * fusionados en un caso; los fusionados se consultan desde los casos.
+ * Se ordenan con los de peligro inmediato primero y después del más reciente
+ * al más antiguo.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {Object} query Filtros opcionales, tal como llegan en la URL.
+ * @param {string} [query.estatus] Solo los reportes con este estatus.
+ * @param {string} [query.desde] Solo los registrados desde esta fecha, en formato AAAA-MM-DD.
+ * @param {string} [query.hasta] Solo los registrados hasta esta fecha, incluido el día completo.
+ * @param {string} [query.nivel_riesgo] Bajo, Medio o Alto.
+ * @param {string} [query.peligro_inmediato] "true" o "1" para los que sí tienen
+ * peligro inmediato; cualquier otro valor, para los que no.
+ * @param {string} [query.posible_duplicado] Igual que peligro_inmediato, pero
+ * para la marca de posible duplicado.
+ * @returns {Promise<Object[]>} Arreglo de reportes con id_folio_reporte,
+ * tipo_actividad, estatus, nivel_riesgo, peligro_inmediato, posible_duplicado,
+ * fecha_registro e id_caso. peligro_inmediato y posible_duplicado llegan como
+ * true o false.
+ */
 export async function getReportes(connection, idProcurador, query) {
   let sql = `
     SELECT id_folio_reporte, tipo_actividad, estatus, nivel_riesgo, peligro_inmediato,
@@ -51,7 +77,19 @@ export async function getReportes(connection, idProcurador, query) {
 }
 
 
-// el procurador no debe ver el correo del ciudadano
+/**
+ * Obtiene el detalle de un reporte del procurador, con el nombre de su
+ * municipio. No incluye el correo del ciudadano. Las rutas de escritura
+ * también la usan para revisar que el reporte sea del procurador antes de
+ * llamar a un procedure.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {string} folio Folio del reporte.
+ * @returns {Promise<Object|null>} Todos los datos del reporte menos el correo,
+ * con peligro_inmediato y posible_duplicado como true o false, o null si el
+ * reporte no existe o es de otro procurador.
+ */
 export async function getReporte(connection, idProcurador, folio) {
   const sql = `
     SELECT r.id_folio_reporte, r.descripcion, r.tipo_actividad, r.edad_aproximada, r.numero_menores,
@@ -72,7 +110,18 @@ export async function getReporte(connection, idProcurador, folio) {
 }
 
 
-// tambien trae las notas del caso si el reporte esta fusionado
+/**
+ * Obtiene las notas de avance de un reporte del procurador, de la más reciente
+ * a la más antigua. Si el reporte está fusionado en un caso, también trae las
+ * notas del caso.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {string} folio Folio del reporte.
+ * @returns {Promise<Object[]>} Arreglo de notas con id_avance,
+ * descripcion_avance, descripcion_publica, fecha_registro, id_folio_reporte e
+ * id_caso. Vacío si el reporte no tiene notas o es de otro procurador.
+ */
 export async function getNotasReporte(connection, idProcurador, folio) {
   const sql = `
     SELECT n.id_avance, n.descripcion_avance, n.descripcion_publica, n.fecha_registro,
@@ -88,12 +137,45 @@ export async function getNotasReporte(connection, idProcurador, folio) {
 
 // procedures
 
+/**
+ * Cambia el estatus de un reporte con el procedure sp_cambiar_estatus_reporte.
+ * Sirve para cambiar de estatus, cerrar y reabrir. Cerrar es pasar a un
+ * estatus final (Concluido, Archivado o Cancelado) y exige el motivo. Si el
+ * reporte está fusionado en un caso, el cambio se aplica a todo el caso.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que hace el cambio.
+ * @param {string} folio Folio del reporte.
+ * @param {string} estatus Estatus nuevo, escrito igual que en el catálogo
+ * oficial, por ejemplo En revisión.
+ * @param {string} [motivo] Motivo de cierre. Solo se guarda si el estatus nuevo es final.
+ * @returns {Promise<void>}
+ * @throws {Error} Error 45000 del procedure: "El reporte no existe",
+ * "El reporte no pertenece al municipio de este procurador",
+ * "El estatus no pertenece al catálogo oficial", "El reporte ya tiene ese
+ * estatus" o "Para cerrar un reporte se requiere el motivo de cierre".
+ */
 export async function cambiarEstatus(connection, idProcurador, folio, estatus, motivo) {
   const sql = 'CALL sp_cambiar_estatus_reporte(?, ?, ?, ?)';
   await connection.query(sql, [folio, idProcurador, estatus ?? null, motivo ?? null]);
 }
 
 
+/**
+ * Registra una nota de avance con el procedure sp_registrar_nota. Si el
+ * reporte está fusionado en un caso, la nota se guarda en el caso.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que escribe la nota.
+ * @param {string} folio Folio del reporte.
+ * @param {string} descripcionAvance Nota interna, solo la ve el personal.
+ * @param {string} [descripcionPublica] Nota que puede ver el ciudadano. Si
+ * llega vacía se guarda como null.
+ * @returns {Promise<void>}
+ * @throws {Error} Error 45000 del procedure: "El reporte no existe",
+ * "El reporte no pertenece al municipio de este procurador" o
+ * "La nota de avance no puede estar vacía".
+ */
 export async function registrarNota(connection, idProcurador, folio, descripcionAvance, descripcionPublica) {
   const sql = 'CALL sp_registrar_nota(?, ?, ?, ?)';
   // una nota publica vacia se guarda como null para que el ciudadano no vea una nota en blanco
@@ -101,12 +183,44 @@ export async function registrarNota(connection, idProcurador, folio, descripcion
 }
 
 
+/**
+ * Cambia el municipio de un reporte mal catalogado con el procedure
+ * sp_corregir_municipio. El reporte pasa al procurador del municipio nuevo,
+ * o queda sin procurador si ese municipio no tiene uno. El folio no cambia.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que hace la corrección.
+ * @param {string} folio Folio del reporte.
+ * @param {number} idMunicipio Id del municipio correcto.
+ * @returns {Promise<void>}
+ * @throws {Error} Error 45000 del procedure: "El reporte no existe",
+ * "El reporte no pertenece al municipio de este procurador",
+ * "El municipio nuevo no existe", "El reporte ya pertenece a ese municipio" o
+ * "No se puede corregir el municipio de un reporte fusionado en un caso".
+ */
 export async function corregirMunicipio(connection, idProcurador, folio, idMunicipio) {
   const sql = 'CALL sp_corregir_municipio(?, ?, ?)';
   await connection.query(sql, [folio, idProcurador, idMunicipio ?? null]);
 }
 
 
+/**
+ * Prende o apaga la marca de posible duplicado de un reporte con el procedure
+ * sp_marcar_posible_duplicado. La marca le avisa al administrador que revise
+ * si debe fusionarlo.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que hace el cambio.
+ * @param {string} folio Folio del reporte.
+ * @param {boolean} valor true para marcarlo, false para desmarcarlo.
+ * @returns {Promise<void>}
+ * @throws {Error} Error 45000 del procedure: "El reporte no existe",
+ * "El reporte no pertenece al municipio de este procurador",
+ * "Se debe indicar si se marca o se desmarca el reporte",
+ * "El reporte ya tiene ese valor de posible duplicado",
+ * "El reporte ya pertenece a un caso fusionado" o
+ * "No se puede marcar como duplicado un reporte cerrado".
+ */
 export async function marcarDuplicado(connection, idProcurador, folio, valor) {
   const sql = 'CALL sp_marcar_posible_duplicado(?, ?, ?)';
   await connection.query(sql, [folio, idProcurador, valor ?? null]);
@@ -115,6 +229,15 @@ export async function marcarDuplicado(connection, idProcurador, folio, valor) {
 
 // casos
 
+/**
+ * Obtiene los casos de los que el procurador es responsable, con cuántos
+ * reportes tiene cada uno.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @returns {Promise<Object[]>} Arreglo de casos con id_caso, estatus_caso,
+ * fecha_creacion, fecha_cierre y total_reportes.
+ */
 export async function getCasos(connection, idProcurador) {
   const sql = `
     SELECT c.id_caso, c.estatus_caso, c.fecha_creacion, c.fecha_cierre,
@@ -128,6 +251,16 @@ export async function getCasos(connection, idProcurador) {
 }
 
 
+/**
+ * Obtiene un caso del que el procurador es responsable.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {number|string} idCaso Id del caso.
+ * @returns {Promise<Object|null>} Un objeto con id_caso, estatus_caso,
+ * fecha_creacion, fecha_cierre y total_reportes, o null si el caso no existe
+ * o es de otro procurador.
+ */
 export async function getCaso(connection, idProcurador, idCaso) {
   const sql = `
     SELECT c.id_caso, c.estatus_caso, c.fecha_creacion, c.fecha_cierre,
@@ -141,6 +274,16 @@ export async function getCaso(connection, idProcurador, idCaso) {
 }
 
 
+/**
+ * Obtiene los reportes que forman un caso del procurador.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {number|string} idCaso Id del caso.
+ * @returns {Promise<Object[]>} Arreglo de reportes con id_folio_reporte,
+ * tipo_actividad, estatus, nivel_riesgo, peligro_inmediato como true o false,
+ * y fecha_registro. Vacío si el caso es de otro procurador.
+ */
 export async function getReportesCaso(connection, idProcurador, idCaso) {
   const sql = `
     SELECT r.id_folio_reporte, r.tipo_actividad, r.estatus, r.nivel_riesgo,
@@ -157,6 +300,17 @@ export async function getReportesCaso(connection, idProcurador, idCaso) {
 }
 
 
+/**
+ * Obtiene las notas guardadas en un caso del procurador, de la más reciente a
+ * la más antigua.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {number|string} idCaso Id del caso.
+ * @returns {Promise<Object[]>} Arreglo de notas con id_avance,
+ * descripcion_avance, descripcion_publica y fecha_registro. Vacío si el caso
+ * no tiene notas o es de otro procurador.
+ */
 export async function getNotasCaso(connection, idProcurador, idCaso) {
   const sql = `
     SELECT n.id_avance, n.descripcion_avance, n.descripcion_publica, n.fecha_registro
@@ -169,8 +323,18 @@ export async function getNotasCaso(connection, idProcurador, idCaso) {
 }
 
 
-// cualquier folio del caso que sea del procurador
-// no hay procedures de casos, se llama el del reporte y el trigger actualiza todo el caso
+/**
+ * Obtiene el folio de cualquier reporte de un caso del procurador. No hay
+ * procedures de casos: para cambiar el estatus de un caso o agregarle una
+ * nota se llama al procedure del reporte con este folio, y como el reporte
+ * está fusionado, el cambio se aplica a todo el caso.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {number|string} idCaso Id del caso.
+ * @returns {Promise<string|null>} El folio de uno de los reportes del caso, o
+ * null si el caso no existe o es de otro procurador.
+ */
 export async function getFolioDeCaso(connection, idProcurador, idCaso) {
   const sql = `
     SELECT r.id_folio_reporte
@@ -185,7 +349,15 @@ export async function getFolioDeCaso(connection, idProcurador, idCaso) {
 
 // mapa y metricas
 
-// aqui si entran los fusionados
+/**
+ * Obtiene la ubicación de todos los reportes del procurador para el mapa.
+ * A diferencia del listado, aquí sí se incluyen los reportes fusionados.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @returns {Promise<Object[]>} Arreglo de reportes con id_folio_reporte,
+ * latitud, longitud, estatus y peligro_inmediato como true o false.
+ */
 export async function getMapa(connection, idProcurador) {
   const sql = `
     SELECT id_folio_reporte, latitud, longitud, estatus, peligro_inmediato
@@ -200,6 +372,23 @@ export async function getMapa(connection, idProcurador) {
 }
 
 
+/**
+ * Calcula las métricas de todos los reportes del procurador, incluidos los
+ * fusionados.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {number|string} idProcurador Id del procurador que consulta.
+ * @returns {Promise<Object>} Un objeto con:
+ * total_reportes;
+ * reportes_por_estatus, un arreglo de { estatus, total };
+ * tiempo_promedio_atencion, un objeto { reportes_cerrados, promedio_horas }
+ * donde promedio_horas es el tiempo promedio entre el registro y el cierre,
+ * o null si no hay reportes cerrados;
+ * reportes_nuevos, los que siguen en Registrado;
+ * posibles_duplicados;
+ * ninos_identificados, la suma de numero_menores;
+ * y riesgo_alto, los de nivel de riesgo Alto.
+ */
 export async function getMetricas(connection, idProcurador) {
   const id = idProcurador ?? null;
 

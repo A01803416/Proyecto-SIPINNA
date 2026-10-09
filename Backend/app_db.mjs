@@ -1,7 +1,23 @@
-// consultas de la app movil del ciudadano
+/**
+ * @file Consultas de la app móvil del ciudadano: consultar el estado de un
+ * reporte y registrar un reporte nuevo.
+ * @module app_db
+ */
 
-// pide folio y correo juntos para que nadie vea reportes ajenos
-// si el reporte esta en un caso tambien cuentan las notas del caso
+/**
+ * Busca un reporte por su folio y el correo con el que se registró. Se piden
+ * los dos juntos para que nadie pueda ver reportes ajenos; los reportes
+ * anónimos no tienen correo y por eso nunca se encuentran.
+ * Además trae la nota pública más reciente del reporte. Si el reporte ya está
+ * fusionado en un caso, también se toman en cuenta las notas del caso.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {string} folio Folio del reporte, por ejemplo RIETI-ATZ-000001.
+ * @param {string} correo Correo con el que se registró el reporte.
+ * @returns {Promise<Object|null>} Un objeto con id_folio_reporte, estatus,
+ * fecha_registro y ultima_nota_publica (null si no hay ninguna nota pública),
+ * o null si no existe un reporte con ese folio y ese correo.
+ */
 export async function consultarReporte(connection, folio, correo) {
   const sql = `
     SELECT r.id_folio_reporte, r.estatus, r.fecha_registro,
@@ -18,7 +34,36 @@ export async function consultarReporte(connection, folio, correo) {
 }
 
 
-// llamamos al procedure para registrar el reporte
+/**
+ * Registra un reporte nuevo con el procedure sp_registrar_reporte y regresa
+ * el folio que generó. El procedure deja el folio en la variable @folio, que
+ * se lee después con SELECT @folio en la misma conexión.
+ * El procedure guarda el reporte con estatus Registrado, se lo asigna al
+ * procurador del municipio, guarda el correo en minúsculas y sin espacios
+ * (vacío se guarda como NULL) y toma peligro_inmediato como FALSE si llega
+ * nulo. Los campos que no vienen en datos se mandan como NULL.
+ *
+ * @param {Object} connection Conexión abierta con connect().
+ * @param {Object} datos Datos del reporte, tal como llegan en el cuerpo de la petición.
+ * @param {string} datos.descripcion Descripción de lo que se observó.
+ * @param {string} datos.tipo_actividad Tipo de actividad, por ejemplo Venta de dulces.
+ * @param {string} datos.edad_aproximada Edad aproximada, por ejemplo "9".
+ * @param {number} datos.numero_menores Número de menores involucrados.
+ * @param {string} datos.horario Horario en que ocurre.
+ * @param {string} [datos.nombre_lugar] Nombre o referencia del lugar.
+ * @param {string} datos.frecuencia Frecuencia con que ocurre.
+ * @param {string} [datos.colonia] Colonia.
+ * @param {number} datos.latitud Latitud del lugar.
+ * @param {number} datos.longitud Longitud del lugar.
+ * @param {string} [datos.correo] Correo del ciudadano; vacío o nulo si es anónimo.
+ * @param {boolean} [datos.peligro_inmediato] Si los menores están en peligro inmediato.
+ * @param {string} [datos.nivel_riesgo] Bajo, Medio o Alto.
+ * @param {number} datos.id_municipio Municipio donde ocurre.
+ * @param {string|null} ligaFoto Liga pública de la foto en S3, o null si no hay foto.
+ * @returns {Promise<string>} El folio del reporte nuevo, por ejemplo RIETI-ATZ-000008.
+ * @throws {Error} Error 45000 del procedure: "El municipio no existe" o
+ * "El número de menores debe ser mayor a cero".
+ */
 export async function registrarReporte(connection, datos, ligaFoto) {
   const sql = 'CALL sp_registrar_reporte(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @folio)';
   await connection.query(sql, [
