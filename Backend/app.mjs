@@ -3,12 +3,15 @@ import cors from 'cors';
 import { connect, loginProcurador, loginAdministrador, getMunicipios } from './general_db.mjs';
 import * as procurador from './procurador_db.mjs';
 import * as admin from './admin_db.mjs';
+import * as appDb from './app_db.mjs';
+import * as fotos from './fotos_s3.mjs';
 
 const app = express();
 const port = process.env.PORT ?? 8080;
 
 app.use(cors());
-app.use(express.json());
+// como vamos a mandar las fotos desde la app le subo para que podamos mandar json mas grandes
+app.use(express.json({ limit: '5mb' }));
 
 
 // los errores de los procedures llegan con su mensaje tal cual a la pagina
@@ -76,6 +79,64 @@ app.get('/municipios', async (req, res) => {
     connection = await connect();
     const result = await getMunicipios(connection);
     res.json(result);
+
+  } catch (err) {
+    manejarError(res, err);
+
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+
+// para la app
+
+// si el reporte es anonimo no se regresa el folio porque nadie podria consultarlo
+app.post('/reportes', async (req, res) => {
+  const datos = req.body ?? {};
+  const correo = datos.correo;
+  let connection;
+
+  try {
+    connection = await connect();
+    let ligaFoto = null;
+    // puse este if para que, ademas de que en caso de que el reporte llegue sin foto funcione, tambien podamos seguir haciendo pruebas en local sin que exista el bucket
+    if (datos.foto && process.env.BUCKET_FOTOS) {
+      ligaFoto = await fotos.guardarFoto(datos.foto);
+    }
+    const folio = await appDb.registrarReporte(connection, datos, ligaFoto);
+    if (correo && correo.trim() !== '') {
+      res.status(201).json({ folio });
+    } else {
+      res.status(201).json({ ok: true });
+    }
+
+  } catch (err) {
+    manejarError(res, err);
+
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+});
+
+
+// mismo mensaje si falla el folio o el correo para no dar pistas
+app.post('/reportes/consulta', async (req, res) => {
+  const { folio, correo } = req.body ?? {};
+  let connection;
+
+  try {
+    connection = await connect();
+    const result = await appDb.consultarReporte(connection, folio, correo);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).json({ message: 'Folio o correo incorrectos' });
+    }
 
   } catch (err) {
     manejarError(res, err);
