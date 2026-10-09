@@ -41,11 +41,6 @@ align-items: center;
 animation: scroll-carousel 30s linear infinite;
 }
 
-.carousel-track:hover
-{
-animation-play-state: paused;
-}
-
 .carousel-logo
 {
 height: 60px; 
