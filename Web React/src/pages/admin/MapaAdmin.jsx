@@ -2,55 +2,44 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
-/**
- * @typedef {Object} PuntoMapaAdmin
- * @property {number|string} latitud Latitud del punto que se representa en el mapa.
- * @property {number|string} longitud Longitud del punto que se representa en el mapa.
- */
-
-/**
- * @typedef {Object} MunicipioMapaAdmin
- * @property {number|string} id_municipio Identificador del municipio.
- * @property {string} nombre_municipio Nombre visible del municipio.
- */
-
-/**
- * Muestra el mapa de calor administrativo junto con los filtros de consulta.
- * Carga los puntos geográficos y el catálogo de municipios desde la API.
- * @returns {JSX.Element} Vista del mapa administrativo.
- */
 export default function MapaAdmin() {
   const [puntosMapa, setPuntosMapa] = useState([]);
   const [municipios, setMunicipios] = useState([]);
 
-  /**
-   * Obtiene los puntos del mapa y el catálogo de municipios desde la API.
-   * @returns {Promise<void>} Promesa que se resuelve al completar las solicitudes.
-   */
+  // Estados para los filtros (sin edad)
+  const [municipioSel, setMunicipioSel] = useState("");
+  const [riesgoSel, setRiesgoSel] = useState("");
+  const [estatusSel, setEstatusSel] = useState("");
+
   async function cargarDatos() {
     try {
-      // Obtenemos los puntos de calor de la BD
-      const resMapa = await fetch(`${API_URL}/admin/mapa`, {
-        headers: encabezados()
-      });
+      // Parámetros de búsqueda para la URL
+      const params = new URLSearchParams();
+      if (municipioSel) params.append('id_municipio', municipioSel);
+      if (riesgoSel) params.append('nivel_riesgo', riesgoSel);
+      if (estatusSel) params.append('estatus', estatusSel);
+
+      const url = `${API_URL}/admin/mapa?${params.toString()}`;
+
+      // Obtener puntos de calor filtrados
+      const resMapa = await fetch(url, { headers: encabezados() });
       const dataMapa = await resMapa.json();
       if (resMapa.ok) {
         setPuntosMapa(dataMapa);
       }
 
-      // Obtenemos lista de los municipios
-      const resMunicipios = await fetch(`${API_URL}/municipios`, {
-        headers: encabezados()
-      });
-      const dataMunicipios = await resMunicipios.json();
-      if (resMunicipios.ok) {
-        setMunicipios(dataMunicipios);
+      // Obtener lista de municipios si aún no se ha cargado
+      if (municipios.length === 0) {
+        const resMunicipios = await fetch(`${API_URL}/municipios`, { headers: encabezados() });
+        const dataMunicipios = await resMunicipios.json();
+        if (resMunicipios.ok) setMunicipios(dataMunicipios);
       }
     } catch (err) {
       console.error("Error al conectar con el servidor: ", err);
     }
   }
 
+  // Carga inicial al abrir la pantalla
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -58,7 +47,8 @@ export default function MapaAdmin() {
   return (
     <div className="full-map-widget">
       <div className="map-filters-full">
-        <select defaultValue="">
+        {/* Filtro Municipio */}
+        <select value={municipioSel} onChange={(e) => setMunicipioSel(e.target.value)}>
           <option value="">Todos los Municipios</option>
           {municipios.map((m) => (
             <option key={m.id_municipio} value={m.id_municipio}>
@@ -66,19 +56,27 @@ export default function MapaAdmin() {
             </option>
           ))}
         </select>
-        <select defaultValue="">
-          <option>Rango de Edad</option>
+
+        {/* Filtro Nivel de Riesgo */}
+        <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
+          <option value="">Nivel de Riesgo</option>
+          <option value="Bajo">Bajo</option>
+          <option value="Medio">Medio</option>
+          <option value="Alto">Alto</option>
         </select>
-        <select defaultValue="">
-          <option>Nivel de Riesgo</option>
+
+        {/* Filtro Estatus */}
+        <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
+          <option value="">Estatus</option>
+          <option value="Nuevo">Nuevo</option>
+          <option value="Registrado">Registrado</option>
+          <option value="Cerrado">Cerrado</option>
         </select>
-        <select defaultValue="">
-          <option>Estatus</option>
-        </select>
-        <button className="btn-black">Aplicar Filtros</button>
+
+        {/* Botón Aplicar Filtros */}
+        <button className="btn-black" onClick={cargarDatos}>Aplicar Filtros</button>
       </div>
 
-      {    }
       <div style={{ height: '75vh', width: '100%', marginTop: '20px', borderRadius: '8px', overflow: 'hidden' }}>
         <MapaCalor puntos={puntosMapa} />
       </div>
