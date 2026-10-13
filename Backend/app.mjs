@@ -679,9 +679,11 @@ app.post('/procurador/casos/:id/notas', async (req, res) => {
  * fusionados, para pintarlos en el mapa.
  *
  * Encabezado: id-procurador.
+ * Query, todos opcionales: nivel_riesgo y estatus.
  *
  * Respuestas:
- * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus, peligro_inmediato }.
+ * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus, peligro_inmediato,
+ *   nivel_riesgo }.
  * - 500: cualquier error.
  *
  * @see module:procurador_db.getMapa
@@ -692,7 +694,7 @@ app.get('/procurador/mapa', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await procurador.getMapa(connection, idProcurador);
+    const result = await procurador.getMapa(connection, idProcurador, req.query);
     res.json(result);
 
   } catch (err) {
@@ -964,9 +966,11 @@ app.get('/admin/casos/:id', async (req, res) => {
  * Regresa la ubicación de todos los reportes de todos los municipios,
  * incluidos los fusionados, para pintarlos en el mapa.
  *
+ * Query, todos opcionales: id_municipio, nivel_riesgo y estatus.
+ *
  * Respuestas:
  * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus,
- *   peligro_inmediato, nombre_municipio }.
+ *   peligro_inmediato, nivel_riesgo, nombre_municipio }.
  * - 500: cualquier error.
  *
  * @see module:admin_db.getMapa
@@ -976,7 +980,7 @@ app.get('/admin/mapa', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await admin.getMapa(connection);
+    const result = await admin.getMapa(connection, req.query);
     res.json(result);
 
   } catch (err) {

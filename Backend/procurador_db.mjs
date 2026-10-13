@@ -351,19 +351,35 @@ export async function getFolioDeCaso(connection, idProcurador, idCaso) {
 
 /**
  * Obtiene la ubicación de todos los reportes del procurador para el mapa.
- * A diferencia del listado, aquí sí se incluyen los reportes fusionados.
+ * A diferencia del listado, aquí sí se incluyen los reportes fusionados. Se
+ * pueden filtrar por nivel de riesgo y estatus.
  *
  * @param {Object} connection Conexión abierta con connect().
  * @param {number|string} idProcurador Id del procurador que consulta.
+ * @param {Object} query Filtros opcionales, tal como llegan en la URL.
+ * @param {string} [query.nivel_riesgo] Bajo, Medio o Alto.
+ * @param {string} [query.estatus] Solo los reportes con este estatus.
  * @returns {Promise<Object[]>} Arreglo de reportes con id_folio_reporte,
- * latitud, longitud, estatus y peligro_inmediato como true o false.
+ * latitud, longitud, estatus, peligro_inmediato como true o false, y
+ * nivel_riesgo.
  */
-export async function getMapa(connection, idProcurador) {
-  const sql = `
-    SELECT id_folio_reporte, latitud, longitud, estatus, peligro_inmediato
+export async function getMapa(connection, idProcurador, query) {
+  let sql = `
+    SELECT id_folio_reporte, latitud, longitud, estatus, peligro_inmediato, nivel_riesgo
     FROM Reporte
     WHERE id_procurador = ?`;
-  const [rows] = await connection.execute(sql, [idProcurador ?? null]);
+  const valores = [idProcurador ?? null];
+
+  if (query.nivel_riesgo) {
+    sql += ' AND nivel_riesgo = ?';
+    valores.push(query.nivel_riesgo);
+  }
+  if (query.estatus) {
+    sql += ' AND estatus = ?';
+    valores.push(query.estatus);
+  }
+
+  const [rows] = await connection.execute(sql, valores);
 
   return rows.map((r) => {
     r.peligro_inmediato = r.peligro_inmediato === 1;

@@ -339,21 +339,43 @@ export async function getNotasCaso(connection, idCaso) {
 // mapa y metricas
 
 /**
- * Obtiene la ubicación de todos los reportes de todos los municipios para el
- * mapa, incluidos los fusionados.
+ * Obtiene la ubicación de los reportes de todos los municipios para el mapa,
+ * incluidos los fusionados. Se pueden filtrar por municipio, nivel de riesgo
+ * y estatus.
  *
  * @param {Object} connection Conexión abierta con connect().
+ * @param {Object} query Filtros opcionales, tal como llegan en la URL.
+ * @param {string} [query.id_municipio] Solo los reportes de este municipio.
+ * @param {string} [query.nivel_riesgo] Bajo, Medio o Alto.
+ * @param {string} [query.estatus] Solo los reportes con este estatus.
  * @returns {Promise<Object[]>} Arreglo de reportes con id_folio_reporte,
- * latitud, longitud, estatus, peligro_inmediato como true o false, y
- * nombre_municipio.
+ * latitud, longitud, estatus, peligro_inmediato como true o false,
+ * nivel_riesgo y nombre_municipio.
  */
-export async function getMapa(connection) {
-  const sql = `
+export async function getMapa(connection, query) {
+  // el 1 = 1 siempre se cumple, asi cada filtro se agrega con AND
+  let sql = `
     SELECT r.id_folio_reporte, r.latitud, r.longitud, r.estatus, r.peligro_inmediato,
-           m.nombre_municipio
+           r.nivel_riesgo, m.nombre_municipio
     FROM Reporte r
-    JOIN Municipio m ON r.id_municipio = m.id_municipio`;
-  const [rows] = await connection.execute(sql);
+    JOIN Municipio m ON r.id_municipio = m.id_municipio
+    WHERE 1 = 1`;
+  const valores = [];
+
+  if (query.id_municipio) {
+    sql += ' AND r.id_municipio = ?';
+    valores.push(query.id_municipio);
+  }
+  if (query.nivel_riesgo) {
+    sql += ' AND r.nivel_riesgo = ?';
+    valores.push(query.nivel_riesgo);
+  }
+  if (query.estatus) {
+    sql += ' AND r.estatus = ?';
+    valores.push(query.estatus);
+  }
+
+  const [rows] = await connection.execute(sql, valores);
 
   return rows.map((r) => {
     r.peligro_inmediato = r.peligro_inmediato === 1;
