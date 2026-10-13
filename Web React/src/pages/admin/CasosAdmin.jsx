@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus } from "../procurador/estatus";
 import DetalleCasoAdmin from "./DetalleCasoAdmin";
+import DetalleReporteAdmin from "./DetalleReporteAdmin";
 
 /**
  * Datos de un caso fusionado mostrados en la tabla de administración.
@@ -15,12 +16,13 @@ import DetalleCasoAdmin from "./DetalleCasoAdmin";
 
 /**
  * Muestra los casos fusionados disponibles para administración y permite
- * consultar el detalle de cada caso.
- * @returns {JSX.Element} Vista de la tabla de casos y su detalle seleccionado.
+ * consultar el detalle de cada caso y sus reportes asociados.
+ * @returns {JSX.Element} Vista de la tabla de casos y sus detalles seleccionados.
  */
 export default function CasosAdmin() {
   const [casos, setCasos] = useState([]);
   const [casoAbierto, setCasoAbierto] = useState(null);
+  const [reporteAbierto, setReporteAbierto] = useState(null);
 
   /**
    * Obtiene los casos desde la API y actualiza la tabla; informa si ocurre un error.
@@ -105,6 +107,14 @@ export default function CasosAdmin() {
         <DetalleCasoAdmin
           idCaso={casoAbierto}
           onClose={() => setCasoAbierto(null)}
+          onVerReporte={setReporteAbierto}
+        />
+      )}
+
+      {reporteAbierto && (
+        <DetalleReporteAdmin
+          folio={reporteAbierto}
+          onClose={() => setReporteAbierto(null)}
         />
       )}
     </div>

@@ -2,15 +2,17 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus } from "./estatus";
 import DetalleCaso from "./DetalleCaso";
+import DetalleReporte from "./DetalleReporte";
 
 /**
  * Muestra los casos fusionados disponibles para el procurador y permite abrir
- * el detalle de un caso para consultarlo o actualizarlo.
- * @returns {import('react').JSX.Element} Tabla de casos y detalle seleccionado.
+ * el detalle de un caso y de sus reportes asociados para consultarlos o actualizarlos.
+ * @returns {import('react').JSX.Element} Tabla de casos y detalles seleccionados.
  */
 export default function CasosProcurador() {
   const [casos, setCasos] = useState([]);
   const [casoAbierto, setCasoAbierto] = useState(null);
+  const [reporteAbierto, setReporteAbierto] = useState(null);
 
   /**
    * Solicita los casos al servidor y actualiza la tabla si la respuesta es exitosa.
@@ -94,6 +96,15 @@ export default function CasosProcurador() {
         <DetalleCaso
           idCaso={casoAbierto}
           onClose={() => setCasoAbierto(null)}
+          onCambio={cargarCasos}
+          onVerReporte={setReporteAbierto}
+        />
+      )}
+
+      {reporteAbierto && (
+        <DetalleReporte
+          folio={reporteAbierto}
+          onClose={() => setReporteAbierto(null)}
           onCambio={cargarCasos}
         />
       )}
