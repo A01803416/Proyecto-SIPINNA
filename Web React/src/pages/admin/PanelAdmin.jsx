@@ -23,11 +23,9 @@ export default function PanelAdmin() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo-container">
-          <img
-            src="/logorieti.jpeg"
-            alt="Logo RIETI"
-            className="sidebar-logo"
-          />
+          <h1 style={{ color: 'white', margin: '20px 0', fontSize: '2.5rem', textAlign: 'center', fontWeight: 'bold' }}>
+            RIETI
+          </h1>
         </div>
         <nav className="sidebar-nav">
           <button
@@ -74,7 +72,6 @@ export default function PanelAdmin() {
           </button>
         </nav>
         <div className="sidebar-bottom">
-          <h2 className="sidebar-rieti-text">RIETI</h2>
           <a
             href="/login-admin"
             className="btn-logout"
