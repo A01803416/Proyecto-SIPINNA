@@ -31,8 +31,7 @@ export async function connect() {
 // login
 
 /**
- * Busca al procurador cuyo correo y contraseña coinciden exactamente.
- * La contraseña se compara en texto plano y nunca se regresa.
+ * Busca al procurador por su correo y su contraseña.
  *
  * @param {Object} connection Conexión abierta con connect().
  * @param {string} correo Correo del procurador.
@@ -46,15 +45,14 @@ export async function loginProcurador(connection, correo, contrasena) {
     SELECT p.id_procurador, p.correo_procurador, p.id_municipio, m.nombre_municipio
     FROM Procurador p
     LEFT JOIN Municipio m ON p.id_municipio = m.id_municipio
-    WHERE p.correo_procurador = ? AND p.contrasena_procurador = ?`;
+    WHERE p.correo_procurador = ? AND BINARY p.contrasena_procurador = ?`;
   const [rows] = await connection.execute(sql, [correo ?? null, contrasena ?? null]);
   return rows[0] ?? null;
 }
 
 
 /**
- * Busca al administrador cuyo correo y contraseña coinciden exactamente.
- * La contraseña se compara en texto plano y nunca se regresa.
+ * Busca al administrador por su correo y su contraseña.
  *
  * @param {Object} connection Conexión abierta con connect().
  * @param {string} correo Correo del administrador.
@@ -66,7 +64,7 @@ export async function loginAdministrador(connection, correo, contrasena) {
   const sql = `
     SELECT id_administrador, correo_administrador
     FROM Administrador
-    WHERE correo_administrador = ? AND contrasena_administrador = ?`;
+    WHERE correo_administrador = ? AND BINARY contrasena_administrador = ?`;
   const [rows] = await connection.execute(sql, [correo ?? null, contrasena ?? null]);
   return rows[0] ?? null;
 }
