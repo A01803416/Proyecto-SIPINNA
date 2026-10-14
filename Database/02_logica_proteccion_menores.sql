@@ -20,6 +20,8 @@ DROP PROCEDURE IF EXISTS sp_asignar_procurador_municipio;
 DROP PROCEDURE IF EXISTS sp_fusionar_reportes;
 DROP PROCEDURE IF EXISTS sp_aplicar_retencion;
 
+DROP EVENT IF EXISTS ev_retencion;
+
 DELIMITER $$
 
 
@@ -657,3 +659,11 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+-- EVENTOS
+
+-- aplica la retencion de datos una vez al dia
+CREATE EVENT ev_retencion
+ON SCHEDULE EVERY 1 DAY
+DO CALL sp_aplicar_retencion();
