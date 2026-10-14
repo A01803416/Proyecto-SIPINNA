@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
+import { leerSesion } from '../../services/sesion';
 
 /**
  * Componente del panel del procurador para visualizar los casos de su municipio en un mapa de calor.
@@ -17,6 +18,12 @@ import MapaCalor from '../../components/MapaCalor';
  */
 export default function MapaProcurador() {
   const [puntosMapa, setPuntosMapa] = useState([]);
+
+  // el municipio viene en la sesion desde el login
+  const sesion = leerSesion();
+  const textoMunicipio = sesion && sesion.municipio
+    ? `Mi Municipio (${sesion.municipio.nombre_municipio})`
+    : 'Sin municipio asignado';
 
   // Estados para filtrar por riesgo y estatus
   const [riesgoSel, setRiesgoSel] = useState("");
@@ -51,8 +58,8 @@ export default function MapaProcurador() {
     <div className="full-map-widget">
       <div className="map-filters-full">
         {/* Indicador de Municipio Fijo */}
-        <select disabled defaultValue="atizapan">
-          <option value="atizapan">Mi Municipio (Atizapán de Zaragoza)</option>
+        <select disabled>
+          <option>{textoMunicipio}</option>
         </select>
 
         {/* Filtro Nivel de Riesgo */}
