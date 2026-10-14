@@ -2,50 +2,11 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus, claseRiesgo } from "../procurador/estatus";
 
-/** @typedef {Object} ReporteRelacionadoAdmin
- * @property {number|string} id_folio_reporte Folio del reporte.
- * @property {string} tipo_actividad Actividad detectada en el reporte.
- * @property {string} nivel_riesgo Nivel de riesgo asignado.
- * @property {string} estatus Estatus actual del reporte.
- * @property {boolean} [peligro_inmediato] Indica si el reporte señala peligro inmediato.
- */
-
-/** @typedef {Object} NotaCasoAdmin
- * @property {number|string} id_avance Identificador de la nota.
- * @property {string} fecha_registro Fecha en que se registró la nota.
- * @property {string} descripcion_avance Descripción privada del avance.
- * @property {string|null} [descripcion_publica] Descripción pública opcional.
- */
-
-/** @typedef {Object} CasoDetalleAdmin
- * @property {number|string} id_caso Identificador del caso.
- * @property {string} estatus_caso Estatus actual del caso.
- * @property {string} fecha_creacion Fecha en que se creó el caso.
- * @property {string|null} [fecha_cierre] Fecha de cierre, si el caso está cerrado.
- * @property {number|string} total_reportes Cantidad de reportes asociados.
- * @property {ReporteRelacionadoAdmin[]} reportes Reportes asociados al caso.
- * @property {NotaCasoAdmin[]} notas Notas registradas en la bitácora.
- */
-
-/**
- * Presenta la información de un caso, sus reportes y su bitácora de notas.
- * Permite agregar reportes y consultar o imprimir la información del caso.
- * @param {Object} props Propiedades del componente.
- * @param {number|string} props.idCaso Identificador del caso que se va a consultar.
- * @param {() => void} props.onClose Callback para cerrar el modal.
- * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de casos.
- * @param {(folio: number|string) => void} props.onVerReporte Callback para abrir un reporte.
- * @returns {JSX.Element|null} Modal con el detalle del caso, o null mientras carga.
- */
 export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerReporte }) {
   const [caso, setCaso] = useState(null);
   const [sueltos, setSueltos] = useState([]);
   const [mostrarSelect, setMostrarSelect] = useState(false);
 
-  /**
-   * Solicita a la API el detalle del caso indicado por `idCaso`.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
-   */
   async function cargarCaso() {
     try {
       const res = await fetch(`${API_URL}/admin/casos/${idCaso}`, {
@@ -67,10 +28,6 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     cargarCaso();
   }, [idCaso]);
 
-  /**
-   * Busca reportes sin fusionar del municipio del primer reporte del caso.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar las solicitudes.
-   */
   async function buscarSueltos() {
     const folioDelCaso = caso.reportes[0].id_folio_reporte;
 
@@ -106,11 +63,6 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
-  /**
-   * Fusiona el reporte seleccionado con el caso actual y vuelve a cargarlo.
-   * @param {import("react").ChangeEvent<HTMLSelectElement>} e Evento del selector de reportes.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la fusión.
-   */
   async function agregarReporte(e) {
     const folioNuevo = e.target.value;
     if (!folioNuevo) return;
@@ -142,12 +94,6 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
-  // --- Cambio 2: Descargar un reporte individual (ruta admin) ---
-  /**
-   * Obtiene un reporte y abre una vista imprimible con sus datos.
-   * @param {number|string} folio Folio del reporte que se va a imprimir.
-   * @returns {Promise<void>} Promesa que se resuelve al preparar la vista imprimible.
-   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
     try {
@@ -168,13 +114,60 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
           <head>
             <title>Reporte ${r.id_folio_reporte}</title>
             <style>
-              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; font-size: 14px; line-height: 1.6; color: #333; }
+              @page { margin: 0; }
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
               .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
               .row { margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 8px; display: flex; }
               strong { width: 180px; flex-shrink: 0; color: #000; }
               .val { flex-grow: 1; }
               .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
               .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
+
+              /* Estilos del pie de página personalizado */
+              .pie-impresion-custom {
+                position: fixed;
+                bottom: 20px;
+                left: 40px;
+                right: 40px;
+                display: flex;
+                height: 45px;
+                font-family: Arial, sans-serif;
+                font-size: 11px;
+                font-weight: bold;
+                color: #333;
+              }
+              .bloque-azul {
+                background-color: #5b9bd5;
+                color: white;
+                width: 35%;
+                clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+                display: flex;
+                align-items: center;
+                padding-left: 15px;
+              }
+              .bloque-derecho {
+                width: 65%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-left: -5%;
+              }
+              .bloque-beige {
+                background-color: #faebd7;
+                height: 46%;
+                width: 70%;
+                display: flex;
+                align-items: center;
+                padding-left: 35px;
+              }
+              .bloque-rosa {
+                background-color: #f5a3b8;
+                height: 46%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 50px;
+              }
             </style>
           </head>
           <body>
@@ -193,6 +186,15 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             <div class="row"><strong>No. de Menores:</strong> <div class="val">${r.numero_menores}</div></div>
             <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
             <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
+
+            <div class="pie-impresion-custom">
+              <div class="bloque-azul">Reporte RIETI</div>
+              <div class="bloque-derecho">
+                <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
+                <div class="bloque-rosa">Folio: ${r.id_folio_reporte}</div>
+              </div>
+            </div>
+
             <script>
               window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 300); };
             </script>
@@ -207,11 +209,6 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
-  // --- Cambio 4: Imprimir todo el caso ---
-  /**
-   * Genera una vista imprimible con los datos, reportes y notas del caso actual.
-   * @returns {void}
-   */
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
     ventana.document.write(`
@@ -219,7 +216,8 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
         <head>
           <title>Caso ${caso.id_caso}</title>
           <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; font-size: 14px; line-height: 1.6; color: #333; }
+            @page { margin: 0; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
             .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
             .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
             .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
@@ -232,6 +230,52 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             th { background-color: #f4f4f4; color: #000; }
             .nota { background: #f8f9fa; padding: 12px; margin-bottom: 10px; border-left: 4px solid #333; }
             .nota-fecha { font-weight: bold; margin-bottom: 5px; color: #000; }
+
+            /* Estilos del pie de página personalizado */
+            .pie-impresion-custom {
+              position: fixed;
+              bottom: 20px;
+              left: 40px;
+              right: 40px;
+              display: flex;
+              height: 45px;
+              font-family: Arial, sans-serif;
+              font-size: 11px;
+              font-weight: bold;
+              color: #333;
+            }
+            .bloque-azul {
+              background-color: #5b9bd5;
+              color: white;
+              width: 35%;
+              clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+              display: flex;
+              align-items: center;
+              padding-left: 15px;
+            }
+            .bloque-derecho {
+              width: 65%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              margin-left: -5%;
+            }
+            .bloque-beige {
+              background-color: #faebd7;
+              height: 46%;
+              width: 70%;
+              display: flex;
+              align-items: center;
+              padding-left: 35px;
+            }
+            .bloque-rosa {
+              background-color: #f5a3b8;
+              height: 46%;
+              width: 100%;
+              display: flex;
+              align-items: center;
+              padding-left: 50px;
+            }
           </style>
         </head>
         <body>
@@ -271,6 +315,14 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
               <div style="margin-bottom: 4px;"><strong>Privada:</strong> ${n.descripcion_avance}</div>${n.descripcion_publica ? `<div><strong>Pública:</strong> ${n.descripcion_publica}</div>` : ''}
             </div>
           `).join('')}
+
+          <div class="pie-impresion-custom">
+            <div class="bloque-azul">Caso RIETI</div>
+            <div class="bloque-derecho">
+              <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
+              <div class="bloque-rosa">Caso ID: ${caso.id_caso}</div>
+            </div>
+          </div>
 
           <script>
             window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 300); };

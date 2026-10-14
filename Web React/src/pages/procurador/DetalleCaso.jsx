@@ -6,12 +6,6 @@ import DetalleReporte from "./DetalleReporte";
 /**
  * Presenta y permite gestionar un caso, sus reportes asociados y su bitácora.
  * También abre el detalle de cada reporte del caso.
- * @param {Object} props
- * @param {number|string} props.idCaso Identificador del caso que se consulta.
- * @param {() => void} props.onClose Cierra el detalle del caso.
- * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de casos.
- * @returns {import('react').ReactNode} Modal del caso o null mientras carga.
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
  */
 export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [caso, setCaso] = useState(null);
@@ -19,11 +13,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [notaPublica, setNotaPublica] = useState("");
   const [folioAbierto, setFolioAbierto] = useState(null);
 
-  /**
-   * Obtiene los datos del caso actual y actualiza el estado del componente.
-   * @returns {Promise<void>}
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
-   */
   async function cargarCaso() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}`, {
@@ -45,12 +34,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     cargarCaso();
   }, [idCaso]);
 
-  /**
-   * Actualiza el estatus del caso; solicita un motivo si el nuevo estatus cierra el caso.
-   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de estatus.
-   * @returns {Promise<void>}
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/prompt
-   */
   async function cambiarEstatus(e) {
     const estatus = e.target.value;
     let motivo = null;
@@ -79,11 +62,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     onCambio();
   }
 
-  /**
-   * Envía las notas privada y pública y las limpia si el servidor confirma el registro.
-   * @returns {Promise<void>}
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
-   */
   async function agregarNota() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}/notas`, {
@@ -110,14 +88,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     onCambio();
   }
 
-  /**
-   * Recupera un reporte individual y abre una ventana preparada para imprimirlo.
-   * @param {number|string} folio Folio del reporte que se va a descargar.
-   * @returns {Promise<void>}
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/open
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/write
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/print
-   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
     try {
@@ -138,13 +108,60 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
           <head>
             <title>Reporte ${r.id_folio_reporte}</title>
             <style>
-              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; font-size: 14px; line-height: 1.6; color: #333; }
+              @page { margin: 0; }
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
               .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
               .row { margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 8px; display: flex; }
               strong { width: 180px; flex-shrink: 0; color: #000; }
               .val { flex-grow: 1; }
               .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
               .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
+
+              /* Estilos del pie de página personalizado */
+              .pie-impresion-custom {
+                position: fixed;
+                bottom: 20px;
+                left: 40px;
+                right: 40px;
+                display: flex;
+                height: 45px;
+                font-family: Arial, sans-serif;
+                font-size: 11px;
+                font-weight: bold;
+                color: #333;
+              }
+              .bloque-azul {
+                background-color: #5b9bd5;
+                color: white;
+                width: 35%;
+                clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+                display: flex;
+                align-items: center;
+                padding-left: 15px;
+              }
+              .bloque-derecho {
+                width: 65%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-left: -5%;
+              }
+              .bloque-beige {
+                background-color: #faebd7;
+                height: 46%;
+                width: 70%;
+                display: flex;
+                align-items: center;
+                padding-left: 35px;
+              }
+              .bloque-rosa {
+                background-color: #f5a3b8;
+                height: 46%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 50px;
+              }
             </style>
           </head>
           <body>
@@ -162,6 +179,15 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
             <div class="row"><strong>No. de Menores:</strong> <div class="val">${r.numero_menores}</div></div>
             <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
             <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
+
+            <div class="pie-impresion-custom">
+              <div class="bloque-azul">Reporte RIETI</div>
+              <div class="bloque-derecho">
+                <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
+                <div class="bloque-rosa">Folio: ${r.id_folio_reporte}</div>
+              </div>
+            </div>
+
             <script>
               window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 300); };
             </script>
@@ -176,13 +202,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     }
   }
 
-  /**
-   * Genera una vista imprimible con los datos, reportes y notas del caso actual.
-   * @returns {void}
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/open
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Document/write
-  * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/print
-   */
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
     ventana.document.write(`
@@ -190,7 +209,8 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
         <head>
           <title>Caso ${caso.id_caso}</title>
           <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; font-size: 14px; line-height: 1.6; color: #333; }
+            @page { margin: 0; }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
             .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
             .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
             .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
@@ -203,6 +223,52 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
             th { background-color: #f4f4f4; color: #000; }
             .nota { background: #f8f9fa; padding: 12px; margin-bottom: 10px; border-left: 4px solid #333; }
             .nota-fecha { font-weight: bold; margin-bottom: 5px; color: #000; }
+
+            /* Estilos del pie de página personalizado */
+            .pie-impresion-custom {
+              position: fixed;
+              bottom: 20px;
+              left: 40px;
+              right: 40px;
+              display: flex;
+              height: 45px;
+              font-family: Arial, sans-serif;
+              font-size: 11px;
+              font-weight: bold;
+              color: #333;
+            }
+            .bloque-azul {
+              background-color: #5b9bd5;
+              color: white;
+              width: 35%;
+              clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+              display: flex;
+              align-items: center;
+              padding-left: 15px;
+            }
+            .bloque-derecho {
+              width: 65%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              margin-left: -5%;
+            }
+            .bloque-beige {
+              background-color: #faebd7;
+              height: 46%;
+              width: 70%;
+              display: flex;
+              align-items: center;
+              padding-left: 35px;
+            }
+            .bloque-rosa {
+              background-color: #f5a3b8;
+              height: 46%;
+              width: 100%;
+              display: flex;
+              align-items: center;
+              padding-left: 50px;
+            }
           </style>
         </head>
         <body>
@@ -242,6 +308,14 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
               <div style="margin-bottom: 4px;"><strong>Privada:</strong> ${n.descripcion_avance}</div>${n.descripcion_publica ? `<div><strong>Pública:</strong> ${n.descripcion_publica}</div>` : ''}
             </div>
           `).join('')}
+
+          <div class="pie-impresion-custom">
+            <div class="bloque-azul">Caso RIETI</div>
+            <div class="bloque-derecho">
+              <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
+              <div class="bloque-rosa">Caso ID: ${caso.id_caso}</div>
+            </div>
+          </div>
 
           <script>
             window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 300); };
@@ -467,7 +541,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
       </div>
     </div>
 
-    {/* un cambio en un reporte del caso se aplica a todo el caso, por eso se recarga */}
     {folioAbierto && (
       <DetalleReporte
         folio={folioAbierto}

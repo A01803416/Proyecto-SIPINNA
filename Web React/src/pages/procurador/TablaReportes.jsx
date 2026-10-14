@@ -2,36 +2,11 @@ import { API_URL, encabezados } from '../../services/api_url';
 import { leerSesion } from '../../services/sesion';
 import { claseEstatus, claseRiesgo } from './estatus';
 
-/**
- * Datos de un reporte usados por las filas de la tabla.
- * @typedef {Object} ReporteTabla
- * @property {number|string} id_folio_reporte Folio único del reporte.
- * @property {string} fecha_registro Fecha de registro del reporte.
- * @property {string} tipo_actividad Actividad detectada.
- * @property {string} nivel_riesgo Nivel de riesgo asignado.
- * @property {string} estatus Estatus actual del reporte.
- * @property {boolean} peligro_inmediato Indica si el reporte contiene una alerta de peligro inmediato.
- * @property {boolean} posible_duplicado Indica si se marcó como posible duplicado.
- */
-
-/**
- * Renderiza reportes del procurador y sus acciones de consulta e impresión.
- * @param {Object} props
- * @param {ReporteTabla[]} props.reportes Reportes que se muestran en la tabla.
- * @param {(folio: number|string) => void} props.onVer Abre el detalle del reporte indicado.
- * @param {boolean} props.mostrarTodos Si es `false`, limita la tabla a los tres primeros reportes.
- * @returns {import('react').JSX.Element} Tabla de reportes.
- */
 export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
   const sesion = leerSesion();
   const municipio = sesion && sesion.municipio ? sesion.municipio.nombre_municipio : '';
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
 
-  /**
-   * Abre una ventana antes de solicitar los datos y prepara el reporte para imprimir.
-   * @param {number|string} folio Folio del reporte que se va a descargar.
-   * @returns {Promise<void>}
-   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
 
@@ -54,13 +29,60 @@ export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
           <head>
             <title>Reporte ${r.id_folio_reporte}</title>
             <style>
-              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; font-size: 14px; line-height: 1.6; color: #333; }
+              @page { margin: 0; }
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
               .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
               .row { margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 8px; display: flex; }
               strong { width: 180px; flex-shrink: 0; color: #000; }
               .val { flex-grow: 1; }
               .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
               .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
+
+              /* Estilos del pie de página personalizado */
+              .pie-impresion-custom {
+                position: fixed;
+                bottom: 20px;
+                left: 40px;
+                right: 40px;
+                display: flex;
+                height: 45px;
+                font-family: Arial, sans-serif;
+                font-size: 11px;
+                font-weight: bold;
+                color: #333;
+              }
+              .bloque-azul {
+                background-color: #5b9bd5;
+                color: white;
+                width: 35%;
+                clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+                display: flex;
+                align-items: center;
+                padding-left: 15px;
+              }
+              .bloque-derecho {
+                width: 65%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-left: -5%;
+              }
+              .bloque-beige {
+                background-color: #faebd7;
+                height: 46%;
+                width: 70%;
+                display: flex;
+                align-items: center;
+                padding-left: 35px;
+              }
+              .bloque-rosa {
+                background-color: #f5a3b8;
+                height: 46%;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                padding-left: 50px;
+              }
             </style>
           </head>
           <body>
@@ -78,6 +100,15 @@ export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
             <div class="row"><strong>No. de Menores:</strong> <div class="val">${r.numero_menores}</div></div>
             <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
             <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
+
+            <div class="pie-impresion-custom">
+              <div class="bloque-azul">Reporte RIETI</div>
+              <div class="bloque-derecho">
+                <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
+                <div class="bloque-rosa">Folio: ${r.id_folio_reporte}</div>
+              </div>
+            </div>
+
             <script>
               window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 300); };
             </script>
