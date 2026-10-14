@@ -107,6 +107,7 @@ export default function CasosAdmin() {
         <DetalleCasoAdmin
           idCaso={casoAbierto}
           onClose={() => setCasoAbierto(null)}
+          onCambio={cargarCasos}
           onVerReporte={setReporteAbierto}
         />
       )}

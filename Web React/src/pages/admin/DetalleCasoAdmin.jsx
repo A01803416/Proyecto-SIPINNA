@@ -33,10 +33,11 @@ import { claseEstatus, claseRiesgo } from "../procurador/estatus";
  * @param {Object} props Propiedades del componente.
  * @param {number|string} props.idCaso Identificador del caso que se va a consultar.
  * @param {() => void} props.onClose Callback para cerrar el modal.
+ * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de casos.
  * @param {(folio: number|string) => void} props.onVerReporte Callback para abrir un reporte.
  * @returns {JSX.Element|null} Modal con el detalle del caso, o null mientras carga.
  */
-export default function DetalleCasoAdmin({ idCaso, onClose, onVerReporte }) {
+export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerReporte }) {
   const [caso, setCaso] = useState(null);
   const [sueltos, setSueltos] = useState([]);
   const [mostrarSelect, setMostrarSelect] = useState(false);
@@ -131,6 +132,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onVerReporte }) {
       if (res.ok) {
         setMostrarSelect(false);
         cargarCaso();
+        onCambio();
       } else {
         alert(data.message);
       }
