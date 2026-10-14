@@ -200,55 +200,95 @@
   align-items: center;
 }
 
-/* Enlace de regreso con capa inclinada animada en los estados hover y active. */
-.btn-animated {
+/* --- BOTONES ANIMADOS --- */
+
+/* 1. Reposo: fondo crema y texto oscuro */
+.btn-animated,
+.btn-nav,
+.btn-login,
+.btn-descarga {
   padding: 0.7em 1.5em;
-  background: none;
-  border: 2px solid #fff;
+  border: 2px solid #ffffff;
   font-size: 0.95rem;
-  color: #333;
+  color: #333333 !important;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s;
   border-radius: 12px;
-  background-color: var(--crema, #ffeed6);
-  font-weight: bolder;
-  box-shadow: 0 2px 0 2px #333;
+  background-color: #ffeed6 !important;
+  font-weight: 800;
+  box-shadow: 0 3px 0 0 #333333;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   z-index: 1;
+  transition: background-color 0.4s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-animated:before {
+/* 2. Franja rosa: gruesa e inclinada, invisible en reposo */
+.btn-animated::before,
+.btn-nav::before,
+.btn-login::before,
+.btn-descarga::before {
   content: "";
   position: absolute;
   width: 100px;
   height: 120%;
-  background-color: var(--rosa, #f29191);
+  background-color: #f29191;
   top: 50%;
   transform: skewX(30deg) translate(-150%, -50%);
-  transition: all 0.5s;
+  opacity: 0;
   z-index: -1;
+  pointer-events: none;
 }
 
-.btn-animated:hover {
-  background-color: var(--azul, #24b1b1);
-  color: #fff;
-  box-shadow: 0 2px 0 2px #167a7a;
+/* 3. Hover: fondo turquesa, texto blanco, la franja cruza y se desvanece */
+.btn-animated:hover,
+.btn-nav:hover,
+.btn-login:hover,
+.btn-descarga:hover {
+  background-color: #24b1b1 !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 0 0 #167a7a;
 }
 
-.btn-animated:hover::before {
-  transform: skewX(30deg) translate(150%, -50%);
-  transition-delay: 0.1s;
+.btn-animated:hover::before,
+.btn-nav:hover::before,
+.btn-login:hover::before,
+.btn-descarga:hover::before {
+  animation: franja-descarga 0.5s ease 0.1s forwards;
 }
 
-.btn-animated:active {
-  transform: scale(0.9);
-  background-color: var(--crema, #ffeed6);
-  color: #333;
-  box-shadow: 0 2px 0 2px #333;
+@keyframes franja-descarga {
+  0%   { transform: skewX(30deg) translate(-150%, -50%); opacity: 1; }
+  70%  { opacity: 1; }
+  100% { transform: skewX(30deg) translate(150%, -50%);  opacity: 0; }
+}
+
+/* 4. Clic */
+.btn-animated:active,
+.btn-nav:active,
+.btn-login:active,
+.btn-descarga:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #167a7a;
+}
+
+/* Botón de login: la franja recorre todo el ancho del botón */
+.btn-submit-large.btn-animated::before {
+  top: -10%;
+  left: -120px;
+  transform: skewX(30deg);
+}
+
+.btn-submit-large.btn-animated:hover::before {
+  animation: franja-login 0.8s ease 0.1s forwards;
+}
+
+@keyframes franja-login {
+  0%   { left: -120px;            opacity: 1; }
+  80%  { opacity: 1; }
+  100% { left: calc(100% + 20px); opacity: 0; }
 }

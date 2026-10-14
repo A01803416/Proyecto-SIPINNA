@@ -1,15 +1,16 @@
-/* --- CONTENEDOR PRINCIPAL --- */
+/* Contenedor de la aplicación: ocupa el alto de la ventana y deja el scroll al área principal. */
 .dashboard-layout {
   display: flex;
   height: 100vh;
-  background-color: #fcfcfc;
+  background-color: #fcfcfc; /* Fondo un poco más claro y limpio */
   font-family: inherit;
   overflow: hidden;
 }
 
 /* --- BARRA LATERAL (SIDEBAR) --- */
 .sidebar {
-  width: 240px;
+  width: 240px; /* Un poco más ancha para respirar mejor */
+  /* Degradado suave basado en tu imagen */
   background: linear-gradient(
     180deg,
     rgba(230, 150, 160, 0.9) 0%,
@@ -23,7 +24,7 @@
 }
 
 .sidebar-logo-container {
-  background-color: transparent;
+  background-color: transparent; /* El logo en la captura tiene fondo transparente o blanco integrado */
   padding: 20px;
   display: flex;
   justify-content: center;
@@ -44,6 +45,13 @@
   flex: 1;
 }
 
+.sidebar-nav a:hover,
+.nav-btn:hover,
+.nav-btn.active {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffeed6; /* Cambia el texto al color beige/crema */
+}
+
 .sidebar-nav a,
 .nav-btn {
   color: white;
@@ -54,12 +62,13 @@
   transition: background 0.3s;
   background: transparent;
   border: none;
-  text-align: center;
+  text-align: center; /* Texto centrado como en la imagen */
   cursor: pointer;
   font-family: inherit;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Línea separadora sutil */
 }
 
+/* La primera opción lleva línea arriba también */
 .sidebar-nav a:first-child {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -68,7 +77,6 @@
 .nav-btn:hover,
 .nav-btn.active {
   background-color: rgba(255, 255, 255, 0.25);
-  color: #ffeed6;
 }
 
 .sidebar-bottom {
@@ -114,14 +122,14 @@
   flex-direction: column;
 }
 
-/* Estilos de tarjetas y mapas */
+/* BORDES NEGROS Y ESQUINAS REDONDEADAS FINAS */
 .admin-map-widget,
 .full-map-widget,
 .users-widget,
 .full-table-widget,
 .table-widget {
   background: white;
-  border: 1px solid #333;
+  border: 1px solid #333; /* Borde oscuro definido */
   border-radius: 6px;
   overflow: hidden;
 }
@@ -139,7 +147,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #333; /* Separador oscuro */
   background: #fff;
 }
 
@@ -154,11 +162,35 @@
   color: #333;
 }
 
+/* BOTONES OSCUROS DE ACCIÓN (Filtrar, Buscar, Crear) */
+.btn-black {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-black:hover {
+  background: #555;
+}
+
+.btn-black.btn-large {
+  padding: 10px 25px;
+  font-size: 1rem;
+  margin-top: 20px;
+  border-radius: 20px; /* Botón de Crear Usuario muy redondeado */
+  display: inline-block;
+}
+
 .map-iframe-container {
   flex: 1;
 }
 
-/* Alertas procurador */
+/* Alertas Procurador */
 .procurador-alerts-widget {
   display: flex;
   flex-direction: column;
@@ -210,7 +242,7 @@
 
 .kpi-card {
   background: white;
-  border: 1px solid #333;
+  border: 1px solid #333; /* Borde oscuro */
   border-radius: 6px;
   display: flex;
   flex-direction: column;
@@ -285,7 +317,7 @@
   padding-bottom: 15px;
 }
 
-/* Badges de estatus y riesgo */
+/* Badges de estado */
 .badge {
   padding: 4px 12px;
   border-radius: 20px;
@@ -301,94 +333,94 @@
   border-color: #d9534f;
   background-color: rgba(217, 83, 79, 0.1);
 }
-
 .risk-medium {
   color: #f0ad4e;
   border-color: #f0ad4e;
   background-color: rgba(240, 173, 78, 0.1);
 }
-
 .status-citizen {
   color: #5bc0de;
   border-color: #5bc0de;
   background-color: rgba(91, 192, 222, 0.1);
 }
-
 .status-valid {
   color: #5cb85c;
   border-color: #5cb85c;
   background-color: rgba(92, 184, 92, 0.1);
 }
-
 .status-canalized {
   color: #af719d;
   border-color: #af719d;
   background-color: rgba(175, 113, 157, 0.1);
 }
 
-/* --- BOTONES UNIFORMES TURQUESA --- */
-.btn-animated,
-.btn-logout,
-.btn-black,
+/* Botones de acción en tabla */
 .btn-action,
-.btn-quienes-somos {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6em 1.4em;
-  font-size: 0.95rem;
-  font-weight: 800;
-  text-decoration: none;
-  color: #ffffff !important;
-  background-color: #24b1b1 !important;
-  border: 2px solid #ffffff;
-  border-radius: 14px;
+.btn-action-icon {
+  background: white;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 3px 8px;
   cursor: pointer;
-  box-shadow: 0 4px 0 0 #167a7a;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  margin-right: 5px;
+  font-size: 0.8rem;
+  color: #333;
+  font-weight: 600;
 }
 
+/* === BOTÓN DE CERRAR SESIÓN ANIMADO === */
 .btn-logout {
+  padding: 0.7em 1.5em;
+  background: none;
+  border: 2px solid #fff;
+  font-size: 0.95rem;
+  color: #333;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  border-radius: 12px;
+  background-color: #ffeed6;
+  font-weight: bolder;
+  box-shadow: 0 2px 0 2px #333;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
   width: 100%;
+  z-index: 1;
 }
 
-.btn-black.btn-large {
-  padding: 10px 25px;
-  font-size: 1rem;
-  margin-top: 20px;
-  border-radius: 20px;
+.btn-logout:before {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 120%;
+  background-color: #f29191;
+  top: 50%;
+  transform: skewX(30deg) translate(-150%, -50%);
+  transition: all 0.5s;
+  z-index: -1;
 }
 
-/* Ocultar la capa de animación rosa */
-.btn-animated::before,
-.btn-logout::before,
-.btn-black::before,
-.btn-action::before,
-.btn-quienes-somos::before {
-  display: none !important;
+.btn-logout:hover {
+  background-color: #24b1b1;
+  color: #fff;
+  box-shadow: 0 2px 0 2px #167a7a;
 }
 
-/* Cambio suave de color turquesa al pasar el cursor */
-.btn-animated:hover,
-.btn-logout:hover,
-.btn-black:hover,
-.btn-action:hover,
-.btn-quienes-somos:hover {
-  background-color: #1e9a9a !important;
+.btn-logout:hover::before {
+  transform: skewX(30deg) translate(150%, -50%);
+  transition-delay: 0.1s;
 }
 
-/* Efecto de presión al hacer clic */
-.btn-animated:active,
-.btn-logout:active,
-.btn-black:active,
-.btn-action:active,
-.btn-quienes-somos:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 0 #167a7a;
+.btn-logout:active {
+  transform: scale(0.9);
+  background-color: #ffeed6;
+  color: #333;
+  box-shadow: 0 2px 0 2px #333;
 }
 
-/* --- VISTAS INTERNAS --- */
+/* --- VISTAS INTERNAS ESPECÍFICAS --- */
 .full-map-widget {
   display: flex;
   flex-direction: column;
@@ -399,7 +431,7 @@
   flex: 1;
 }
 
-/* Formulario de usuarios */
+/* Formulario de Usuarios */
 .users-widget {
   padding: 25px;
 }
@@ -555,16 +587,16 @@
   font-weight: bold;
 }
 
-/* --- ESTILOS DE IMPRESIÓN --- */
 @media print {
+  /* Ocultar la barra lateral y todos los botones */
   .sidebar,
   button,
   .btn-black,
-  .btn-logout,
-  .btn-action {
+  .btn-logout {
     display: none !important;
   }
 
+  /* Ajustar el fondo */
   body, 
   .dashboard-layout,
   .dashboard-main {
@@ -576,12 +608,14 @@
     margin: 0 !important;
   }
 
+  /* Limpiar la tarjeta de métricas para impresión */
   .metricas-widget {
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
   }
 
+  /* El título no quede pegado al borde superior del PDF */
   .dashboard-title {
     margin-top: 0 !important;
   }

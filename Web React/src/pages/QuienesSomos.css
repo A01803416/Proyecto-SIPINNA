@@ -53,57 +53,80 @@
   align-items: center;
 }
 
-/* Enlace de regreso con estados interactivos y una capa decorativa animada. */
+/* --- BOTÓN ANIMADO (.btn-animated) --- */
+
+/* 1. Reposo: fondo crema y texto oscuro */
 .btn-animated {
   padding: 0.7em 1.5em;
-  background: none;
-  border: 2px solid #fff;
+  border: 2px solid #ffffff;
   font-size: 0.95rem;
-  color: #333;
+  color: #333333 !important;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s;
   border-radius: 12px;
-  background-color: var(--crema);
-  font-weight: bolder;
-  box-shadow: 0 2px 0 2px #333;
+  background-color: var(--crema) !important;
+  font-weight: 800;
+  box-shadow: 0 3px 0 0 #333333;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   z-index: 1;
+  transition: background-color 0.4s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-animated:before {
+/* 2. Franja rosa: invisible y fuera del botón en reposo */
+.btn-animated::before {
   content: "";
   position: absolute;
-  width: 100px;
-  height: 140%;
+  top: -50%;
+  left: 0;
+  width: 50%;
+  height: 200%;
   background-color: var(--rosa);
-  top: 50%;
-  transform: skewX(30deg) translate(-220%, -50%);
-  transition: all 0.5s;
-  z-index: -1;
+  transform: skewX(-25deg) translateX(-400%);
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 
+/* Mantiene el texto visible sobre la franja animada */
+.btn-animated * {
+  position: relative;
+  z-index: 2;
+}
+
+/* 3. Hover: fondo turquesa, texto blanco, y la franja cruza y desaparece */
 .btn-animated:hover {
-  background-color: var(--azul);
-  color: #fff;
-  box-shadow: 0 2px 0 2px #167a7a;
+  background-color: var(--azul) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 0 0 #167a7a;
 }
 
 .btn-animated:hover::before {
-  transform: skewX(30deg) translate(150%, -50%);
-  transition-delay: 0.1s;
+  animation: franja-cruza 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+@keyframes franja-cruza {
+  0% {
+    transform: skewX(-25deg) translateX(-400%);
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: skewX(-25deg) translateX(500%);
+    opacity: 0;
+  }
+}
+
+/* 4. Estado Activo (Clic) */
 .btn-animated:active {
-  transform: scale(0.9);
-  background-color: var(--crema);
-  color: #333;
-  box-shadow: 0 2px 0 2px #333;
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #167a7a;
 }
 
 /* Distribuye las tarjetas de información y logotipo dentro del área principal. */
