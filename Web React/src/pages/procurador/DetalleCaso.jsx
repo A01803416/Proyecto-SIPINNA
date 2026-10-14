@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { ESTATUS, esCierre, claseEstatus, claseRiesgo } from "./estatus";
+import DetalleReporte from "./DetalleReporte";
 
 /**
  * Presenta y permite gestionar un caso, sus reportes asociados y su bitácora.
+ * También abre el detalle de cada reporte del caso.
  * @param {Object} props
  * @param {number|string} props.idCaso Identificador del caso que se consulta.
  * @param {() => void} props.onClose Cierra el detalle del caso.
  * @param {() => (void|Promise<void>)} props.onCambio Notifica cambios para actualizar la lista de casos.
- * @param {(folio: number|string) => void} props.onVerReporte Abre el detalle del reporte indicado.
  * @returns {import('react').ReactNode} Modal del caso o null mientras carga.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
  */
-export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte }) {
+export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [caso, setCaso] = useState(null);
   const [notaPrivada, setNotaPrivada] = useState("");
   const [notaPublica, setNotaPublica] = useState("");
+  const [folioAbierto, setFolioAbierto] = useState(null);
 
   /**
    * Obtiene los datos del caso actual y actualiza el estado del componente.
@@ -253,6 +255,7 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
   if (!caso) return null;
 
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content"
@@ -341,7 +344,7 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
                       </span>
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
-                      <button className="btn-action" onClick={() => onVerReporte(r.id_folio_reporte)}>Ver</button>
+                      <button className="btn-action" onClick={() => setFolioAbierto(r.id_folio_reporte)}>Ver</button>
                       <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}>↓</button>
                     </td>
                   </tr>
@@ -463,5 +466,18 @@ export default function DetalleCaso({ idCaso, onClose, onCambio, onVerReporte })
         </div>
       </div>
     </div>
+
+    {/* un cambio en un reporte del caso se aplica a todo el caso, por eso se recarga */}
+    {folioAbierto && (
+      <DetalleReporte
+        folio={folioAbierto}
+        onClose={() => setFolioAbierto(null)}
+        onCambio={() => {
+          cargarCaso();
+          onCambio();
+        }}
+      />
+    )}
+    </>
   );
 }
