@@ -109,13 +109,22 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
       }
 
       const r = data;
+      const fechaActual = new Date().toLocaleString('es-MX');
+
       ventana.document.write(`
         <html>
           <head>
             <title>Reporte ${r.id_folio_reporte}</title>
             <style>
               @page { margin: 0; }
-              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
+              body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                padding: 50px 40px; 
+                margin: 0;
+                font-size: 14px; 
+                line-height: 1.6; 
+                color: #333; 
+              }
               .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
               .row { margin-bottom: 12px; border-bottom: 1px solid #ddd; padding-bottom: 8px; display: flex; }
               strong { width: 180px; flex-shrink: 0; color: #000; }
@@ -123,50 +132,19 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
               .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
               .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
 
-              /* Estilos del pie de página personalizado */
-              .pie-impresion-custom {
+              .pie-pagina-limpio {
                 position: fixed;
-                bottom: 20px;
+                bottom: 30px;
                 left: 40px;
                 right: 40px;
                 display: flex;
-                height: 45px;
-                font-family: Arial, sans-serif;
-                font-size: 11px;
-                font-weight: bold;
-                color: #333;
-              }
-              .bloque-azul {
-                background-color: #5b9bd5;
-                color: white;
-                width: 35%;
-                clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
-                display: flex;
-                align-items: center;
-                padding-left: 15px;
-              }
-              .bloque-derecho {
-                width: 65%;
-                display: flex;
-                flex-direction: column;
                 justify-content: space-between;
-                margin-left: -5%;
-              }
-              .bloque-beige {
-                background-color: #faebd7;
-                height: 46%;
-                width: 70%;
-                display: flex;
                 align-items: center;
-                padding-left: 35px;
-              }
-              .bloque-rosa {
-                background-color: #f5a3b8;
-                height: 46%;
-                width: 100%;
-                display: flex;
-                align-items: center;
-                padding-left: 50px;
+                font-size: 11px;
+                color: #666;
+                font-family: Arial, sans-serif;
+                border-top: 1px solid #eee;
+                padding-top: 8px;
               }
             </style>
           </head>
@@ -187,12 +165,9 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
             <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
 
-            <div class="pie-impresion-custom">
-              <div class="bloque-azul">Reporte RIETI</div>
-              <div class="bloque-derecho">
-                <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
-                <div class="bloque-rosa">Folio: ${r.id_folio_reporte}</div>
-              </div>
+            <div class="pie-pagina-limpio">
+              <div>Generado: ${fechaActual} - Folio: ${r.id_folio_reporte}</div>
+              <div>Página 1 de 1</div>
             </div>
 
             <script>
@@ -211,13 +186,22 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
 
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
+    const fechaActual = new Date().toLocaleString('es-MX');
+
     ventana.document.write(`
       <html>
         <head>
           <title>Caso ${caso.id_caso}</title>
           <style>
             @page { margin: 0; }
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; margin-bottom: 90px; font-size: 14px; line-height: 1.6; color: #333; }
+            body { 
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+              padding: 50px 40px; 
+              margin: 0;
+              font-size: 14px; 
+              line-height: 1.6; 
+              color: #333; 
+            }
             .header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 30px; }
             .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
             .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
@@ -231,50 +215,19 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             .nota { background: #f8f9fa; padding: 12px; margin-bottom: 10px; border-left: 4px solid #333; }
             .nota-fecha { font-weight: bold; margin-bottom: 5px; color: #000; }
 
-            /* Estilos del pie de página personalizado */
-            .pie-impresion-custom {
+            .pie-pagina-limpio {
               position: fixed;
-              bottom: 20px;
+              bottom: 30px;
               left: 40px;
               right: 40px;
               display: flex;
-              height: 45px;
-              font-family: Arial, sans-serif;
-              font-size: 11px;
-              font-weight: bold;
-              color: #333;
-            }
-            .bloque-azul {
-              background-color: #5b9bd5;
-              color: white;
-              width: 35%;
-              clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
-              display: flex;
-              align-items: center;
-              padding-left: 15px;
-            }
-            .bloque-derecho {
-              width: 65%;
-              display: flex;
-              flex-direction: column;
               justify-content: space-between;
-              margin-left: -5%;
-            }
-            .bloque-beige {
-              background-color: #faebd7;
-              height: 46%;
-              width: 70%;
-              display: flex;
               align-items: center;
-              padding-left: 35px;
-            }
-            .bloque-rosa {
-              background-color: #f5a3b8;
-              height: 46%;
-              width: 100%;
-              display: flex;
-              align-items: center;
-              padding-left: 50px;
+              font-size: 11px;
+              color: #666;
+              font-family: Arial, sans-serif;
+              border-top: 1px solid #eee;
+              padding-top: 8px;
             }
           </style>
         </head>
@@ -316,12 +269,9 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             </div>
           `).join('')}
 
-          <div class="pie-impresion-custom">
-            <div class="bloque-azul">Caso RIETI</div>
-            <div class="bloque-derecho">
-              <div class="bloque-beige">Generado: ${new Date().toLocaleString('es-MX')}</div>
-              <div class="bloque-rosa">Caso ID: ${caso.id_caso}</div>
-            </div>
+          <div class="pie-pagina-limpio">
+            <div>Generado: ${fechaActual} - Caso ID: ${caso.id_caso}</div>
+            <div>Página 1 de 1</div>
           </div>
 
           <script>
