@@ -25,10 +25,9 @@ app.use(express.json({ limit: '5mb' }));
 
 
 /**
- * Responde a un error atrapado en cualquier ruta. Los errores 45000 de los
- * procedures traen un mensaje en español pensado para el usuario, así que se
- * responden con código 400 y ese mensaje en message. Cualquier otro error se
- * responde con código 500 y el name y message del error.
+ * Responde a un error atrapado en cualquier ruta. Los errores causados por los
+ * datos de la petición se responden con código 400 y un mensaje en español
+ * para el usuario. Cualquier otro error se responde con código 500.
  *
  * @param {Object} res Respuesta de Express.
  * @param {Error} err Error que se atrapó en la ruta.
@@ -37,6 +36,9 @@ app.use(express.json({ limit: '5mb' }));
 function manejarError(res, err) {
   if (err.sqlState === '45000') {
     res.status(400).json({ message: err.sqlMessage });
+  } else if (err.code === 'ER_DUP_ENTRY') {
+    // por ejemplo un correo o un municipio que ya existe
+    res.status(400).json({ message: 'Ya existe un registro con esos datos' });
   } else {
     const { name, message } = err;
     res.status(500).json({ name, message });

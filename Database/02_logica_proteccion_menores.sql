@@ -204,7 +204,7 @@ BEGIN
     ) VALUES (
         p_folio, p_descripcion, p_tipo_actividad, p_edad_aproximada, p_numero_menores,
         p_horario, p_nombre_lugar, p_frecuencia, p_colonia, p_latitud, p_longitud,
-        NULLIF(LOWER(TRIM(p_correo)), ''),
+        NULLIF(LOWER(TRIM(p_correo)), ''), -- lower convierte a minusculas y trim quita espacios
         'Registrado', IFNULL(p_peligro_inmediato, FALSE), p_nivel_riesgo, p_evidencia_fotografica,
         NOW(), p_id_municipio, v_id_procurador, NULL
     );
