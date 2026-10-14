@@ -156,7 +156,7 @@ export default function TableroAdmin() {
             <span className="kpi-value">{metricas.posibles_duplicados}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Niños Ident.</span>
+            <span className="kpi-label">Niños Identificados</span>
             <span className="kpi-value">{metricas.ninos_identificados}</span>
           </div>
           <div className="kpi-card">

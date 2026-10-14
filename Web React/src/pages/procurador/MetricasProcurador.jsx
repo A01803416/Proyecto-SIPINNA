@@ -74,7 +74,9 @@ export default function MetricasProcurador() {
             <div className="time-stat">
               <span className="time-value">{tiempo.promedio_horas}</span>
               <span className="time-unit">horas</span>
-              <p className="time-desc">Desde el registro hasta el cierre ({tiempo.reportes_cerrados} reportes cerrados)</p>
+              <p className="time-desc">Desde el registro hasta el cierre {tiempo.reportes_cerrados === 1
+                  ? '(1 reporte cerrado)'
+                  : `(${tiempo.reportes_cerrados} reportes cerrados)`}</p>
             </div>
           )}
         </div>

@@ -92,7 +92,9 @@ export default function MetricasAdmin() {
                 <>
                   <span className="time-value">{fila.promedio_horas}</span>
                   <span className="time-unit">horas</span>
-                  <p className="time-desc">Desde el registro hasta el cierre ({fila.reportes_cerrados} reportes cerrados)</p>
+                  <p className="time-desc">Desde el registro hasta el cierre {fila.reportes_cerrados === 1
+                    ? '(1 reporte cerrado)'
+                    : `(${fila.reportes_cerrados} reportes cerrados)`}</p>
                 </>
               )}
             </div>

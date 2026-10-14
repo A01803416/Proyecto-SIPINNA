@@ -109,7 +109,7 @@ export default function DuplicadosAdmin() {
             style={{ background: "#dc3545" }}
             onClick={fusionar}
           >
-            Fusionar {seleccionados.length} Casos
+            Fusionar {seleccionados.length} Reportes
           </button>
         )}
       </div>

@@ -41,7 +41,7 @@ export default function CasosProcurador() {
   return (
     <div className="tablero-content">
       <div className="header-actions">
-        <h2>Casos Fusionados</h2>
+        <h2>Reportes Fusionados</h2>
       </div>
       <div className="table-container">
         <table className="reports-table data-table">
@@ -61,7 +61,7 @@ export default function CasosProcurador() {
                   colSpan="5"
                   style={{ textAlign: "center", padding: "20px" }}
                 >
-                  No hay casos fusionados.
+                  No hay reportes fusionados.
                 </td>
               </tr>
             ) : (
