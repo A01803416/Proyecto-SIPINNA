@@ -2,33 +2,23 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
-/**
- * Vista principal del mapa de calor para el panel del procurador.
- *
- * Este componente obtiene los puntos de reportes desde el backend y los envía al
- * componente de mapa de calor para visualizar la distribución geográfica de incidencias.
- * También renderiza un conjunto de filtros visuales del panel, aunque actualmente se
- * encuentran estáticos y no tienen lógica de filtrado implementada.
- *
- * @returns {JSX.Element} Panel completo con filtros y mapa de calor.
- */
 export default function MapaProcurador() {
   const [puntosMapa, setPuntosMapa] = useState([]);
 
-  /**
-   * Carga los puntos geográficos que se muestran en el mapa de calor para el procurador.
-   *
-   * Realiza una petición al endpoint de mapa del procurador usando los encabezados
-   * de autenticación configurados en la aplicación y guarda la respuesta en el estado.
-   *
-   * @async
-   * @returns {Promise<void>} Promesa que finaliza cuando los puntos han sido cargados o
-   * el error ha sido registrado en consola.
-   */
+  // Estados para filtrar por riesgo y estatus
+  const [riesgoSel, setRiesgoSel] = useState("");
+  const [estatusSel, setEstatusSel] = useState("");
+
   async function cargarPuntosProcurador() {
     try {
-      // Endpoint que trae los reportes filtrados para el procurador
-      const res = await fetch(`${API_URL}/procurador/mapa`, {
+      // Construir parámetros de consulta para la URL
+      const params = new URLSearchParams();
+      if (riesgoSel) params.append('nivel_riesgo', riesgoSel);
+      if (estatusSel) params.append('estatus', estatusSel);
+
+      const url = `${API_URL}/procurador/mapa?${params.toString()}`;
+
+      const res = await fetch(url, {
         headers: encabezados()
       });
       const data = await res.json();
@@ -47,14 +37,33 @@ export default function MapaProcurador() {
   return (
     <div className="full-map-widget">
       <div className="map-filters-full">
-        <select defaultValue=""><option>Mi Municipio (Atizapán)</option></select>
-        <select defaultValue=""><option>Rango de Edad</option></select>
-        <select defaultValue=""><option>Nivel de Riesgo</option></select>
-        <select defaultValue=""><option>Estatus</option></select>
-        <button className="btn-black">Aplicar Filtros</button>
+        {/* Indicador de Municipio Fijo */}
+        <select disabled defaultValue="atizapan">
+          <option value="atizapan">Mi Municipio (Atizapán de Zaragoza)</option>
+        </select>
+
+        {/* Filtro Nivel de Riesgo */}
+        <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
+          <option value="">Nivel de Riesgo</option>
+          <option value="Bajo">Bajo</option>
+          <option value="Medio">Medio</option>
+          <option value="Alto">Alto</option>
+        </select>
+
+        {/* Filtro Estatus */}
+        <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
+          <option value="">Estatus</option>
+          <option value="Nuevo">Nuevo</option>
+          <option value="Registrado">Registrado</option>
+          <option value="Cerrado">Cerrado</option>
+        </select>
+
+        {/* Botón Aplicar Filtros */}
+        <button className="btn-black" onClick={cargarPuntosProcurador}>
+          Aplicar Filtros
+        </button>
       </div>
 
-      {/* Contenedor del Mapa de Calor interactivo */}
       <div style={{ height: '75vh', width: '100%', marginTop: '20px', borderRadius: '8px', overflow: 'hidden' }}>
         <MapaCalor puntos={puntosMapa} />
       </div>

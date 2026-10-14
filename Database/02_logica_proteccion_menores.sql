@@ -18,6 +18,9 @@ DROP PROCEDURE IF EXISTS sp_corregir_municipio;
 DROP PROCEDURE IF EXISTS sp_marcar_posible_duplicado;
 DROP PROCEDURE IF EXISTS sp_asignar_procurador_municipio;
 DROP PROCEDURE IF EXISTS sp_fusionar_reportes;
+DROP PROCEDURE IF EXISTS sp_aplicar_retencion;
+
+DROP EVENT IF EXISTS ev_retencion;
 
 DELIMITER $$
 
@@ -201,7 +204,7 @@ BEGIN
     ) VALUES (
         p_folio, p_descripcion, p_tipo_actividad, p_edad_aproximada, p_numero_menores,
         p_horario, p_nombre_lugar, p_frecuencia, p_colonia, p_latitud, p_longitud,
-        NULLIF(LOWER(TRIM(p_correo)), ''),
+        NULLIF(LOWER(TRIM(p_correo)), ''), -- lower convierte a minusculas y trim quita espacios
         'Registrado', IFNULL(p_peligro_inmediato, FALSE), p_nivel_riesgo, p_evidencia_fotografica,
         NOW(), p_id_municipio, v_id_procurador, NULL
     );
@@ -591,4 +594,76 @@ BEGIN
     COMMIT;
 END $$
 
+
+-- LA RETENCION DE DATOS
+
+-- las fotos se quitan a los 10 dias y los reportes cerrados se borran al año
+-- el archivo de la foto en s3 lo borra una regla del bucket, aqui solo se quita la liga
+CREATE PROCEDURE sp_aplicar_retencion()
+BEGIN
+    DECLARE v_limite_fotos DATETIME;
+    DECLARE v_limite_reportes DATETIME;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+
+    -- las fechas limite se calculan una vez para que todos los borrados usen la misma
+    SET v_limite_fotos = NOW() - INTERVAL 10 DAY;
+    SET v_limite_reportes = NOW() - INTERVAL 1 YEAR;
+
+    SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+    START TRANSACTION;
+
+    -- fotos con mas de 10 dias
+    UPDATE Reporte
+    SET evidencia_fotografica = NULL
+    WHERE evidencia_fotografica IS NOT NULL
+      AND fecha_registro < v_limite_fotos;
+
+    -- reportes cerrados hace mas de un año
+    -- se borra primero lo que depende del reporte por las llaves foraneas
+    DELETE FROM Entrada
+    WHERE id_bitacora IN (SELECT id_bitacora FROM Bitacora
+                          WHERE id_folio_reporte IN (SELECT id_folio_reporte FROM Reporte
+                                                     WHERE fn_es_estatus_final(estatus)
+                                                       AND fecha_cierre < v_limite_reportes));
+
+    DELETE FROM Bitacora
+    WHERE id_folio_reporte IN (SELECT id_folio_reporte FROM Reporte
+                               WHERE fn_es_estatus_final(estatus)
+                                 AND fecha_cierre < v_limite_reportes);
+
+    -- aqui tambien caen las notas que pasaron al caso al fusionar, porque conservan su folio
+    DELETE FROM Notas_Avance_Reporte
+    WHERE id_folio_reporte IN (SELECT id_folio_reporte FROM Reporte
+                               WHERE fn_es_estatus_final(estatus)
+                                 AND fecha_cierre < v_limite_reportes);
+
+    DELETE FROM Reporte
+    WHERE fn_es_estatus_final(estatus)
+      AND fecha_cierre < v_limite_reportes;
+
+    -- casos que se quedaron sin reportes, primero sus notas y luego el caso
+    -- el IS NOT NULL es necesario porque NOT IN no regresa nada si la lista trae un NULL
+    DELETE FROM Notas_Avance_Reporte
+    WHERE id_caso IS NOT NULL
+      AND id_caso NOT IN (SELECT id_caso FROM Reporte WHERE id_caso IS NOT NULL);
+
+    DELETE FROM Casos
+    WHERE id_caso NOT IN (SELECT id_caso FROM Reporte WHERE id_caso IS NOT NULL);
+
+    COMMIT;
+END $$
+
 DELIMITER ;
+
+
+-- EVENTOS
+
+-- aplica la retencion de datos una vez al dia
+CREATE EVENT ev_retencion
+ON SCHEDULE EVERY 1 DAY
+DO CALL sp_aplicar_retencion();

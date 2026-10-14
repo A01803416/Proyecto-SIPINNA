@@ -25,10 +25,9 @@ app.use(express.json({ limit: '5mb' }));
 
 
 /**
- * Responde a un error atrapado en cualquier ruta. Los errores 45000 de los
- * procedures traen un mensaje en español pensado para el usuario, así que se
- * responden con código 400 y ese mensaje en message. Cualquier otro error se
- * responde con código 500 y el name y message del error.
+ * Responde a un error atrapado en cualquier ruta. Los errores causados por los
+ * datos de la petición se responden con código 400 y un mensaje en español
+ * para el usuario. Cualquier otro error se responde con código 500.
  *
  * @param {Object} res Respuesta de Express.
  * @param {Error} err Error que se atrapó en la ruta.
@@ -37,6 +36,9 @@ app.use(express.json({ limit: '5mb' }));
 function manejarError(res, err) {
   if (err.sqlState === '45000') {
     res.status(400).json({ message: err.sqlMessage });
+  } else if (err.code === 'ER_DUP_ENTRY') {
+    // por ejemplo un correo o un municipio que ya existe
+    res.status(400).json({ message: 'Ya existe un registro con esos datos' });
   } else {
     const { name, message } = err;
     res.status(500).json({ name, message });
@@ -679,9 +681,11 @@ app.post('/procurador/casos/:id/notas', async (req, res) => {
  * fusionados, para pintarlos en el mapa.
  *
  * Encabezado: id-procurador.
+ * Query, todos opcionales: nivel_riesgo y estatus.
  *
  * Respuestas:
- * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus, peligro_inmediato }.
+ * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus, peligro_inmediato,
+ *   nivel_riesgo }.
  * - 500: cualquier error.
  *
  * @see module:procurador_db.getMapa
@@ -692,7 +696,7 @@ app.get('/procurador/mapa', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await procurador.getMapa(connection, idProcurador);
+    const result = await procurador.getMapa(connection, idProcurador, req.query);
     res.json(result);
 
   } catch (err) {
@@ -964,9 +968,11 @@ app.get('/admin/casos/:id', async (req, res) => {
  * Regresa la ubicación de todos los reportes de todos los municipios,
  * incluidos los fusionados, para pintarlos en el mapa.
  *
+ * Query, todos opcionales: id_municipio, nivel_riesgo y estatus.
+ *
  * Respuestas:
  * - 200: arreglo de { id_folio_reporte, latitud, longitud, estatus,
- *   peligro_inmediato, nombre_municipio }.
+ *   peligro_inmediato, nivel_riesgo, nombre_municipio }.
  * - 500: cualquier error.
  *
  * @see module:admin_db.getMapa
@@ -976,7 +982,7 @@ app.get('/admin/mapa', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await admin.getMapa(connection);
+    const result = await admin.getMapa(connection, req.query);
     res.json(result);
 
   } catch (err) {

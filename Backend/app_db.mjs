@@ -8,6 +8,8 @@
  * Busca un reporte por su folio y el correo con el que se registró. Se piden
  * los dos juntos para que nadie pueda ver reportes ajenos; los reportes
  * anónimos no tienen correo y por eso nunca se encuentran.
+ * El correo se compara en minúsculas y sin espacios al inicio ni al final,
+ * igual que lo guarda sp_registrar_reporte.
  * Además trae la nota pública más reciente del reporte. Si el reporte ya está
  * fusionado en un caso, también se toman en cuenta las notas del caso.
  *
@@ -28,7 +30,7 @@ export async function consultarReporte(connection, folio, correo) {
             ORDER BY n.fecha_registro DESC
             LIMIT 1) AS ultima_nota_publica
     FROM Reporte r
-    WHERE r.id_folio_reporte = ? AND r.correo = ?`;
+    WHERE r.id_folio_reporte = ? AND r.correo = LOWER(TRIM(?))`;
   const [rows] = await connection.execute(sql, [folio ?? null, correo ?? null]);
   return rows[0] ?? null;
 }

@@ -4,7 +4,8 @@
  */
 
 /* Variables de color disponibles para reutilizar en las reglas de esta hoja. */
-:root {
+:root
+{
   --rosa: #F29191;
   --azul: #24B1B1;
   --crema: #FFEED6;
