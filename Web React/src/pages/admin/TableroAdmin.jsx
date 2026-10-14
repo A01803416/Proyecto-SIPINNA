@@ -5,29 +5,7 @@ import DetalleReporteAdmin from './DetalleReporteAdmin';
 import MapaCalor from '../../components/MapaCalor';
 
 /**
- * @typedef {Object} ResumenTableroAdmin
- * @property {number} reportes_nuevos Cantidad de reportes nuevos.
- * @property {number} posibles_duplicados Cantidad de posibles duplicados.
- * @property {number} ninos_identificados Cantidad de menores identificados.
- * @property {number} riesgo_alto Cantidad de reportes con riesgo alto.
- * @property {number} total_reportes Cantidad total de reportes.
- */
-
-/**
- * @typedef {Object} MunicipioTableroAdmin
- * @property {number|string} id_municipio Identificador del municipio.
- * @property {string} nombre_municipio Nombre visible del municipio.
- */
-
-/**
- * @typedef {Object} PuntoMapaTableroAdmin
- * @property {number|string} latitud Latitud del punto del mapa.
- * @property {number|string} longitud Longitud del punto del mapa.
- */
-
-/**
  * Muestra el resumen administrativo con indicadores, mapa y reportes recientes.
- * Los datos se cargan al montar el componente y el detalle abre el reporte elegido.
  * @returns {JSX.Element|null} Tablero administrativo, o null mientras cargan las métricas.
  */
 export default function TableroAdmin() {
@@ -37,16 +15,19 @@ export default function TableroAdmin() {
   const [folioAbierto, setFolioAbierto] = useState(null);
   const [puntosMapa, setPuntosMapa] = useState([]);
 
+  // Estados para los filtros del mapa
+  const [municipioSel, setMunicipioSel] = useState("");
+  const [riesgoSel, setRiesgoSel] = useState("");
+  const [estatusSel, setEstatusSel] = useState("");
+
   /**
-   * Obtiene puntos del mapa, métricas, reportes y municipios desde la API.
-   * @returns {Promise<void>} Promesa que se resuelve al completar las solicitudes.
+   * Carga inicial de métricas, reportes, municipios y mapa.
    */
   async function cargarDatos() {
     try {
       const resMapa = await fetch(`${API_URL}/admin/mapa`, {
         headers: encabezados()
       });
-
       const dataMapa = await resMapa.json();
       if (resMapa.ok) {
         setPuntosMapa(dataMapa);
@@ -87,6 +68,28 @@ export default function TableroAdmin() {
     }
   }
 
+  /**
+   * Función para filtrar únicamente los puntos del mapa según los selectores
+   */
+  async function aplicarFiltrosMapa() {
+    try {
+      const params = new URLSearchParams();
+      if (municipioSel) params.append('id_municipio', municipioSel);
+      if (riesgoSel) params.append('nivel_riesgo', riesgoSel);
+      if (estatusSel) params.append('estatus', estatusSel);
+
+      const url = `${API_URL}/admin/mapa?${params.toString()}`;
+      const resMapa = await fetch(url, { headers: encabezados() });
+      const dataMapa = await resMapa.json();
+
+      if (resMapa.ok) {
+        setPuntosMapa(dataMapa);
+      }
+    } catch (err) {
+      console.error("Error al filtrar el mapa: ", err);
+    }
+  }
+
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -99,7 +102,8 @@ export default function TableroAdmin() {
         <div className="top-left-widget">
           <div className="admin-map-widget">
             <div className="map-filters">
-              <select defaultValue="">
+              {/* Filtro Municipio */}
+              <select value={municipioSel} onChange={(e) => setMunicipioSel(e.target.value)}>
                 <option value="">Todos los Municipios</option>
                 {municipios.map((m) => (
                   <option key={m.id_municipio} value={m.id_municipio}>
@@ -107,16 +111,32 @@ export default function TableroAdmin() {
                   </option>
                 ))}
               </select>
-              <select defaultValue="">
-                <option>Últimos 3 meses</option>
+
+              {/* Filtro Nivel de Riesgo */}
+              <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
+                <option value="">Nivel de Riesgo</option>
+                <option value="Bajo">Bajo</option>
+                <option value="Medio">Medio</option>
+                <option value="Alto">Alto</option>
               </select>
-              <select defaultValue="">
-                <option>Rango de Edad (Todos)</option>
+
+              {/* Filtro Estatus Actualizado */}
+              <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
+                <option value="">Estatus (Todos)</option>
+                <option value="Registrado">Registrado</option>
+                <option value="En revisión">En revisión</option>
+                <option value="En seguimiento">En seguimiento</option>
+                <option value="Canalizado">Canalizado</option>
+                <option value="Concluido">Concluido</option>
+                <option value="Archivado">Archivado</option>
+                <option value="Cancelado">Cancelado</option>
+                <option value="Reincidente">Reincidente</option>
               </select>
-              <select defaultValue="">
-                <option>Nivel de Riesgo</option>
-              </select>
-              <button className="btn-black">Filtrar</button>
+
+              {/* Botón Aplicar Filtros */}
+              <button className="btn-black" onClick={aplicarFiltrosMapa}>
+                Aplicar Filtros
+              </button>
             </div>
             <div className="map-iframe-container">
               <div style={{ height: '350px', width: '100%' }}>

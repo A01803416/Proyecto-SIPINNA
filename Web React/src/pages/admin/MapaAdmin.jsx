@@ -2,18 +2,25 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
+/**
+ * Componente de administración para visualizar un mapa de calor con filtros por municipio,
+ * nivel de riesgo y estatus.
+ *
+ * @component
+ * @returns {JSX.Element} Vista del panel administrativo con filtros y mapa de calor.
+ */
 export default function MapaAdmin() {
   const [puntosMapa, setPuntosMapa] = useState([]);
   const [municipios, setMunicipios] = useState([]);
 
-  // Estados para los filtros (sin edad)
+  // Estados para guardar la selección de los filtros
   const [municipioSel, setMunicipioSel] = useState("");
   const [riesgoSel, setRiesgoSel] = useState("");
   const [estatusSel, setEstatusSel] = useState("");
 
   async function cargarDatos() {
     try {
-      // Parámetros de búsqueda para la URL
+      // Construir los parámetros de búsqueda para la URL
       const params = new URLSearchParams();
       if (municipioSel) params.append('id_municipio', municipioSel);
       if (riesgoSel) params.append('nivel_riesgo', riesgoSel);
@@ -28,7 +35,7 @@ export default function MapaAdmin() {
         setPuntosMapa(dataMapa);
       }
 
-      // Obtener lista de municipios si aún no se ha cargado
+      // Obtener la lista de municipios la primera vez
       if (municipios.length === 0) {
         const resMunicipios = await fetch(`${API_URL}/municipios`, { headers: encabezados() });
         const dataMunicipios = await resMunicipios.json();
@@ -39,7 +46,7 @@ export default function MapaAdmin() {
     }
   }
 
-  // Carga inicial al abrir la pantalla
+  // Carga inicial de datos al abrir la pantalla
   useEffect(() => {
     cargarDatos();
   }, []);
@@ -65,16 +72,23 @@ export default function MapaAdmin() {
           <option value="Alto">Alto</option>
         </select>
 
-        {/* Filtro Estatus */}
+        {/* Filtro Estatus Actualizado */}
         <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
-          <option value="">Estatus</option>
-          <option value="Nuevo">Nuevo</option>
+          <option value="">Estatus (Todos)</option>
           <option value="Registrado">Registrado</option>
-          <option value="Cerrado">Cerrado</option>
+          <option value="En revisión">En revisión</option>
+          <option value="En seguimiento">En seguimiento</option>
+          <option value="Canalizado">Canalizado</option>
+          <option value="Concluido">Concluido</option>
+          <option value="Archivado">Archivado</option>
+          <option value="Cancelado">Cancelado</option>
+          <option value="Reincidente">Reincidente</option>
         </select>
 
         {/* Botón Aplicar Filtros */}
-        <button className="btn-black" onClick={cargarDatos}>Aplicar Filtros</button>
+        <button className="btn-black" onClick={cargarDatos}>
+          Aplicar Filtros
+        </button>
       </div>
 
       <div style={{ height: '75vh', width: '100%', marginTop: '20px', borderRadius: '8px', overflow: 'hidden' }}>

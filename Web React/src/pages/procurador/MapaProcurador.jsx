@@ -2,6 +2,19 @@ import { useState, useEffect } from 'react';
 import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
+/**
+ * Componente del panel del procurador para visualizar los casos de su municipio en un mapa de calor.
+ *
+ * La vista muestra un selector fijo de municipio y dos filtros adicionales: nivel de riesgo y estatus.
+ * Al montar el componente, o al presionar "Aplicar Filtros", consulta la API de procurador con los
+ * parámetros seleccionados y actualiza los puntos que se renderizan en el mapa.
+ *
+ * @component
+ * @returns {JSX.Element} Vista con filtros y mapa de calor del procurador.
+ *
+ * @example
+ * return <MapaProcurador />
+ */
 export default function MapaProcurador() {
   const [puntosMapa, setPuntosMapa] = useState([]);
 
@@ -50,12 +63,17 @@ export default function MapaProcurador() {
           <option value="Alto">Alto</option>
         </select>
 
-        {/* Filtro Estatus */}
+        {/* Filtro Estatus Actualizado */}
         <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
-          <option value="">Estatus</option>
-          <option value="Nuevo">Nuevo</option>
+          <option value="">Estatus (Todos)</option>
           <option value="Registrado">Registrado</option>
-          <option value="Cerrado">Cerrado</option>
+          <option value="En revisión">En revisión</option>
+          <option value="En seguimiento">En seguimiento</option>
+          <option value="Canalizado">Canalizado</option>
+          <option value="Concluido">Concluido</option>
+          <option value="Archivado">Archivado</option>
+          <option value="Cancelado">Cancelado</option>
+          <option value="Reincidente">Reincidente</option>
         </select>
 
         {/* Botón Aplicar Filtros */}

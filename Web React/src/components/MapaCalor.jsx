@@ -21,16 +21,20 @@ function CapaHeatmap({ puntos }) {
     const heatArray = puntos.map(p => [
         parseFloat(p.latitud),
         parseFloat(p.longitud),
-        1.0 // Subimos la intensidad de cada punto a 1.0 (máximo)
+        0.5 // Intensidad de 0.5 para que un punto aislado se registre en el primer color
     ]);
 
     // Crear capa de calor
     const heatLayer = L.heatLayer(heatArray, {
-        radius: 35,       
-        blur: 10,         
-        maxZoom: 13,      
-        max: 1.0,         
-        minOpacity: 0.4   
+        radius: 35,        // Tamaño del punto ajustado para que el traslape sea dinámico con el zoom
+        blur: 15,          // Difuminado de los bordes
+        maxZoom: 14,       // Nivel de zoom donde los puntos alcanzan su máxima separación
+        max: 1.0,          // Umbral máximo de suma de intensidades
+        minOpacity: 0.5,   // Opacidad base para que el azul sea visible
+        gradient: {        // Gradiente estricto de dos tonos
+            0.5: '#0055ff',  // Azul: para un solo reporte aislado
+            1.0: '#ff00a0'   // Rosa: cuando dos o más reportes se traslapan (0.5 + 0.5 = 1.0)
+        }
     }).addTo(map);
 
     return () => {
