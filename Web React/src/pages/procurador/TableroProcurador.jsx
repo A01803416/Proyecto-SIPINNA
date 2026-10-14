@@ -90,11 +90,19 @@ export default function TableroProcurador() {
           <div className="procurador-alerts-widget">
             <div className="alert-box danger-alert">
               <h3>Alerta Peligro Inmediato</h3>
-              <p>{conPeligro} reportes con peligro inmediato requieren atención urgente.</p>
+              <p>
+                {conPeligro === 1
+                  ? '1 reporte indica una situación de peligro inmediato.'
+                  : `${conPeligro} reportes indican una situación de peligro inmediato.`}
+              </p>
             </div>
             <div className="alert-box warning-alert">
               <h3>Posible Duplicidad</h3>
-              <p>{metricas.posibles_duplicados} reportes marcados como posible duplicado.</p>
+              <p>
+                {metricas.posibles_duplicados === 1
+                  ? '1 reporte marcado como posible duplicado.'
+                  : `${metricas.posibles_duplicados} reportes marcados como posible duplicado.`}
+              </p>
             </div>
           </div>
         </div>
@@ -109,7 +117,7 @@ export default function TableroProcurador() {
             <span className="kpi-value">{metricas.posibles_duplicados}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Niños Ident.</span>
+            <span className="kpi-label">Niños Identificados</span>
             <span className="kpi-value">{metricas.ninos_identificados}</span>
           </div>
           <div className="kpi-card">

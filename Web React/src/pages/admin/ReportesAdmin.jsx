@@ -152,7 +152,7 @@ export default function ReportesAdmin() {
       <div className="report-filters-header" style={{display: 'flex', justifyContent: 'space-between'}}>
         <h2>Todos los Reportes</h2>
         {seleccionados.length === 2 && (
-           <button className="btn-black" style={{background: '#dc3545'}} onClick={fusionar}>Fusionar {seleccionados.length} Casos</button>
+           <button className="btn-black" style={{background: '#dc3545'}} onClick={fusionar}>Fusionar {seleccionados.length} Reportes</button>
         )}
       </div>
 
