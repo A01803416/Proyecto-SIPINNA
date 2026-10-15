@@ -1,5 +1,4 @@
 import './Hero.css';
-
 /**
  * Presenta la invitación a registrar casos de trabajo infantil y descargar
  * la aplicación, junto con un mockup visual de un teléfono.

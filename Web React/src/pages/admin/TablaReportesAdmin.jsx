@@ -1,5 +1,6 @@
 import { API_URL, encabezados } from '../../services/api_url';
 import { claseEstatus, claseRiesgo } from '../procurador/estatus';
+import DescargaPDF from "../../components/DescargaPDF";
 
 export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, mostrarFusion, seleccionados, onSeleccionar }) {
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
@@ -142,7 +143,12 @@ export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, most
             </td>
             <td>
               <button className="btn-action" onClick={() => onVer(r.id_folio_reporte)}>Ver</button>
-              <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}>↓</button>
+              <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}
+                    title="Descargar PDF"
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
+              >
+                    <DescargaPDF size={18} />
+                  </button>
             </td>
           </tr>
         ))}
