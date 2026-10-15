@@ -30,19 +30,28 @@ import { API_URL, encabezados } from '../../services/api_url';
 
 /**
  * Presenta las métricas globales de atención, estatus y reportes por municipio.
+ * Los reportes por estatus se pueden ver de todos los municipios o de uno solo.
  * Permite imprimir la vista para guardarla o exportarla como PDF.
  * @returns {JSX.Element|null} Panel de métricas, o null mientras carga la información.
  */
 export default function MetricasAdmin() {
   const [metricas, setMetricas] = useState(null);
+  const [municipios, setMunicipios] = useState([]);
+  const [municipioSel, setMunicipioSel] = useState('');
 
   /**
-   * Obtiene las métricas globales administrativas desde la API.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
+   * Obtiene las métricas globales desde la API.
+   * @param {string} idMunicipio Municipio para los reportes por estatus, o vacío para todos.
+   * @returns {Promise<void>}
    */
-  async function cargarMetricas() {
+  async function cargarMetricas(idMunicipio) {
+    let url = `${API_URL}/admin/metricas`;
+    if (idMunicipio) {
+      url += `?id_municipio=${idMunicipio}`;
+    }
+
     try {
-      const res = await fetch(`${API_URL}/admin/metricas`, {
+      const res = await fetch(url, {
         headers: encabezados()
       });
       const data = await res.json();
@@ -57,9 +66,51 @@ export default function MetricasAdmin() {
     }
   }
 
+  /**
+   * Obtiene el catálogo de municipios para el selector.
+   * @returns {Promise<void>}
+   */
+  async function cargarMunicipios() {
+    try {
+      const res = await fetch(`${API_URL}/municipios`, {
+        headers: encabezados()
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMunicipios(data);
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo conectar con el servidor');
+    }
+  }
+
+  /**
+   * Carga las métricas de todos los municipios y el catálogo de municipios.
+   * @returns {Promise<void>}
+   */
+  async function cargarDatos() {
+    await cargarMetricas('');
+    await cargarMunicipios();
+  }
+
   useEffect(() => {
-    cargarMetricas();
+    cargarDatos();
   }, []);
+
+  /**
+   * Cambia el municipio elegido y vuelve a pedir las métricas.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de municipio.
+   * @returns {void}
+   */
+  function cambiarMunicipio(e) {
+    const idMunicipio = e.target.value;
+    setMunicipioSel(idMunicipio);
+    // se pasa el valor directo porque el estado todavia no se actualiza aqui
+    cargarMetricas(idMunicipio);
+  }
 
   /**
    * Abre el diálogo de impresión del navegador para guardar la vista como PDF.
@@ -70,6 +121,16 @@ export default function MetricasAdmin() {
   }
 
   if (!metricas) return null;
+
+  // nombre del municipio elegido para el titulo de la tarjeta
+  const elegidos = municipios.filter((m) => m.id_municipio === Number(municipioSel));
+  const nombreSel = elegidos.length > 0 ? elegidos[0].nombre_municipio : 'Todos';
+
+  // las barras se miden contra lo que se esta mostrando, no contra el total global
+  let totalEstatus = 0;
+  for (const fila of metricas.reportes_por_estatus) {
+    totalEstatus += fila.total;
+  }
 
   return (
     <div className="metricas-widget" id="metricas-report">
@@ -102,13 +163,22 @@ export default function MetricasAdmin() {
         </div>
 
         <div className="metricas-card">
-          <h3>Reportes por Estatus</h3>
+          <h3>Reportes por Estatus ({nombreSel})</h3>
+          <select value={municipioSel} onChange={cambiarMunicipio} style={{ padding: '4px', marginBottom: '12px' }}>
+            <option value="">Todos los municipios</option>
+            {municipios.map((m) => (
+              <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>
+            ))}
+          </select>
           <div className="bar-chart">
+            {metricas.reportes_por_estatus.length === 0 && (
+              <p className="time-desc">Este municipio no tiene reportes.</p>
+            )}
             {metricas.reportes_por_estatus.map(fila => (
               <div className="bar-row" key={fila.estatus}>
                 <span className="bar-label">{fila.estatus}</span>
                 <div className="bar-track">
-                  <div className="bar-fill" style={{ width: `${(fila.total / metricas.total_reportes) * 100}%` }}></div>
+                  <div className="bar-fill" style={{ width: `${(fila.total / totalEstatus) * 100}%` }}></div>
                 </div>
                 <span className="bar-value">{fila.total}</span>
               </div>
@@ -118,7 +188,7 @@ export default function MetricasAdmin() {
       </div>
 
       <div className="metricas-card full-width">
-        <h3>Comparativa Global de Municipios (Todos)</h3>
+        <h3>Reportes por Municipio</h3>
         <div className="bar-chart" style={{maxHeight: '300px', overflowY: 'auto', paddingRight: '10px'}}>
           {metricas.reportes_por_municipio.map(fila => (
             <div className="bar-row" key={fila.nombre_municipio} style={{marginBottom: '10px'}}>

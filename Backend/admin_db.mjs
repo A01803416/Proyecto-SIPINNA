@@ -385,25 +385,18 @@ export async function getMapa(connection, query) {
 
 
 /**
- * Calcula las métricas de todos los reportes de todos los municipios,
- * incluidos los fusionados.
+ * Calcula las métricas de los reportes de todos los municipios. Los reportes
+ * por estatus se pueden filtrar por municipio; las demás métricas siempre
+ * incluyen todos los municipios.
  *
  * @param {Object} connection Conexión abierta con connect().
- * @returns {Promise<Object>} Un objeto con:
- * total_reportes;
- * reportes_por_municipio, un arreglo de { nombre_municipio, total } que
- * incluye los municipios sin reportes;
- * reportes_por_estatus, un arreglo de { estatus, total };
- * tiempo_promedio_atencion_por_municipio, un arreglo de
- * { nombre_municipio, reportes_cerrados, promedio_horas } donde promedio_horas
- * es el tiempo promedio entre el registro y el cierre, o null si el municipio
- * no tiene reportes cerrados;
- * reportes_nuevos, los que siguen en Registrado;
- * posibles_duplicados;
- * ninos_identificados, la suma de numero_menores;
- * y riesgo_alto, los de nivel de riesgo Alto.
+ * @param {Object} query Filtros opcionales, tal como llegan en la URL.
+ * @param {string} [query.id_municipio] Solo cuenta los reportes por estatus de este municipio.
+ * @returns {Promise<Object>} Un objeto con total_reportes, reportes_por_municipio,
+ * reportes_por_estatus, tiempo_promedio_atencion_por_municipio, reportes_nuevos,
+ * posibles_duplicados, ninos_identificados y riesgo_alto.
  */
-export async function getMetricas(connection) {
+export async function getMetricas(connection, query) {
   const [filasTotal] = await connection.execute('SELECT COUNT(*) AS total_reportes FROM Reporte');
 
   const [porMunicipio] = await connection.execute(`
@@ -412,8 +405,18 @@ export async function getMetricas(connection) {
     LEFT JOIN Reporte r ON r.id_municipio = m.id_municipio
     GROUP BY m.id_municipio, m.nombre_municipio`);
 
-  const [porEstatus] = await connection.execute(
-    'SELECT estatus, COUNT(*) AS total FROM Reporte GROUP BY estatus');
+  // solo esta metrica se filtra por municipio, las demas siempre son de todos
+  let sqlEstatus = 'SELECT estatus, COUNT(*) AS total FROM Reporte';
+  const valoresEstatus = [];
+
+  if (query.id_municipio) {
+    sqlEstatus += ' WHERE id_municipio = ?';
+    valoresEstatus.push(query.id_municipio);
+  }
+
+  sqlEstatus += ' GROUP BY estatus';
+
+  const [porEstatus] = await connection.execute(sqlEstatus, valoresEstatus);
 
   const [tiempoPorMunicipio] = await connection.execute(`
     SELECT m.nombre_municipio,

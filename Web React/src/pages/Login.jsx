@@ -82,7 +82,7 @@ export default function Login({ role }) {
 
             <div className="auth-logo-box">
               <img
-                src="/logorieti.jpeg"
+                src="/Logo_RIETI_sin_fondo.png"
                 alt="Logo RIETI"
                 className="auth-logo-img"
               />

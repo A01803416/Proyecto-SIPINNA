@@ -1,8 +1,8 @@
 import './QuienesSomos.css';
 
 /**
- * Presenta la misión, la colaboración intermunicipal y el compromiso ciudadano
- * de RIETI, junto con su logotipo institucional.
+ * Presenta qué es RIETI, la colaboración intermunicipal y la participación
+ * ciudadana, junto con su logotipo institucional.
  * @returns {import('react').JSX.Element} Página informativa de RIETI.
  */
 export default function QuienesSomos() {
@@ -27,19 +27,19 @@ export default function QuienesSomos() {
             <h1>¿Quiénes Somos?</h1>
           </div>
           <div className="about-text">
-            <h2>Nuestra Misión</h2>
+            <h2>¿Qué es RIETI?</h2>
             <p>
-              El Registro e Identificación Estratégica del Trabajo Infantil (RIETI) es una plataforma diseñada para coordinar esfuerzos municipales e institucionales en la detección, atención y erradicación del trabajo infantil en el Estado de México.
+              La Ruta Intermunicipal para la Erradicación del Trabajo Infantil (RIETI) es una iniciativa impulsada por el Sistema de Protección Integral de Niñas, Niños y Adolescentes (SIPINNA) de Atizapán de Zaragoza, en alianza con 15 municipios del Estado de México. Esta plataforma apoya su labor, permitiendo que la ciudadanía reporte posibles casos de trabajo infantil y que las autoridades municipales les den seguimiento.
             </p>
 
             <h2>Colaboración Intermunicipal</h2>
             <p>
-              En alianza con los municipios participantes y el Sistema de Protección Integral de Niñas, Niños y Adolescentes (SIPINNA), canalizamos reportes de manera ágil hacia las procuradurías municipales correspondientes para garantizar la restitución de sus derechos.
+              Cada reporte se dirige a la procuraduría del municipio donde ocurre, para que pueda atenderlo, registrar su avance y, cuando corresponda, canalizarlo a otras instituciones. Los municipios participantes son Atizapán de Zaragoza, Naucalpan de Juárez, Tlalnepantla de Baz, Cuautitlán Izcalli, Villa del Carbón, Nicolás Romero, Isidro Fabela, Huixquilucan, Tepotzotlán, Teoloyucan, Cuautitlán, Jilotzingo, Ecatepec, Tultitlán y Melchor Ocampo.
             </p>
 
-            <h2>Compromiso Ciudadano</h2>
+            <h2>Participación Ciudadana</h2>
             <p>
-              Fomentamos la participación de la sociedad facilitando un canal confidencial y seguro para reportar situaciones de riesgo en vía pública o establecimientos, protegiendo siempre la integridad y privacidad de la niñez.
+              Cualquier persona puede reportar desde la aplicación móvil una situación en la que vea a niñas, niños o adolescentes trabajando, ya sea en la vía pública o en un establecimiento. El reporte puede hacerse de forma anónima o con seguimiento, para consultar después su avance. Para proteger su identidad, pedimos no fotografiar a las niñas, niños o adolescentes.
             </p>
           </div>
         </section>
@@ -47,7 +47,7 @@ export default function QuienesSomos() {
         {/* Tarjeta derecha: Logo institucional */}
         <section className="about-card-right">
           <img
-            src="/logorieti.jpeg"
+            src="/Logo_RIETI_sin_fondo.png"
             alt="Logo RIETI"
             className="about-logo-small"
           />
