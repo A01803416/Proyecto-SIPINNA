@@ -3,11 +3,9 @@ import { API_URL, encabezados } from '../../services/api_url';
 import MapaCalor from '../../components/MapaCalor';
 
 /**
- * Componente de administración para visualizar un mapa de calor con filtros por municipio,
- * nivel de riesgo y estatus.
- *
- * @component
- * @returns {JSX.Element} Vista del panel administrativo con filtros y mapa de calor.
+ * Muestra el mapa de calor de los reportes de todos los municipios, con
+ * filtros por municipio, nivel de riesgo y estatus.
+ * @returns {JSX.Element} Filtros y mapa de calor.
  */
 export default function MapaAdmin() {
   const [puntosMapa, setPuntosMapa] = useState([]);
@@ -18,6 +16,11 @@ export default function MapaAdmin() {
   const [riesgoSel, setRiesgoSel] = useState("");
   const [estatusSel, setEstatusSel] = useState("");
 
+  /**
+   * Obtiene los puntos del mapa con los filtros elegidos y, la primera vez,
+   * el catálogo de municipios.
+   * @returns {Promise<void>}
+   */
   async function cargarDatos() {
     try {
       // Construir los parámetros de búsqueda para la URL

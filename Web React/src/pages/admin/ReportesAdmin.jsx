@@ -5,6 +5,11 @@ import TablaReportesAdmin from './TablaReportesAdmin';
 import DetalleReporteAdmin from './DetalleReporteAdmin';
 import Dialogos from '../../components/Dialogos';
 
+/**
+ * Muestra el listado de reportes de todos los municipios con sus filtros.
+ * Permite consultar el detalle de un reporte y fusionar dos reportes.
+ * @returns {JSX.Element} Filtros y tabla de reportes.
+ */
 export default function ReportesAdmin() {
   const [reportes, setReportes] = useState([]);
   const [municipios, setMunicipios] = useState([]);
@@ -21,6 +26,10 @@ export default function ReportesAdmin() {
   // Estado para el modal de fusión
   const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
 
+  /**
+   * Obtiene los reportes con los filtros elegidos.
+   * @returns {Promise<void>}
+   */
   async function cargarReportes() {
     let url = `${API_URL}/admin/reportes?`;
     if (filterDesde) url += `desde=${filterDesde}&`;
@@ -46,6 +55,10 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Obtiene el catálogo de municipios para el filtro.
+   * @returns {Promise<void>}
+   */
   async function cargarMunicipios() {
     try {
       const res = await fetch(`${API_URL}/municipios`, {
@@ -71,6 +84,11 @@ export default function ReportesAdmin() {
     cargarMunicipios();
   }, []);
 
+  /**
+   * Agrega o quita un reporte de la selección para fusionar, que admite como máximo dos.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {void}
+   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
@@ -81,10 +99,18 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Pide confirmación para fusionar los dos reportes seleccionados.
+   * @returns {void}
+   */
   function solicitarFusion() {
     setModalFusionAbierto(true);
   }
 
+  /**
+   * Fusiona los dos reportes seleccionados en un caso.
+   * @returns {Promise<void>}
+   */
   async function ejecutarFusion() {
     setModalFusionAbierto(false);
     const folio1 = seleccionados[0];
@@ -110,6 +136,10 @@ export default function ReportesAdmin() {
     }
   }
 
+  /**
+   * Regresa todos los filtros a su valor inicial.
+   * @returns {void}
+   */
   function limpiarFiltros() {
     setFilterDesde('');
     setFilterHasta('');

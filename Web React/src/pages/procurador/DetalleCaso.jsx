@@ -4,6 +4,15 @@ import { ESTATUS, esCierre, claseEstatus, claseRiesgo } from "./estatus";
 import DetalleReporte from "./DetalleReporte";
 import Dialogos from "../../components/Dialogos";
 
+/**
+ * Muestra y permite gestionar un caso: su estatus, sus notas y sus reportes,
+ * cuyo detalle se abre desde aquí. También permite imprimir el caso.
+ * @param {Object} props
+ * @param {number|string} props.idCaso Identificador del caso que se consulta.
+ * @param {() => void} props.onClose Cierra el modal del caso.
+ * @param {() => (void|Promise<void>)} props.onCambio Avisa que hubo un cambio para actualizar la lista de casos.
+ * @returns {import('react').ReactNode} Modal del caso, o null mientras carga.
+ */
 export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [caso, setCaso] = useState(null);
   const [notaPrivada, setNotaPrivada] = useState("");
@@ -15,6 +24,10 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [estatusPendiente, setEstatusPendiente] = useState("");
   const [motivoCierre, setMotivoCierre] = useState("");
 
+  /**
+   * Obtiene los datos del caso con sus reportes y notas.
+   * @returns {Promise<void>}
+   */
   async function cargarCaso() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}`, {
@@ -36,6 +49,11 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     cargarCaso();
   }, [idCaso]);
 
+  /**
+   * Cambia el estatus elegido; si es de cierre, primero pide el motivo.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de estatus.
+   * @returns {Promise<void>}
+   */
   async function cambiarEstatus(e) {
     const estatus = e.target.value;
 
@@ -49,6 +67,12 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     guardarEstatus(estatus, null);
   }
 
+  /**
+   * Guarda el nuevo estatus del caso.
+   * @param {string} estatus Estatus nuevo.
+   * @param {string|null} motivo Motivo de cierre, o null si el estatus no es de cierre.
+   * @returns {Promise<void>}
+   */
   async function guardarEstatus(estatus, motivo) {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}/estatus`, {
@@ -69,6 +93,10 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     onCambio();
   }
 
+  /**
+   * Cierra el caso con el motivo escrito en la ventana de cierre.
+   * @returns {void}
+   */
   function confirmarCierre() {
     if (!motivoCierre.trim()) {
       alert("Escribe el motivo de cierre del caso");
@@ -78,6 +106,10 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     guardarEstatus(estatusPendiente, motivoCierre);
   }
 
+  /**
+   * Agrega una nota de avance al caso, con su parte privada y su parte pública.
+   * @returns {Promise<void>}
+   */
   async function agregarNota() {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}/notas`, {
@@ -104,6 +136,11 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     onCambio();
   }
 
+  /**
+   * Abre una versión imprimible de un reporte del caso.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {Promise<void>}
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
     try {
@@ -193,6 +230,10 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
     }
   }
 
+  /**
+   * Abre una versión imprimible del caso con sus reportes y notas.
+   * @returns {void}
+   */
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
     const fechaActual = new Date().toLocaleString('es-MX');

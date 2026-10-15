@@ -1,13 +1,24 @@
-import React from 'react';
-
 /**
- * Componente modal para reemplazar window.prompt y window.confirm
+ * Ventana con el diseño de la web que reemplaza a window.prompt y
+ * window.confirm. Puede pedir un texto o solo pedir una confirmación.
+ * @param {Object} props
+ * @param {boolean} props.isOpen Si es true, la ventana se muestra.
+ * @param {string} props.title Título de la ventana.
+ * @param {string} [props.message] Texto que explica qué se pide o qué se va a hacer.
+ * @param {'prompt'|'confirm'} [props.type] "prompt" muestra un cuadro de texto; "confirm" solo los botones. Por omisión, "prompt".
+ * @param {string} [props.inputValue] Texto escrito en el cuadro de texto.
+ * @param {(valor: string) => void} [props.onInputChange] Recibe el texto cada vez que cambia.
+ * @param {() => void} props.onConfirm Se llama al pulsar el botón de confirmar.
+ * @param {() => void} props.onClose Se llama al cancelar o cerrar la ventana.
+ * @param {string} [props.confirmText] Texto del botón de confirmar. Por omisión, "Confirmar".
+ * @param {string} [props.cancelText] Texto del botón de cancelar. Por omisión, "Cancelar".
+ * @returns {JSX.Element|null} La ventana, o null si está cerrada.
  */
 export default function Dialogos({
   isOpen,
   title,
   message,
-  type = "prompt", // 'prompt' (texto) o 'confirm' (sí/no)
+  type = "prompt", // prompt pide un texto y confirm solo pregunta si o no
   inputValue = "",
   onInputChange = () => {},
   onConfirm,

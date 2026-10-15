@@ -3,6 +3,11 @@ import { API_URL, encabezados } from "../../services/api_url";
 import DetalleReporteAdmin from "./DetalleReporteAdmin";
 import Dialogos from "../../components/Dialogos";
 
+/**
+ * Muestra los reportes marcados como posible duplicado y permite elegir dos
+ * para fusionarlos en un caso.
+ * @returns {JSX.Element} Tabla de posibles duplicados.
+ */
 export default function DuplicadosAdmin() {
   const [duplicados, setDuplicados] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
@@ -11,6 +16,10 @@ export default function DuplicadosAdmin() {
   // Estado para el modal de fusión
   const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
 
+  /**
+   * Obtiene los reportes marcados como posible duplicado.
+   * @returns {Promise<void>}
+   */
   async function cargarDuplicados() {
     try {
       const res = await fetch(`${API_URL}/admin/duplicados`, {
@@ -32,6 +41,11 @@ export default function DuplicadosAdmin() {
     cargarDuplicados();
   }, []);
 
+  /**
+   * Agrega o quita un reporte de la selección para fusionar, que admite como máximo dos.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {void}
+   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
@@ -42,12 +56,18 @@ export default function DuplicadosAdmin() {
     }
   }
 
-  // Ahora solo abre el modal
+  /**
+   * Pide confirmación para fusionar los dos reportes seleccionados.
+   * @returns {void}
+   */
   function solicitarFusion() {
     setModalFusionAbierto(true);
   }
 
-  // Esta función se ejecuta al dar "Aceptar" en el modal
+  /**
+   * Fusiona los dos reportes seleccionados en un caso.
+   * @returns {Promise<void>}
+   */
   async function ejecutarFusion() {
     setModalFusionAbierto(false);
     const folio1 = seleccionados[0];

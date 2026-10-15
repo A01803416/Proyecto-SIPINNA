@@ -4,17 +4,9 @@ import MapaCalor from '../../components/MapaCalor';
 import { leerSesion } from '../../services/sesion';
 
 /**
- * Componente del panel del procurador para visualizar los casos de su municipio en un mapa de calor.
- *
- * La vista muestra un selector fijo de municipio y dos filtros adicionales: nivel de riesgo y estatus.
- * Al montar el componente, o al presionar "Aplicar Filtros", consulta la API de procurador con los
- * parámetros seleccionados y actualiza los puntos que se renderizan en el mapa.
- *
- * @component
- * @returns {JSX.Element} Vista con filtros y mapa de calor del procurador.
- *
- * @example
- * return <MapaProcurador />
+ * Muestra el mapa de calor de los reportes del municipio del procurador, con
+ * filtros por nivel de riesgo y estatus.
+ * @returns {JSX.Element} Filtros y mapa de calor.
  */
 export default function MapaProcurador() {
   const [puntosMapa, setPuntosMapa] = useState([]);
@@ -29,6 +21,10 @@ export default function MapaProcurador() {
   const [riesgoSel, setRiesgoSel] = useState("");
   const [estatusSel, setEstatusSel] = useState("");
 
+  /**
+   * Obtiene los puntos del mapa del procurador con los filtros elegidos.
+   * @returns {Promise<void>}
+   */
   async function cargarPuntosProcurador() {
     try {
       // Construir parámetros de consulta para la URL
