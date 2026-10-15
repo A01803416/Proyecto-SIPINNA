@@ -1,6 +1,7 @@
 import { API_URL, encabezados } from '../../services/api_url';
 import { leerSesion } from '../../services/sesion';
 import { claseEstatus, claseRiesgo } from './estatus';
+import DescargaPDF from "../../components/DescargaPDF";
 
 /**
  * Muestra los reportes del procurador en una tabla, con botones para ver el
@@ -146,7 +147,12 @@ export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
             </td>
             <td>
               <button className="btn-action" onClick={() => onVer(r.id_folio_reporte)}>Ver</button>
-              <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}>↓</button>
+              <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}
+                                  title="Descargar PDF"
+                                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
+                            >
+                                  <DescargaPDF size={18} />
+                                </button>
             </td>
           </tr>
         ))}

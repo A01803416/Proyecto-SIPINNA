@@ -3,6 +3,7 @@ import { API_URL, encabezados } from "../../services/api_url";
 import { ESTATUS, esCierre, claseEstatus, claseRiesgo } from "./estatus";
 import DetalleReporte from "./DetalleReporte";
 import Dialogos from "../../components/Dialogos";
+import DescargaPDF from "../../components/DescargaPDF";
 
 /**
  * Muestra y permite gestionar un caso: su estatus, sus notas y sus reportes,
@@ -422,7 +423,12 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <button className="btn-action" onClick={() => setFolioAbierto(r.id_folio_reporte)}>Ver</button>
-                      <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}>↓</button>
+                      <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}
+                                        title="Descargar PDF"
+                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
+                                  >
+                                        <DescargaPDF size={18} />
+                                      </button>
                     </td>
                   </tr>
                 ))}

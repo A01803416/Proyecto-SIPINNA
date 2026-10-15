@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus, claseRiesgo } from "../procurador/estatus";
 import Dialogos from "../../components/Dialogos";
+import DescargaPDF from "../../components/DescargaPDF";
 
 /**
  * Muestra un caso con sus reportes y notas, y permite agregarle otro reporte
@@ -433,7 +434,12 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
                     </td>
                     <td style={{ whiteSpace: "nowrap" }}>
                       <button className="btn-action" onClick={() => onVerReporte(r.id_folio_reporte)}>Ver</button>
-                      <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}>↓</button>
+                      <button className="btn-action-icon" onClick={() => descargarReporte(r.id_folio_reporte)}
+                                          title="Descargar PDF"
+                                          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
+                                    >
+                                          <DescargaPDF size={18} />
+                                        </button>
                     </td>
                   </tr>
                 ))}
