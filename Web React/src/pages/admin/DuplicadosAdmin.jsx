@@ -3,6 +3,11 @@ import { API_URL, encabezados } from "../../services/api_url";
 import DetalleReporteAdmin from "./DetalleReporteAdmin";
 import Dialogos from "../../components/Dialogos";
 
+/**
+ * Muestra los reportes marcados como posible duplicado y permite elegir dos
+ * para fusionarlos en un caso.
+ * @returns {JSX.Element} Tabla de posibles duplicados.
+ */
 export default function DuplicadosAdmin() {
   const [duplicados, setDuplicados] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
@@ -11,6 +16,13 @@ export default function DuplicadosAdmin() {
   // Estado para el modal de fusión
   const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
 
+  // texto de la ventana de aviso, vacio cuando esta cerrada
+  const [aviso, setAviso] = useState("");
+
+  /**
+   * Obtiene los reportes marcados como posible duplicado.
+   * @returns {Promise<void>}
+   */
   async function cargarDuplicados() {
     try {
       const res = await fetch(`${API_URL}/admin/duplicados`, {
@@ -32,22 +44,33 @@ export default function DuplicadosAdmin() {
     cargarDuplicados();
   }, []);
 
+  /**
+   * Agrega o quita un reporte de la selección para fusionar, que admite como máximo dos.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {void}
+   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
     } else if (seleccionados.length === 2) {
-      alert("Solo puedes elegir 2 reportes para fusionar.");
+      setAviso("Solo puedes elegir 2 reportes para fusionar.");
     } else {
       setSeleccionados([...seleccionados, folio]);
     }
   }
 
-  // Ahora solo abre el modal
+  /**
+   * Pide confirmación para fusionar los dos reportes seleccionados.
+   * @returns {void}
+   */
   function solicitarFusion() {
     setModalFusionAbierto(true);
   }
 
-  // Esta función se ejecuta al dar "Aceptar" en el modal
+  /**
+   * Fusiona los dos reportes seleccionados en un caso.
+   * @returns {Promise<void>}
+   */
   async function ejecutarFusion() {
     setModalFusionAbierto(false);
     const folio1 = seleccionados[0];
@@ -61,7 +84,7 @@ export default function DuplicadosAdmin() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`Reportes fusionados en el caso ${data.id_caso}.`);
+        setAviso(`Reportes fusionados en el caso ${data.id_caso}.`);
         setSeleccionados([]);
         cargarDuplicados();
       } else {
@@ -155,6 +178,17 @@ export default function DuplicadosAdmin() {
         type="confirm"
         onConfirm={ejecutarFusion}
         onClose={() => setModalFusionAbierto(false)}
+      />
+
+      {/* Ventana de aviso */}
+      <Dialogos
+        isOpen={aviso !== ""}
+        title="Aviso"
+        message={aviso}
+        type="aviso"
+        confirmText="Aceptar"
+        onConfirm={() => setAviso("")}
+        onClose={() => setAviso("")}
       />
     </div>
   );

@@ -3,6 +3,16 @@ import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus, claseRiesgo } from "../procurador/estatus";
 import Dialogos from "../../components/Dialogos";
 
+/**
+ * Muestra un caso con sus reportes y notas, y permite agregarle otro reporte
+ * del mismo municipio. También permite imprimir el caso o uno de sus reportes.
+ * @param {Object} props
+ * @param {number|string} props.idCaso Identificador del caso que se consulta.
+ * @param {() => void} props.onClose Cierra el modal del caso.
+ * @param {() => (void|Promise<void>)} props.onCambio Avisa que hubo un cambio para actualizar la lista de casos.
+ * @param {(folio: number|string) => void} props.onVerReporte Abre el detalle del reporte indicado.
+ * @returns {JSX.Element|null} Modal del caso, o null mientras carga.
+ */
 export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerReporte }) {
   const [caso, setCaso] = useState(null);
   const [sueltos, setSueltos] = useState([]);
@@ -13,6 +23,10 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
   const [folioAObtener, setFolioAObtener] = useState(null);
   const [targetSelect, setTargetSelect] = useState(null);
 
+  /**
+   * Obtiene los datos del caso con sus reportes y notas.
+   * @returns {Promise<void>}
+   */
   async function cargarCaso() {
     try {
       const res = await fetch(`${API_URL}/admin/casos/${idCaso}`, {
@@ -34,6 +48,10 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     cargarCaso();
   }, [idCaso]);
 
+  /**
+   * Obtiene los reportes sin fusionar del municipio del caso y muestra el selector.
+   * @returns {Promise<void>}
+   */
   async function buscarSueltos() {
     const folioDelCaso = caso.reportes[0].id_folio_reporte;
 
@@ -69,6 +87,11 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
+  /**
+   * Pide confirmación para agregar al caso el reporte elegido.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de reportes.
+   * @returns {void}
+   */
   function solicitarAgregarReporte(e) {
     const folioNuevo = e.target.value;
     if (!folioNuevo) return;
@@ -78,6 +101,10 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     setModalConfirmAbierto(true);
   }
 
+  /**
+   * Agrega al caso el reporte confirmado.
+   * @returns {Promise<void>}
+   */
   async function ejecutarAgregarReporte() {
     setModalConfirmAbierto(false);
     try {
@@ -103,11 +130,20 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
+  /**
+   * Cancela la confirmación y limpia la elección del selector.
+   * @returns {void}
+   */
   function cancelarAgregarReporte() {
     if (targetSelect) targetSelect.value = "";
     setModalConfirmAbierto(false);
   }
 
+  /**
+   * Abre una versión imprimible de un reporte del caso.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {Promise<void>}
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
     try {
@@ -198,6 +234,10 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
+  /**
+   * Abre una versión imprimible del caso con sus reportes y notas.
+   * @returns {void}
+   */
   function imprimirCaso() {
     const ventana = window.open('', '_blank');
     const fechaActual = new Date().toLocaleString('es-MX');

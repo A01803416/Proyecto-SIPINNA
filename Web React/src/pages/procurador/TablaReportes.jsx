@@ -2,11 +2,25 @@ import { API_URL, encabezados } from '../../services/api_url';
 import { leerSesion } from '../../services/sesion';
 import { claseEstatus, claseRiesgo } from './estatus';
 
+/**
+ * Muestra los reportes del procurador en una tabla, con botones para ver el
+ * detalle de cada uno o imprimirlo.
+ * @param {Object} props
+ * @param {Object[]} props.reportes Reportes que se muestran.
+ * @param {(folio: number|string) => void} props.onVer Abre el detalle del reporte indicado.
+ * @param {boolean} props.mostrarTodos Si es false, solo muestra los tres primeros reportes.
+ * @returns {import('react').JSX.Element} Tabla de reportes.
+ */
 export default function TablaReportes({ reportes, onVer, mostrarTodos }) {
   const sesion = leerSesion();
   const municipio = sesion && sesion.municipio ? sesion.municipio.nombre_municipio : '';
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
 
+  /**
+   * Abre una versión imprimible del reporte indicado.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {Promise<void>}
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
 

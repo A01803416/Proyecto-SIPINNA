@@ -3,6 +3,15 @@ import { API_URL, encabezados } from '../../services/api_url';
 import { ESTATUS, esCierre } from './estatus';
 import Dialogos from '../../components/Dialogos';
 
+/**
+ * Muestra y permite gestionar un reporte: su estatus, la marca de posible
+ * duplicado, su municipio y sus notas de avance.
+ * @param {Object} props
+ * @param {number|string} props.folio Folio del reporte que se consulta.
+ * @param {() => void} props.onClose Cierra el modal del reporte.
+ * @param {() => (void|Promise<void>)} props.onCambio Avisa que hubo un cambio para actualizar la lista.
+ * @returns {import('react').ReactNode} Modal del reporte, o null mientras carga.
+ */
 export default function DetalleReporte({ folio, onClose, onCambio }) {
   const [reporte, setReporte] = useState(null);
   const [municipios, setMunicipios] = useState([]);
@@ -18,6 +27,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
   const [municipioDestino, setMunicipioDestino] = useState(null);
   const [nombreMunicipioDestino, setNombreMunicipioDestino] = useState("");
 
+  /**
+   * Obtiene los datos del reporte y sus notas.
+   * @returns {Promise<void>}
+   */
   async function cargarReporte() {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}`, {
@@ -35,6 +48,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     }
   }
 
+  /**
+   * Obtiene la lista de municipios a los que se puede transferir el reporte.
+   * @returns {Promise<void>}
+   */
   async function cargarMunicipios() {
     try {
       const res = await fetch(`${API_URL}/municipios`, {
@@ -60,7 +77,11 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     cargarMunicipios();
   }, []);
 
-  // Función al seleccionar estatus
+  /**
+   * Cambia el estatus elegido; si es de cierre, primero pide el motivo.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de estatus.
+   * @returns {void}
+   */
   function cambiarEstatus(e) {
     const estatus = e.target.value;
 
@@ -74,7 +95,12 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     guardarEstatus(estatus, null);
   }
 
-  // Guardar en BD
+  /**
+   * Guarda el nuevo estatus del reporte.
+   * @param {string} estatus Estatus nuevo.
+   * @param {string|null} motivo Motivo de cierre, o null si el estatus no es de cierre.
+   * @returns {Promise<void>}
+   */
   async function guardarEstatus(estatus, motivo) {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}/estatus`, {
@@ -95,15 +121,20 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     onCambio();
   }
 
+  /**
+   * Cierra el reporte con el motivo escrito en la ventana de cierre.
+   * @returns {void}
+   */
   function confirmarCierre() {
-    if (!motivoCierre.trim()) {
-      alert("El motivo de cierre es obligatorio.");
-      return;
-    }
     setModalCierreAbierto(false);
     guardarEstatus(estatusPendiente, motivoCierre);
   }
 
+  /**
+   * Marca o desmarca el reporte como posible duplicado.
+   * @param {import('react').ChangeEvent<HTMLInputElement>} e Evento de la casilla.
+   * @returns {Promise<void>}
+   */
   async function marcarDuplicado(e) {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}/duplicado`, {
@@ -124,7 +155,11 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     onCambio();
   }
 
-  // Interceptar el cambio del selector
+  /**
+   * Pide confirmación para transferir el reporte al municipio elegido.
+   * @param {import('react').ChangeEvent<HTMLSelectElement>} e Evento del selector de municipio.
+   * @returns {void}
+   */
   function solicitarTransferencia(e) {
     const idMunicipio = Number(e.target.value);
     const elegidos = municipios.filter((m) => m.id_municipio === idMunicipio);
@@ -135,7 +170,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     setModalTransferirAbierto(true);
   }
 
-  // Ejecutar el traslado
+  /**
+   * Transfiere el reporte al municipio confirmado y cierra el modal.
+   * @returns {Promise<void>}
+   */
   async function ejecutarTransferencia() {
     setModalTransferirAbierto(false);
     try {
@@ -157,6 +195,10 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
     }
   }
 
+  /**
+   * Agrega una nota de avance con su parte privada y su parte pública.
+   * @returns {Promise<void>}
+   */
   async function agregarNota() {
     try {
       const res = await fetch(`${API_URL}/procurador/reportes/${folio}/notas`, {
@@ -290,6 +332,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
         onInputChange={setMotivoCierre}
         onConfirm={confirmarCierre}
         onClose={() => setModalCierreAbierto(false)}
+        confirmDisabled={motivoCierre.trim() === ''}
       />
 
       {/* Modal para Transferencia de Municipio */}

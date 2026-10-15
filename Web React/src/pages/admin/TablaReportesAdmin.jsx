@@ -1,9 +1,26 @@
 import { API_URL, encabezados } from '../../services/api_url';
 import { claseEstatus, claseRiesgo } from '../procurador/estatus';
 
+/**
+ * Muestra reportes de todos los municipios en una tabla, con botones para ver
+ * el detalle de cada uno o imprimirlo, y casillas opcionales para fusionar.
+ * @param {Object} props
+ * @param {Object[]} props.reportes Reportes que se muestran.
+ * @param {(folio: number|string) => void} props.onVer Abre el detalle del reporte indicado.
+ * @param {boolean} props.mostrarTodos Si es false, solo muestra los tres primeros reportes.
+ * @param {boolean} [props.mostrarFusion] Si es true, muestra las casillas para elegir reportes a fusionar.
+ * @param {(number|string)[]} [props.seleccionados] Folios elegidos para fusionar.
+ * @param {(folio: number|string) => void} [props.onSeleccionar] Marca o desmarca un folio para fusionar.
+ * @returns {JSX.Element} Tabla de reportes.
+ */
 export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, mostrarFusion, seleccionados, onSeleccionar }) {
   const filas = mostrarTodos ? reportes : reportes.slice(0, 3);
 
+  /**
+   * Abre una versión imprimible del reporte indicado.
+   * @param {number|string} folio Folio del reporte.
+   * @returns {Promise<void>}
+   */
   async function descargarReporte(folio) {
     const ventana = window.open('', '_blank');
 
