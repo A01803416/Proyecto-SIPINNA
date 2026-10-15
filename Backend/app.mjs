@@ -1001,6 +1001,8 @@ app.get('/admin/mapa', async (req, res) => {
  *
  * Regresa las métricas de todos los municipios.
  *
+ * Query, opcional: id_municipio, que filtra solo los reportes por estatus.
+ *
  * Respuestas:
  * - 200: objeto con las métricas.
  * - 500: cualquier error.
@@ -1012,7 +1014,7 @@ app.get('/admin/metricas', async (req, res) => {
 
   try {
     connection = await connect();
-    const result = await admin.getMetricas(connection);
+    const result = await admin.getMetricas(connection, req.query);
     res.json(result);
 
   } catch (err) {
