@@ -1,8 +1,8 @@
 import './QuienesSomos.css';
 
 /**
- * Presenta la misión, la colaboración intermunicipal y el compromiso ciudadano
- * de RIETI, junto con su logotipo institucional.
+ * Presenta qué es RIETI, la colaboración intermunicipal y la participación
+ * ciudadana, junto con su logotipo institucional.
  * @returns {import('react').JSX.Element} Página informativa de RIETI.
  */
 export default function QuienesSomos() {
