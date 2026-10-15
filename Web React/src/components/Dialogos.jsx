@@ -1,11 +1,12 @@
 /**
- * Ventana con el diseño de la web que reemplaza a window.prompt y
- * window.confirm. Puede pedir un texto o solo pedir una confirmación.
+ * Ventana con el diseño de la web que reemplaza a window.prompt,
+ * window.confirm y alert. Puede pedir un texto, pedir una confirmación o
+ * solo dar un aviso.
  * @param {Object} props
  * @param {boolean} props.isOpen Si es true, la ventana se muestra.
  * @param {string} props.title Título de la ventana.
- * @param {string} [props.message] Texto que explica qué se pide o qué se va a hacer.
- * @param {'prompt'|'confirm'} [props.type] "prompt" muestra un cuadro de texto; "confirm" solo los botones. Por omisión, "prompt".
+ * @param {string} [props.message] Texto que explica qué se pide, qué se va a hacer o qué pasó.
+ * @param {'prompt'|'confirm'|'aviso'} [props.type] "prompt" muestra un cuadro de texto; "confirm" solo los botones; "aviso" es una ventana más angosta con un solo botón. Por omisión, "prompt".
  * @param {string} [props.inputValue] Texto escrito en el cuadro de texto.
  * @param {(valor: string) => void} [props.onInputChange] Recibe el texto cada vez que cambia.
  * @param {() => void} props.onConfirm Se llama al pulsar el botón de confirmar.
@@ -19,7 +20,7 @@ export default function Dialogos({
   isOpen,
   title,
   message,
-  type = "prompt", // prompt pide un texto y confirm solo pregunta si o no
+  type = "prompt", // prompt pide un texto, confirm pregunta si o no y aviso solo informa
   inputValue = "",
   onInputChange = () => {},
   onConfirm,
@@ -54,7 +55,7 @@ export default function Dialogos({
           backgroundColor: '#fff',
           borderRadius: '8px',
           padding: '24px',
-          width: '420px',
+          width: type === 'aviso' ? '340px' : '420px',
           maxWidth: '90%',
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.15)',
           fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
@@ -98,20 +99,22 @@ export default function Dialogos({
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-          <button 
-            onClick={onClose}
-            style={{
-              background: '#e0e0e0',
-              color: '#333',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}
-          >
-            {cancelText}
-          </button>
+          {type !== 'aviso' && (
+            <button
+              onClick={onClose}
+              style={{
+                background: '#e0e0e0',
+                color: '#333',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontWeight: '500'
+              }}
+            >
+              {cancelText}
+            </button>
+          )}
           <button
             onClick={onConfirm}
             disabled={confirmDisabled}

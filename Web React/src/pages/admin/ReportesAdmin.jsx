@@ -26,6 +26,9 @@ export default function ReportesAdmin() {
   // Estado para el modal de fusión
   const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
 
+  // texto de la ventana de aviso, vacio cuando esta cerrada
+  const [aviso, setAviso] = useState('');
+
   /**
    * Obtiene los reportes con los filtros elegidos.
    * @returns {Promise<void>}
@@ -93,7 +96,7 @@ export default function ReportesAdmin() {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
     } else if (seleccionados.length === 2) {
-      alert('Solo puedes elegir 2 reportes para fusionar.');
+      setAviso('Solo puedes elegir 2 reportes para fusionar.');
     } else {
       setSeleccionados([...seleccionados, folio]);
     }
@@ -124,7 +127,7 @@ export default function ReportesAdmin() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`Reportes fusionados en el caso ${data.id_caso}.`);
+        setAviso(`Reportes fusionados en el caso ${data.id_caso}.`);
         setSeleccionados([]);
         cargarReportes();
       } else {
@@ -208,6 +211,17 @@ export default function ReportesAdmin() {
         type="confirm"
         onConfirm={ejecutarFusion}
         onClose={() => setModalFusionAbierto(false)}
+      />
+
+      {/* Ventana de aviso */}
+      <Dialogos
+        isOpen={aviso !== ''}
+        title="Aviso"
+        message={aviso}
+        type="aviso"
+        confirmText="Aceptar"
+        onConfirm={() => setAviso('')}
+        onClose={() => setAviso('')}
       />
     </div>
   );

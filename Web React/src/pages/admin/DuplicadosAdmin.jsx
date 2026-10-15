@@ -16,6 +16,9 @@ export default function DuplicadosAdmin() {
   // Estado para el modal de fusión
   const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
 
+  // texto de la ventana de aviso, vacio cuando esta cerrada
+  const [aviso, setAviso] = useState("");
+
   /**
    * Obtiene los reportes marcados como posible duplicado.
    * @returns {Promise<void>}
@@ -50,7 +53,7 @@ export default function DuplicadosAdmin() {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
     } else if (seleccionados.length === 2) {
-      alert("Solo puedes elegir 2 reportes para fusionar.");
+      setAviso("Solo puedes elegir 2 reportes para fusionar.");
     } else {
       setSeleccionados([...seleccionados, folio]);
     }
@@ -81,7 +84,7 @@ export default function DuplicadosAdmin() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`Reportes fusionados en el caso ${data.id_caso}.`);
+        setAviso(`Reportes fusionados en el caso ${data.id_caso}.`);
         setSeleccionados([]);
         cargarDuplicados();
       } else {
@@ -175,6 +178,17 @@ export default function DuplicadosAdmin() {
         type="confirm"
         onConfirm={ejecutarFusion}
         onClose={() => setModalFusionAbierto(false)}
+      />
+
+      {/* Ventana de aviso */}
+      <Dialogos
+        isOpen={aviso !== ""}
+        title="Aviso"
+        message={aviso}
+        type="aviso"
+        confirmText="Aceptar"
+        onConfirm={() => setAviso("")}
+        onClose={() => setAviso("")}
       />
     </div>
   );
