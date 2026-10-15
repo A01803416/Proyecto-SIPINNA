@@ -12,6 +12,7 @@
  * @param {() => void} props.onClose Se llama al cancelar o cerrar la ventana.
  * @param {string} [props.confirmText] Texto del botón de confirmar. Por omisión, "Confirmar".
  * @param {string} [props.cancelText] Texto del botón de cancelar. Por omisión, "Cancelar".
+ * @param {boolean} [props.confirmDisabled] Si es true, el botón de confirmar no se puede pulsar. Por omisión, false.
  * @returns {JSX.Element|null} La ventana, o null si está cerrada.
  */
 export default function Dialogos({
@@ -24,7 +25,8 @@ export default function Dialogos({
   onConfirm,
   onClose,
   confirmText = "Confirmar",
-  cancelText = "Cancelar"
+  cancelText = "Cancelar",
+  confirmDisabled = false
 }) {
   if (!isOpen) return null;
 
@@ -110,15 +112,17 @@ export default function Dialogos({
           >
             {cancelText}
           </button>
-          <button 
+          <button
             onClick={onConfirm}
+            disabled={confirmDisabled}
             style={{
               background: '#28a745',
               color: '#fff',
               border: 'none',
               padding: '8px 16px',
               borderRadius: '4px',
-              cursor: 'pointer',
+              cursor: confirmDisabled ? 'not-allowed' : 'pointer',
+              opacity: confirmDisabled ? 0.5 : 1,
               fontWeight: '500'
             }}
           >

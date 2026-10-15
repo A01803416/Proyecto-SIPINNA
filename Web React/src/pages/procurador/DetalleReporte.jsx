@@ -126,10 +126,6 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
    * @returns {void}
    */
   function confirmarCierre() {
-    if (!motivoCierre.trim()) {
-      alert("El motivo de cierre es obligatorio.");
-      return;
-    }
     setModalCierreAbierto(false);
     guardarEstatus(estatusPendiente, motivoCierre);
   }
@@ -336,6 +332,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
         onInputChange={setMotivoCierre}
         onConfirm={confirmarCierre}
         onClose={() => setModalCierreAbierto(false)}
+        confirmDisabled={motivoCierre.trim() === ''}
       />
 
       {/* Modal para Transferencia de Municipio */}

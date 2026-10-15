@@ -98,10 +98,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
    * @returns {void}
    */
   function confirmarCierre() {
-    if (!motivoCierre.trim()) {
-      alert("Escribe el motivo de cierre del caso");
-      return;
-    }
     setModalCierreAbierto(false);
     guardarEstatus(estatusPendiente, motivoCierre);
   }
@@ -569,6 +565,7 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
       onInputChange={setMotivoCierre}
       onConfirm={confirmarCierre}
       onClose={() => setModalCierreAbierto(false)}
+      confirmDisabled={motivoCierre.trim() === ''}
     />
     </>
   );
