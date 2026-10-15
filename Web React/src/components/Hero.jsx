@@ -23,7 +23,7 @@ export default function Hero() {
             <div className="phone-screen"></div>
             <div className="phone-home-btn"></div>
           </div>
-          <button className="btn-descarga">Descargar ↓</button>
+          <button className="btn-descarga">Descargar </button>
         </div>
       </div>
     </main>
