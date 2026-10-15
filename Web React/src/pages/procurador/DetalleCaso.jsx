@@ -2,12 +2,18 @@ import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { ESTATUS, esCierre, claseEstatus, claseRiesgo } from "./estatus";
 import DetalleReporte from "./DetalleReporte";
+import Dialogos from "../../components/Dialogos";
 
 export default function DetalleCaso({ idCaso, onClose, onCambio }) {
   const [caso, setCaso] = useState(null);
   const [notaPrivada, setNotaPrivada] = useState("");
   const [notaPublica, setNotaPublica] = useState("");
   const [folioAbierto, setFolioAbierto] = useState(null);
+
+  // Estados para el modal de diálogo de cierre
+  const [modalCierreAbierto, setModalCierreAbierto] = useState(false);
+  const [estatusPendiente, setEstatusPendiente] = useState("");
+  const [motivoCierre, setMotivoCierre] = useState("");
 
   async function cargarCaso() {
     try {
@@ -32,13 +38,18 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
 
   async function cambiarEstatus(e) {
     const estatus = e.target.value;
-    let motivo = null;
 
     if (esCierre(estatus)) {
-      motivo = window.prompt("Escribe el motivo de cierre del caso:");
-      if (motivo === null) return;
+      setEstatusPendiente(estatus);
+      setMotivoCierre("");
+      setModalCierreAbierto(true);
+      return;
     }
 
+    guardarEstatus(estatus, null);
+  }
+
+  async function guardarEstatus(estatus, motivo) {
     try {
       const res = await fetch(`${API_URL}/procurador/casos/${idCaso}/estatus`, {
         method: "PUT",
@@ -56,6 +67,15 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
 
     cargarCaso();
     onCambio();
+  }
+
+  function confirmarCierre() {
+    if (!motivoCierre.trim()) {
+      alert("Escribe el motivo de cierre del caso");
+      return;
+    }
+    setModalCierreAbierto(false);
+    guardarEstatus(estatusPendiente, motivoCierre);
   }
 
   async function agregarNota() {
@@ -122,7 +142,6 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
               .title { font-size: 26px; font-weight: bold; margin: 0; color: #000; text-transform: uppercase; }
               .subtitle { font-size: 14px; color: #666; margin: 8px 0 0 0; }
 
-              /* Pie de página limpio en posición fija sin encabezados arriba */
               .pie-pagina-limpio {
                 position: fixed;
                 bottom: 30px;
@@ -498,6 +517,18 @@ export default function DetalleCaso({ idCaso, onClose, onCambio }) {
         }}
       />
     )}
+
+    {/* Dialogo personalizado para el motivo de cierre */}
+    <Dialogos
+      isOpen={modalCierreAbierto}
+      title="Motivo de Cierre del Caso"
+      message="Escribe detalladamente el motivo por el cual se cierra el caso:"
+      type="prompt"
+      inputValue={motivoCierre}
+      onInputChange={setMotivoCierre}
+      onConfirm={confirmarCierre}
+      onClose={() => setModalCierreAbierto(false)}
+    />
     </>
   );
 }

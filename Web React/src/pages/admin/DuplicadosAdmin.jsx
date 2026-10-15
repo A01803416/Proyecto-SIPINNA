@@ -1,33 +1,16 @@
 import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import DetalleReporteAdmin from "./DetalleReporteAdmin";
+import Dialogos from "../../components/Dialogos";
 
-/**
- * @typedef {Object} ReporteDuplicadoAdmin
- * @property {number|string} id_folio_reporte Folio del reporte.
- * @property {string} nombre_municipio Municipio donde se registró.
- * @property {string|null} [colonia] Colonia donde se registró.
- * @property {string|null} [nombre_lugar] Referencia del lugar.
- * @property {string} tipo_actividad Actividad detectada en el reporte.
- * @property {string} fecha_registro Fecha de registro del reporte.
- */
-
-// reportes que los procuradores marcaron como posible duplicado
-// vienen ordenados por municipio y colonia para encontrar las parejas facil
-/**
- * Lista los reportes marcados como posibles duplicados y permite seleccionar
- * dos para fusionarlos en un mismo caso.
- * @returns {JSX.Element} Tabla de reportes duplicados y controles de fusión.
- */
 export default function DuplicadosAdmin() {
   const [duplicados, setDuplicados] = useState([]);
   const [folioAbierto, setFolioAbierto] = useState(null);
   const [seleccionados, setSeleccionados] = useState([]);
 
-  /**
-   * Obtiene de la API los reportes marcados como posibles duplicados.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
-   */
+  // Estado para el modal de fusión
+  const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
+
   async function cargarDuplicados() {
     try {
       const res = await fetch(`${API_URL}/admin/duplicados`, {
@@ -49,12 +32,6 @@ export default function DuplicadosAdmin() {
     cargarDuplicados();
   }, []);
 
-  // la fusion es siempre de dos reportes, no se deja elegir un tercero
-  /**
-   * Agrega o quita un folio de la selección, que admite como máximo dos.
-   * @param {number|string} folio Folio del reporte que se selecciona o deselecciona.
-   * @returns {void}
-   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
@@ -65,16 +42,16 @@ export default function DuplicadosAdmin() {
     }
   }
 
-  /**
-   * Envía los dos reportes seleccionados para fusionarlos en un caso.
-   * Si la operación tiene éxito, limpia la selección y actualiza la lista.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la fusión.
-   */
-  async function fusionar() {
+  // Ahora solo abre el modal
+  function solicitarFusion() {
+    setModalFusionAbierto(true);
+  }
+
+  // Esta función se ejecuta al dar "Aceptar" en el modal
+  async function ejecutarFusion() {
+    setModalFusionAbierto(false);
     const folio1 = seleccionados[0];
     const folio2 = seleccionados[1];
-    if (!window.confirm(`¿Fusionar ${folio1} y ${folio2} en un mismo caso?`))
-      return;
 
     try {
       const res = await fetch(`${API_URL}/admin/fusiones`, {
@@ -107,7 +84,7 @@ export default function DuplicadosAdmin() {
           <button
             className="btn-black"
             style={{ background: "#dc3545" }}
-            onClick={fusionar}
+            onClick={solicitarFusion}
           >
             Fusionar {seleccionados.length} Reportes
           </button>
@@ -169,6 +146,16 @@ export default function DuplicadosAdmin() {
           onClose={() => setFolioAbierto(null)}
         />
       )}
+
+      {/* Modal de Fusión */}
+      <Dialogos
+        isOpen={modalFusionAbierto}
+        title="Confirmar Fusión"
+        message={`¿Estás seguro de fusionar los reportes ${seleccionados[0]} y ${seleccionados[1]} en un mismo caso?`}
+        type="confirm"
+        onConfirm={ejecutarFusion}
+        onClose={() => setModalFusionAbierto(false)}
+      />
     </div>
   );
 }

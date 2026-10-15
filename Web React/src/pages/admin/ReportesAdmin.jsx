@@ -3,19 +3,8 @@ import { API_URL, encabezados } from '../../services/api_url';
 import { ESTATUS } from '../procurador/estatus';
 import TablaReportesAdmin from './TablaReportesAdmin';
 import DetalleReporteAdmin from './DetalleReporteAdmin';
+import Dialogos from '../../components/Dialogos';
 
-/**
- * @typedef {Object} MunicipioFiltroAdmin
- * @property {number|string} id_municipio Identificador del municipio.
- * @property {string} nombre_municipio Nombre visible del municipio.
- */
-
-/**
- * Presenta el listado administrativo de reportes con filtros por fecha,
- * municipio, estatus, riesgo y peligro inmediato. También permite consultar
- * el detalle y fusionar dos reportes.
- * @returns {JSX.Element} Panel de filtros y tabla de reportes.
- */
 export default function ReportesAdmin() {
   const [reportes, setReportes] = useState([]);
   const [municipios, setMunicipios] = useState([]);
@@ -29,10 +18,9 @@ export default function ReportesAdmin() {
   const [filterRiesgo, setFilterRiesgo] = useState('');
   const [filterPeligro, setFilterPeligro] = useState(false);
 
-  /**
-   * Solicita los reportes a la API aplicando los filtros activos.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
-   */
+  // Estado para el modal de fusión
+  const [modalFusionAbierto, setModalFusionAbierto] = useState(false);
+
   async function cargarReportes() {
     let url = `${API_URL}/admin/reportes?`;
     if (filterDesde) url += `desde=${filterDesde}&`;
@@ -58,10 +46,6 @@ export default function ReportesAdmin() {
     }
   }
 
-  /**
-   * Obtiene el catálogo de municipios para las opciones del filtro.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la solicitud.
-   */
   async function cargarMunicipios() {
     try {
       const res = await fetch(`${API_URL}/municipios`, {
@@ -79,7 +63,6 @@ export default function ReportesAdmin() {
     }
   }
 
-  // cada filtro que cambia vuelve a pedir la lista al backend
   useEffect(() => {
     cargarReportes();
   }, [filterDesde, filterHasta, filterMunicipio, filterEstatus, filterRiesgo, filterPeligro]);
@@ -88,12 +71,6 @@ export default function ReportesAdmin() {
     cargarMunicipios();
   }, []);
 
-  // la fusion es siempre de dos reportes, no se deja elegir un tercero
-  /**
-   * Agrega o quita un folio de la selección, que admite como máximo dos.
-   * @param {number|string} folio Folio del reporte que se selecciona o deselecciona.
-   * @returns {void}
-   */
   function seleccionar(folio) {
     if (seleccionados.includes(folio)) {
       setSeleccionados(seleccionados.filter((f) => f !== folio));
@@ -104,15 +81,14 @@ export default function ReportesAdmin() {
     }
   }
 
-  /**
-   * Envía los dos reportes seleccionados para fusionarlos en un mismo caso.
-   * Si la operación tiene éxito, limpia la selección y actualiza el listado.
-   * @returns {Promise<void>} Promesa que se resuelve al terminar la fusión.
-   */
-  async function fusionar() {
+  function solicitarFusion() {
+    setModalFusionAbierto(true);
+  }
+
+  async function ejecutarFusion() {
+    setModalFusionAbierto(false);
     const folio1 = seleccionados[0];
     const folio2 = seleccionados[1];
-    if (!window.confirm(`¿Fusionar ${folio1} y ${folio2} en un mismo caso?`)) return;
 
     try {
       const res = await fetch(`${API_URL}/admin/fusiones`, {
@@ -134,10 +110,6 @@ export default function ReportesAdmin() {
     }
   }
 
-  /**
-   * Restablece los filtros de fecha, municipio, estatus, riesgo y peligro.
-   * @returns {void}
-   */
   function limpiarFiltros() {
     setFilterDesde('');
     setFilterHasta('');
@@ -152,7 +124,7 @@ export default function ReportesAdmin() {
       <div className="report-filters-header" style={{display: 'flex', justifyContent: 'space-between'}}>
         <h2>Todos los Reportes</h2>
         {seleccionados.length === 2 && (
-           <button className="btn-black" style={{background: '#dc3545'}} onClick={fusionar}>Fusionar {seleccionados.length} Reportes</button>
+           <button className="btn-black" style={{background: '#dc3545'}} onClick={solicitarFusion}>Fusionar {seleccionados.length} Reportes</button>
         )}
       </div>
 
@@ -197,6 +169,16 @@ export default function ReportesAdmin() {
       {folioAbierto && (
         <DetalleReporteAdmin folio={folioAbierto} onClose={() => setFolioAbierto(null)} />
       )}
+
+      {/* Modal de Fusión */}
+      <Dialogos
+        isOpen={modalFusionAbierto}
+        title="Confirmar Fusión"
+        message={`¿Estás seguro de fusionar los reportes ${seleccionados[0]} y ${seleccionados[1]} en un mismo caso?`}
+        type="confirm"
+        onConfirm={ejecutarFusion}
+        onClose={() => setModalFusionAbierto(false)}
+      />
     </div>
   );
 }

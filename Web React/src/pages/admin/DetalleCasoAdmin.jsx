@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
 import { API_URL, encabezados } from "../../services/api_url";
 import { claseEstatus, claseRiesgo } from "../procurador/estatus";
+import Dialogos from "../../components/Dialogos";
 
 export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerReporte }) {
   const [caso, setCaso] = useState(null);
   const [sueltos, setSueltos] = useState([]);
   const [mostrarSelect, setMostrarSelect] = useState(false);
+
+  // Estados para el diálogo de confirmación de fusión/asociación de reporte
+  const [modalConfirmAbierto, setModalConfirmAbierto] = useState(false);
+  const [folioAObtener, setFolioAObtener] = useState(null);
+  const [targetSelect, setTargetSelect] = useState(null);
 
   async function cargarCaso() {
     try {
@@ -63,20 +69,23 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     }
   }
 
-  async function agregarReporte(e) {
+  function solicitarAgregarReporte(e) {
     const folioNuevo = e.target.value;
     if (!folioNuevo) return;
-    if (!window.confirm(`¿Agregar ${folioNuevo} al caso ${caso.id_caso}?`)) {
-      e.target.value = "";
-      return;
-    }
 
+    setFolioAObtener(folioNuevo);
+    setTargetSelect(e.target);
+    setModalConfirmAbierto(true);
+  }
+
+  async function ejecutarAgregarReporte() {
+    setModalConfirmAbierto(false);
     try {
       const res = await fetch(`${API_URL}/admin/fusiones`, {
         method: "POST",
         headers: encabezados(),
         body: JSON.stringify({
-          folio1: folioNuevo,
+          folio1: folioAObtener,
           folio2: caso.reportes[0].id_folio_reporte,
         }),
       });
@@ -92,6 +101,11 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
       console.error(err);
       alert("No se pudo conectar con el servidor");
     }
+  }
+
+  function cancelarAgregarReporte() {
+    if (targetSelect) targetSelect.value = "";
+    setModalConfirmAbierto(false);
   }
 
   async function descargarReporte(folio) {
@@ -286,6 +300,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
   if (!caso) return null;
 
   return (
+    <>
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content"
@@ -390,7 +405,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
                 <label>Reporte a agregar:</label>
                 <select
                   defaultValue=""
-                  onChange={agregarReporte}
+                  onChange={solicitarAgregarReporte}
                   style={{ width: "100%", padding: "8px", borderRadius: "4px" }}
                 >
                   <option value="">Selecciona un reporte...</option>
@@ -465,5 +480,16 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
         </div>
       </div>
     </div>
+
+    {/* Dialogo personalizado para confirmación de fusión */}
+    <Dialogos
+      isOpen={modalConfirmAbierto}
+      title="Confirmar Fusión"
+      message={`¿Deseas agregar el reporte ${folioAObtener} al caso ${caso.id_caso}?`}
+      type="confirm"
+      onConfirm={ejecutarAgregarReporte}
+      onClose={cancelarAgregarReporte}
+    />
+    </>
   );
 }
