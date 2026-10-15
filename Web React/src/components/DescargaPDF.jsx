@@ -1,3 +1,11 @@
+/**
+ * Dibuja el ícono de descarga, una flecha hacia abajo sobre una bandeja.
+ * @param {Object} props
+ * @param {number} [props.size] Ancho y alto del ícono en píxeles. Por omisión, 18.
+ * @param {string} [props.color] Color del ícono. Por omisión, el color del texto que lo rodea.
+ * @param {string} [props.className] Clase CSS opcional.
+ * @returns {JSX.Element} El ícono en SVG.
+ */
 export default function DescargaPDF({ size = 18, color = "currentColor", className = "" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 512 512" className={className} xmlns="http://www.w3.org/2000/svg">
