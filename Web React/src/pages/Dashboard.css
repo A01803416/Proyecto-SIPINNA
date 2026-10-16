@@ -943,3 +943,33 @@
     flex-wrap: wrap;
   }
 }
+
+/* en la tablet acostada la barra lateral es mas angosta y nada se sale de su tarjeta */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .sidebar {
+    width: 190px;
+  }
+
+  .sidebar-titulo {
+    font-size: 2rem;
+  }
+
+  .dashboard-main {
+    padding: 24px 24px;
+  }
+
+  /* el mapa del tablero puede encogerse para que quepan las metricas a su lado */
+  .top-left-widget {
+    min-width: 0;
+  }
+
+  .map-filters {
+    flex-wrap: wrap;
+  }
+
+  /* las tablas anchas se deslizan de lado dentro de su tarjeta */
+  .table-widget,
+  .full-table-widget {
+    overflow-x: auto;
+  }
+}

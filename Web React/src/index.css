@@ -149,3 +149,13 @@ body {
     overflow-y: auto;
   }
 }
+
+/* en la tablet acostada la pagina tambien puede bajar si no cabe en la altura */
+@media (min-width: 769px) and (max-width: 1280px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}

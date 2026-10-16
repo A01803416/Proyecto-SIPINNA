@@ -259,3 +259,25 @@
     max-width: 160px;
   }
 }
+
+/* en la tablet acostada la pagina crece hacia abajo y la tarjeta muestra todo su texto */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .about-page-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .about-section {
+    overflow: visible;
+  }
+
+  .about-card-left {
+    overflow-y: visible;
+  }
+
+  .about-text h2,
+  .about-text p {
+    flex-shrink: 0;
+  }
+}
