@@ -276,7 +276,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
                 )}
              </div>
 
-             <div className="form-group" style={{marginBottom:'15px', display:'flex', alignItems:'center', gap:'10px', background:'#fff3cd', padding:'10px', borderRadius:'4px'}}>
+             <div className="form-group" style={{marginBottom:'15px', display:'flex', flexDirection:'row', alignItems:'center', gap:'10px', background:'#fff3cd', padding:'10px', borderRadius:'4px'}}>
                 <input type="checkbox" id="dupCheck" checked={reporte.posible_duplicado} onChange={marcarDuplicado} disabled={reporte.id_caso !== null} style={{width:'auto'}} />
                 <label htmlFor="dupCheck" style={{margin:0, fontWeight:'bold', color:'#856404'}}>Marcar como Posible Duplicado</label>
              </div>
