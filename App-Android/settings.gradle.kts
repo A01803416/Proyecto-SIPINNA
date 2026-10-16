@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "App SIPINNA"
+rootProject.name = "AppLogin"
 include(":app")
