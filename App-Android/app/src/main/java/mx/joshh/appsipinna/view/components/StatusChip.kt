@@ -1,5 +1,7 @@
 /**
  * Chip coloreado para representar el estatus actual de un reporte.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -16,7 +18,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.model.EstatusReporte
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Chip indicador de estatus con colores temáticos según el estado del reporte. */
+/**
+ * Chip indicador de estatus con colores temáticos según el estado del reporte.
+ * @param estatus El [EstatusReporte] a representar visualmente.
+ * @param modifier Modificador de diseño opcional.
+ */
 @Composable
 fun StatusChip(
     estatus: EstatusReporte,

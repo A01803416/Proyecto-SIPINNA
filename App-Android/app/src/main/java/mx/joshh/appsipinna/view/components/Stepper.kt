@@ -1,5 +1,7 @@
 /**
  * Control numérico de incremento y decremento para cantidades (número de involucrados).
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -25,7 +27,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Control interactivo con botones más y menos para ajustar un valor entero. */
+/**
+ * Control interactivo con botones más y menos para ajustar un valor entero.
+ * @param value Valor numérico actual.
+ * @param onValueChange Se invoca al incrementar o decrementar el valor.
+ * @param modifier Modificador de diseño opcional.
+ * @param minValue Valor mínimo permitido.
+ * @param maxValue Valor máximo permitido.
+ */
 @Composable
 fun Stepper(
     value: Int,

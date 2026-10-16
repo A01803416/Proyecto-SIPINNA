@@ -1,5 +1,7 @@
 /**
  * Ruta para el Paso 1 (Ubicación y Municipio) del formulario de reporte.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
@@ -14,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import mx.joshh.appsipinna.R
-import mx.joshh.appsipinna.model.obtenerDireccion
+import mx.joshh.appsipinna.model.obtenerDetalleUbicacion
 import mx.joshh.appsipinna.view.navigation.Routes
 import mx.joshh.appsipinna.viewmodel.ReportViewModel
 import mx.joshh.appsipinna.viewmodel.UbicacionVM
@@ -65,17 +67,25 @@ fun LocationStepRoute(
     LaunchedEffect(pin) {
         viewModel.onMapClick(pin.latitude, pin.longitude)
         delay(700L)
-        direccion = obtenerDireccion(context, pin.latitude, pin.longitude)
+        val detalle = obtenerDetalleUbicacion(context, pin.latitude, pin.longitude)
+        direccion = detalle.direccion
+        if (!detalle.colonia.isNullOrBlank()) {
+            viewModel.onColoniaChange(detalle.colonia)
+        }
+        if (detalle.idMunicipio != null) {
+            viewModel.onIdMunicipioChange(detalle.idMunicipio)
+        }
     }
 
     LocationStepScreen(
         centro = pin,
         direccion = direccion,
         idMunicipio = uiState.idMunicipio,
+        municipios = uiState.municipios,
+        errorMunicipio = uiState.errorMunicipio,
         colonia = uiState.colonia,
         nombreLugar = uiState.nombreLugar,
         tipoActividad = uiState.tipoActividad,
-        otroTipoActividad = uiState.otroTipoActividad,
         isStepValid = uiState.isStep1Valid,
         esperandoUbicacion = esperandoUbicacion,
         errorUbicacion = errorUbicacion,
@@ -86,7 +96,6 @@ fun LocationStepRoute(
         onColoniaChange = viewModel::onColoniaChange,
         onNombreLugarChange = viewModel::onNombreLugarChange,
         onTipoActividadChange = viewModel::onTipoActividadChange,
-        onOtroTipoActividadChange = viewModel::onOtroTipoActividadChange,
         onUseMyLocationClick = {
             errorUbicacion = null
             val loc = gpsLocation

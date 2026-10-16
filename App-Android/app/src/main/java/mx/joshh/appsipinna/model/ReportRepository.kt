@@ -1,11 +1,17 @@
 /**
  * Repositorio local simulado para el almacenamiento y consulta de reportes ciudadanos.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.model
 
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 
+/**
+ * Repositorio local implementado como `object` (patrón Singleton).
+ * Nota de diseño: Se definió como `object` para actuar como un almacén de datos centralizado en memoria compartido de forma global por la aplicación durante la sesión actual, evitando la necesidad de inyección de dependencias compleja para los datos simulados de prueba.
+ */
 object FakeReportRepository {
     private val reportes = mutableListOf<Reporte>()
     private var counter = 4
@@ -62,7 +68,11 @@ object FakeReportRepository {
         )
     }
 
-    /** Almacena un nuevo reporte y genera su folio oficial si aplica. */
+    /**
+     * Almacena un nuevo reporte y genera un folio oficial únicamente si es con seguimiento.
+     * @param reporte El objeto [Reporte] a registrar.
+     * @return El número de folio generado si es con seguimiento, o `null` si es anónimo.
+     */
     suspend fun crearReporte(reporte: Reporte): String? {
         delay(800)
         val nuevoFolio = if (reporte.tipoEnvio == TipoEnvio.ANONIMO) null else generarFolio(reporte.idMunicipio)
@@ -75,7 +85,12 @@ object FakeReportRepository {
         return nuevoFolio
     }
 
-    /** Consulta un reporte buscando coincidencia exacta de folio y correo electrónico. */
+    /**
+     * Consulta un reporte buscando coincidencia exacta de folio y correo electrónico.
+     * @param folio Código de folio de seguimiento.
+     * @param correo Correo electrónico registrado.
+     * @return El [Reporte] encontrado, o `null` si no coincide.
+     */
     suspend fun consultarPorFolioYCorreo(folio: String, correo: String): Reporte? {
         delay(800)
         return reportes.find { 
@@ -84,7 +99,11 @@ object FakeReportRepository {
         }
     }
 
-    /** Genera un folio único basado en el municipio y un contador incremental. */
+    /**
+     * Genera un folio único basado en el municipio y un contador incremental.
+     * @param idMunicipio Identificador numérico del municipio.
+     * @return El string del folio formateado (ej. RIETI-ATZ-000003).
+     */
     private fun generarFolio(idMunicipio: Int): String {
         val municipio = municipiosPrueba.find { it.idMunicipio == idMunicipio }?.claveMunicipio ?: "ATZ"
         val numero = String.format("%06d", counter++)

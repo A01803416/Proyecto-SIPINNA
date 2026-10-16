@@ -46,6 +46,10 @@ fun InfoScreen(
             verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xl)
         ) {
             InfoSection(
+                title = stringResource(R.string.info_que_es_rieti_titulo),
+                description = stringResource(R.string.info_que_es_rieti_desc)
+            )
+            InfoSection(
                 title = stringResource(R.string.info_que_es_sipinna_titulo),
                 description = stringResource(R.string.info_que_es_sipinna_desc)
             )

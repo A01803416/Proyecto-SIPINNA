@@ -1,5 +1,7 @@
 /**
  * Pantalla del Paso 3 para mostrar advertencias de privacidad, adjuntar evidencia y elegir tipo de envío.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -15,8 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,8 +26,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -60,6 +64,9 @@ fun EvidenceStepScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold(
         topBar = {
             RietiTopAppBar(
@@ -84,8 +91,9 @@ fun EvidenceStepScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = RietiTheme.spacing.screenHorizontal)
-                .verticalScroll(rememberScrollState()),
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = RietiTheme.spacing.screenHorizontal),
             verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xl)
         ) {
             StepIndicator(currentStep = 3)
@@ -109,24 +117,10 @@ fun EvidenceStepScreen(
                 )
             }
 
-            EvidenceWarning()
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)
-            ) {
-                Checkbox(
-                    checked = advertenciaEntendida,
-                    onCheckedChange = onAdvertenciaEntendidaChange,
-                    colors = CheckboxDefaults.colors(
-                        checkedColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text(
-                    text = stringResource(R.string.entendido_checkbox),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            EvidenceWarning(
+                advertenciaEntendida = advertenciaEntendida,
+                onAdvertenciaEntendidaChange = onAdvertenciaEntendidaChange
+            )
 
             if (evidenciaUri == null) {
                 RietiSecondaryButton(
@@ -149,7 +143,13 @@ fun EvidenceStepScreen(
                         label = stringResource(R.string.label_correo),
                         placeholder = stringResource(R.string.placeholder_correo),
                         errorText = errorCorreo?.let { stringResource(it) },
-                        keyboardType = KeyboardType.Email
+                        maxLength = 100,
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done,
+                        onImeAction = {
+                            keyboardController?.hide()
+                            focusManager.clearFocus()
+                        }
                     )
                     Text(
                         text = stringResource(R.string.nota_anonimato),

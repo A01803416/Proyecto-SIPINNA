@@ -1,5 +1,7 @@
 /**
  * Pantalla de revisión general que muestra el resumen de todos los datos capturados antes de enviar el reporte.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
@@ -22,9 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
-import mx.joshh.appsipinna.model.Horario
-import mx.joshh.appsipinna.model.NivelRiesgo
-import mx.joshh.appsipinna.model.TipoActividad
 import mx.joshh.appsipinna.model.TipoEnvio
 import mx.joshh.appsipinna.model.municipiosPrueba
 import mx.joshh.appsipinna.view.components.RietiButton
@@ -41,7 +40,8 @@ fun ReviewScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val municipioNombre = municipiosPrueba.find { it.idMunicipio == state.idMunicipio }?.nombreMunicipio ?: ""
+    val listaMunicipios = state.municipios.ifEmpty { municipiosPrueba }
+    val municipioNombre = listaMunicipios.find { it.idMunicipio == state.idMunicipio }?.nombreMunicipio ?: ""
 
     Scaffold(
         topBar = {
@@ -78,11 +78,8 @@ fun ReviewScreen(
                 }
                 ReviewItem(label = stringResource(R.string.label_colonia), value = state.colonia)
                 ReviewItem(label = stringResource(R.string.label_referencia_lugar), value = state.nombreLugar)
-                state.tipoActividad?.let {
-                    ReviewItem(label = stringResource(R.string.label_tipo_actividad), value = stringResource(it.labelRes))
-                }
-                if (state.tipoActividad == TipoActividad.OTRO && state.otroTipoActividad.isNotBlank()) {
-                    ReviewItem(label = stringResource(R.string.label_otro_tipo_actividad), value = state.otroTipoActividad)
+                if (state.tipoActividad.isNotBlank()) {
+                    ReviewItem(label = stringResource(R.string.label_tipo_actividad), value = state.tipoActividad)
                 }
             }
 
@@ -95,12 +92,12 @@ fun ReviewScreen(
                 ReviewItem(label = stringResource(R.string.label_descripcion), value = state.descripcion)
                 ReviewItem(label = stringResource(R.string.label_numero_menores), value = state.numeroMenores.toString())
                 ReviewItem(label = stringResource(R.string.label_edad_aproximada), value = state.edadAproximada)
-                state.horario?.let {
-                    ReviewItem(label = stringResource(R.string.label_horario), value = stringResource(it.labelRes))
+                if (state.horario.isNotBlank()) {
+                    ReviewItem(label = stringResource(R.string.label_horario), value = state.horario)
                 }
                 ReviewItem(label = stringResource(R.string.label_frecuencia_texto), value = state.frecuencia)
-                state.nivelRiesgo?.let {
-                    ReviewItem(label = stringResource(R.string.label_nivel_riesgo), value = stringResource(it.labelRes))
+                if (state.nivelRiesgo.isNotBlank()) {
+                    ReviewItem(label = stringResource(R.string.label_nivel_riesgo), value = state.nivelRiesgo)
                 }
                 state.peligroInmediato?.let {
                     ReviewItem(
@@ -178,11 +175,10 @@ private fun ReviewScreenPreview() {
                 colonia = "Centro",
                 nombreLugar = "Mercado",
                 descripcion = "Descripción de prueba con más de veinte caracteres necesarios.",
-                tipoActividad = TipoActividad.OTRO,
-                otroTipoActividad = "Venta ambulante",
-                horario = Horario.MATUTINO,
+                tipoActividad = "Venta ambulante",
+                horario = "Matutino",
                 frecuencia = "Todos los días por la tarde",
-                nivelRiesgo = NivelRiesgo.MEDIO,
+                nivelRiesgo = "Medio",
                 peligroInmediato = true
             ),
             onEditStep = {},

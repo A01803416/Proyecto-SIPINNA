@@ -1,5 +1,7 @@
 /**
  * Ruta para el Paso 2 (Detalles) del formulario de reporte.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 

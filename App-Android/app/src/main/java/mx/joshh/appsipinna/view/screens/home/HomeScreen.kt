@@ -1,8 +1,10 @@
 /**
- * Pantalla principal de bienvenida con accesos al reporte de casos, consulta y números de emergencia.
+ * Pantalla principal de bienvenida con accesos al reporte de casos, consulta, números de emergencia y redes sociales.
  */
 package mx.joshh.appsipinna.view.screens.home
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +49,8 @@ fun HomeScreen(
     onInfoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
@@ -126,18 +131,63 @@ fun HomeScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                EmergencyItem(text = stringResource(R.string.home_emergencia_911))
-                EmergencyItem(text = stringResource(R.string.home_emergencia_sipinna))
+                EmergencyItem(
+                    text = stringResource(R.string.home_emergencia_911),
+                    phoneNumber = "911"
+                )
+                EmergencyItem(
+                    text = stringResource(R.string.home_emergencia_sipinna),
+                    phoneNumber = "55591484607"
+                )
+            }
+
+            // Social Media / Instagram Block
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.large)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://instagram.com/sipinna_mx"))
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                    }
+                    .padding(RietiTheme.spacing.lg),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo_instagram),
+                    contentDescription = "Instagram",
+                    modifier = Modifier.size(36.dp)
+                )
+                Text(
+                    text = "Instagram: @sipinna_mx",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
 
 @Composable
-private fun EmergencyItem(text: String) {
+private fun EmergencyItem(text: String, phoneNumber: String) {
+    val context = LocalContext.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)
+        horizontalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                try {
+                    val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phoneNumber"))
+                    context.startActivity(intent)
+                } catch (_: Exception) {}
+            }
+            .padding(vertical = RietiTheme.spacing.xs)
     ) {
         Icon(
             imageVector = Icons.Default.Phone,

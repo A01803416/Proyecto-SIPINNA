@@ -25,8 +25,8 @@
     <string name="label_horario">Horario en que ocurre la situación</string>
     <string name="label_frecuencia_texto">Frecuencia con la que ocurre</string>
     <string name="placeholder_frecuencia_texto">Ej. Los veo cada sábado</string>
-    <string name="label_nivel_riesgo">Nivel de riesgo</string>
-    <string name="label_peligro_inmediato">¿Situación de peligro inmediato?</string>
+    <string name="label_nivel_riesgo">Nivel de riesgo del trabajo</string>
+    <string name="label_peligro_inmediato">¿El niño está en situación de peligro inmediato?</string>
     <string name="opcion_si">Sí</string>
     <string name="opcion_no">No</string>
 
@@ -62,6 +62,8 @@
 
     <!-- Información -->
     <string name="info_titulo">Sobre SIPINNA y RIETI</string>
+    <string name="info_que_es_rieti_titulo">¿Qué es RIETI?</string>
+    <string name="info_que_es_rieti_desc">Es la Ruta Intermunicipal para la Erradicación del Trabajo Infantil. Un mecanismo de coordinación entre municipios para prevenir, atender y erradicar el trabajo infantil mediante reportes ciudadanos seguros y eficientes.</string>
     <string name="info_que_es_sipinna_titulo">¿Qué es SIPINNA?</string>
     <string name="info_que_es_sipinna_desc">Es el Sistema Nacional de Protección Integral de Niñas, Niños y Adolescentes. En Atizapán trabajamos para garantizar sus derechos.</string>
     <string name="info_trabajo_infantil_titulo">¿Qué es el Trabajo Infantil?</string>
@@ -119,6 +121,7 @@
     <string name="lookup_error_credenciales">Folio o correo incorrectos</string>
     <string name="error_correo_invalido">Ingresa un correo electrónico válido.</string>
     <string name="error_envio_reporte">Hubo un problema al enviar tu reporte. Intenta de nuevo.</string>
+    <string name="error_sin_conexion">No se pudo conectar con el servidor</string>
     <string name="validan_min_caracteres">%1$d/%2$d caracteres mínimos</string>
 
     <!-- Mapa -->

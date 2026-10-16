@@ -1,5 +1,7 @@
 /**
  * Indicador visual de progreso por pasos para el formulario de reportes.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -23,7 +25,12 @@ import androidx.compose.ui.unit.dp
 import mx.joshh.appsipinna.R
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Barra indicadora de pasos activos y completados. */
+/**
+ * Barra indicadora de pasos activos y completados en el formulario de reporte.
+ * @param currentStep Paso actual en el que se encuentra el usuario (1 basado).
+ * @param modifier Modificador de diseño opcional.
+ * @param totalSteps Número total de pasos del formulario (por defecto 3).
+ */
 @Composable
 fun StepIndicator(
     currentStep: Int,

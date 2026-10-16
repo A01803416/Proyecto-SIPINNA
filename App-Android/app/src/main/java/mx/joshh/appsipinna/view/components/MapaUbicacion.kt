@@ -1,5 +1,7 @@
 /**
  * Composable que envuelve un MapView de osmdroid para mostrar el mapa interactivo y un pin central.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -46,7 +48,15 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import java.io.File
 import android.content.Context
+import android.view.MotionEvent
 
+/**
+ * Mapa interactivo basado en osmdroid para marcar la ubicación del reporte.
+ * Nota de diseño: El pin del mapa se implementó como un [Icon] de Compose posicionado estáticamente al centro del contenedor y no como un marcador (`Marker`) nativo de osmdroid porque la interacción de la app se basa en mover el mapa debajo de un punto de mira fijo (tipo selector de ubicación), garantizando que el usuario marque siempre con precisión el centro exacto.
+ * @param centro Coordenada central actual del mapa ([GeoPoint]).
+ * @param onCentroCambiado Se invoca al mover o hacer zoom en el mapa, reportando la nueva coordenada central.
+ * @param modifier Modificador de diseño opcional.
+ */
 @Composable
 fun MapaUbicacion(
     centro: GeoPoint,
@@ -69,6 +79,19 @@ fun MapaUbicacion(
             maxZoomLevel = 19.0
             controller.setZoom(17.0)
             controller.setCenter(centro)
+            setOnTouchListener { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN,
+                    MotionEvent.ACTION_MOVE -> {
+                        v.parent?.requestDisallowInterceptTouchEvent(true)
+                    }
+                    MotionEvent.ACTION_UP,
+                    MotionEvent.ACTION_CANCEL -> {
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                    }
+                }
+                false
+            }
         }
     }
 

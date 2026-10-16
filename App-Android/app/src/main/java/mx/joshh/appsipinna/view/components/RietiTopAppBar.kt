@@ -1,5 +1,7 @@
 /**
  * Barra superior de navegación estándar con botón de retroceso.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -19,7 +21,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Barra superior centrada con título y opción opcional de regresar. */
+/**
+ * Barra superior centrada con título y opción opcional de regresar.
+ * @param title Texto del título centrado.
+ * @param modifier Modificador de diseño opcional.
+ * @param onBackClick Lambda opcional que se invoca al pulsar el botón de retroceso. Si es `null`, no se muestra el icono de regresar.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RietiTopAppBar(
