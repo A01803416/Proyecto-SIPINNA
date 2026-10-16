@@ -139,3 +139,13 @@ body {
   transform: translateY(2px);
   box-shadow: 0 1px 0 0 #167a7a;
 }
+
+/* en el celular la pagina crece hacia abajo y se desplaza, pero nunca de lado */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}

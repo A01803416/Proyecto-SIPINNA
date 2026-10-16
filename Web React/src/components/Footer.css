@@ -1,58 +1,76 @@
-.footer
-{
-display: flex;
-justify-content: space-between; 
-align-items: center;
-padding: 15px 40px;
-background: linear-gradient(135deg, rgba(242, 145, 145, 0.85) 0%, rgba(175, 113, 157, 0.85) 30%, rgba(36, 177, 177, 0.85) 100%);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-border-top: 1px solid rgba(255, 255, 255, 0.3);
-width: 100%;
-margin: 0;
-border-radius: 0;
-align-self: stretch;
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, rgba(242, 145, 145, 0.85) 0%, rgba(175, 113, 157, 0.85) 30%, rgba(36, 177, 177, 0.85) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    align-self: stretch;
 }
 
-.footer-title
-{
-font-weight: bold;
-white-space: nowrap;
-color: #fff;
+.footer-title {
+    font-weight: bold;
+    white-space: nowrap;
+    color: #fff;
 }
 
-.carousel-container
-{
-flex: 1;
-margin-left: 40px;
-overflow: hidden; 
-position: relative;
-display: flex;
-align-items: center;
-/* Desvanece los extremos para integrar visualmente los logos al fondo. */
--webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+.carousel-container {
+    flex: 1;
+    margin-left: 40px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    /* Desvanece los extremos para integrar visualmente los logos al fondo. */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
-.carousel-track
-{
-display: flex;
-gap: 40px; 
-align-items: center;
-/* La pista duplicada se desplaza para crear el efecto de carrusel continuo. */
-animation: scroll-carousel 30s linear infinite;
+.carousel-track {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    /* La pista duplicada se desplaza para crear el efecto de carrusel continuo. */
+    animation: scroll-carousel 30s linear infinite;
 }
 
-.carousel-logo
-{
-height: 60px; 
-width: auto;
-object-fit: contain; 
-flex-shrink: 0; 
+.carousel-logo {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
-@keyframes scroll-carousel
-{
-0% { transform: translateX(0); }
-100% { transform: translateX(-50%); }
+@keyframes scroll-carousel {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* en el celular el titulo va arriba y la franja de logos abajo, a todo lo ancho */
+@media (max-width: 768px) {
+    .footer {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .carousel-container {
+        flex: none;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .carousel-logo {
+        height: 40px;
+    }
 }

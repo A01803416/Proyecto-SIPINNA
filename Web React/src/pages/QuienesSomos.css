@@ -215,3 +215,47 @@
   object-fit: contain;
   mix-blend-mode: multiply;
 }
+
+/* en el celular las dos tarjetas van en una sola columna */
+@media (max-width: 768px) {
+  .about-page-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .navbar-about {
+    padding: 10px 12px;
+  }
+
+  .navbar-about .btn-animated {
+    padding: 0.5em 0.9em;
+    font-size: 0.85rem;
+  }
+
+  .about-section {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    overflow: visible;
+  }
+
+  .about-card-left {
+    flex: none;
+    padding: 22px;
+    overflow-y: visible;
+  }
+
+  .about-card-right {
+    flex: none;
+    padding: 20px;
+  }
+
+  .about-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .about-logo-small {
+    max-width: 160px;
+  }
+}

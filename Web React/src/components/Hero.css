@@ -125,3 +125,38 @@
   transform: skewX(30deg) translate(150%, -50%);
   transition-delay: 0.1s;
 }
+
+/* en el celular el texto va arriba y el telefono abajo, mas chico */
+@media (max-width: 768px) {
+  .hero-section {
+    flex-direction: column;
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  .content-left,
+  .content-right {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .text-wrapper {
+    align-items: center;
+    text-align: center;
+  }
+
+  .text-wrapper h1 {
+    font-size: 2.2rem;
+  }
+
+  .text-wrapper p {
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+
+  .phone-mockup {
+    width: 150px;
+    height: 300px;
+    border-radius: 22px;
+  }
+}

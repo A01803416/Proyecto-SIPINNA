@@ -300,7 +300,7 @@ export default function UsuariosAdmin() {
         </form>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div className="usuarios-fila">
         <div className="users-widget" style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #eee' }}>
           <h2>Dar de alta Nuevo Municipio</h2>
           <form className="users-form">
@@ -342,7 +342,7 @@ export default function UsuariosAdmin() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+      <div className="usuarios-fila">
         <div className="users-widget" style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #eee' }}>
           <h2>Municipios</h2>
           <table className="data-table">

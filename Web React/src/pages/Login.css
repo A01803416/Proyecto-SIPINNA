@@ -292,3 +292,53 @@
   80%  { opacity: 1; }
   100% { left: calc(100% + 20px); opacity: 0; }
 }
+
+/* en el celular las dos columnas de la tarjeta van una encima de otra */
+@media (max-width: 768px) {
+  .login-page-container {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .navbar-login {
+    padding: 10px 12px;
+  }
+
+  .navbar-login .btn-animated {
+    padding: 0.5em 0.9em;
+    font-size: 0.85rem;
+  }
+
+  .login-main {
+    padding: 16px;
+    align-items: flex-start;
+  }
+
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    padding: 24px;
+    text-align: center;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .auth-left h2 {
+    font-size: 1.8rem;
+  }
+
+  .auth-logo-img {
+    max-height: 100px;
+  }
+
+  .auth-right {
+    padding: 24px 20px;
+  }
+
+  .auth-right h3 {
+    font-size: 1.5rem;
+  }
+}

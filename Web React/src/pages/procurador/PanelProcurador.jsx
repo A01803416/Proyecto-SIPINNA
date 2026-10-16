@@ -20,7 +20,7 @@ export default function PanelProcurador() {
       {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo-container">
-          <h1 style={{ color: 'white', margin: '20px 0', fontSize: '2.5rem', textAlign: 'center', fontWeight: 'bold' }}>
+          <h1 className="sidebar-titulo">
             RIETI
           </h1>
         </div>
