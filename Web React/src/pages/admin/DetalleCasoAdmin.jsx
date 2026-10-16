@@ -362,14 +362,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             </button>
           </div>
         </div>
-        <div
-          className="modal-body"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "25px",
-          }}
-        >
+        <div className="modal-body modal-body-detalle">
           <div className="modal-section left-col">
             <h3
               style={{

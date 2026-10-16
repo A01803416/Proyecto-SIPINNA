@@ -180,7 +180,7 @@ export default function DetalleReporteAdmin({ folio, onClose }) {
             <button className="btn-close" onClick={onClose}>&times;</button>
           </div>
         </div>
-        <div className="modal-body" style={{display:'grid', gridTemplateColumns: '1fr 1fr', gap: '25px'}}>
+        <div className="modal-body modal-body-detalle">
 
           <div className="modal-section left-col">
              <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', marginBottom:'12px'}}>Datos Generales</h3>

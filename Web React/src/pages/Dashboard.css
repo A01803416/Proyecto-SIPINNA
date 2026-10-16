@@ -757,3 +757,189 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+/* titulo rieti de la barra lateral */
+.sidebar-titulo {
+  color: white;
+  margin: 20px 0;
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* cuerpo de los modales de detalle de reporte y de caso */
+.modal-body-detalle {
+  gap: 25px;
+}
+
+/* filas de dos tarjetas en la pantalla de registros */
+.usuarios-fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* en el celular la barra lateral pasa arriba y todo el contenido va a una columna */
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  /* barra de arriba con titulo, menu deslizable y cerrar sesion */
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+  }
+
+  .sidebar-logo-container {
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .sidebar-titulo {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+    overflow-x: auto;
+  }
+
+  .sidebar-nav a,
+  .nav-btn {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    border-bottom: none;
+    border-radius: 6px;
+  }
+
+  .sidebar-nav a:first-child {
+    border-top: none;
+  }
+
+  .sidebar-bottom {
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .btn-logout {
+    width: auto;
+    padding: 0.4em 0.6em;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .dashboard-main {
+    padding: 16px 12px;
+    overflow-y: visible;
+  }
+
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+
+  /* tablero con alertas o mapa arriba y las metricas abajo */
+  .dashboard-top-section {
+    flex-direction: column;
+  }
+
+  .kpi-value {
+    font-size: 1.8rem;
+  }
+
+  /* las tablas se deslizan de lado dentro de su tarjeta */
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .table-widget,
+  .full-table-widget {
+    padding: 14px;
+  }
+
+  /* filtros a todo lo ancho */
+  .map-filters,
+  .map-filters-full,
+  .report-filters-header,
+  .report-filters-controls {
+    flex-wrap: wrap;
+  }
+
+  .map-filters select,
+  .map-filters-full select,
+  .report-filters-controls select,
+  .report-filters-controls label {
+    width: 100%;
+  }
+
+  .report-filters-controls label input {
+    flex: 1;
+  }
+
+  /* la casilla de peligro inmediato no se estira y el texto queda a su lado */
+  .report-filters-controls label input[type="checkbox"] {
+    flex: none;
+    width: auto;
+    margin: 0;
+  }
+
+  .full-map-widget {
+    height: auto;
+  }
+
+  /* metricas en una columna */
+  .metricas-widget {
+    padding: 16px;
+  }
+
+  .metricas-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .metricas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* formularios de registros en una columna */
+  .form-row {
+    flex-direction: column;
+  }
+
+  .usuarios-fila {
+    grid-template-columns: 1fr;
+  }
+
+  /* modales de detalle en una columna, ya ocupan casi todo lo ancho */
+  .modal-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .modal-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+
+  .modal-footer {
+    flex-wrap: wrap;
+  }
+}

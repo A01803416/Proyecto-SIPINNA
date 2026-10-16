@@ -122,3 +122,33 @@ letter-spacing: 1px;
   transform: translateY(2px);
   box-shadow: 0 1px 0 0 #167a7a;
 }
+
+/* en el celular todo va en una fila y si no cabe la barra se desliza de lado, no la pagina */
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding: 8px 8px;
+    overflow-x: auto;
+  }
+
+  .nav-left,
+  .nav-right {
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+    margin-right: 2px;
+  }
+
+  .btn-nav,
+  .btn-login {
+    padding: 0.4em 0.6em;
+    font-size: 0.72rem;
+    border-radius: 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

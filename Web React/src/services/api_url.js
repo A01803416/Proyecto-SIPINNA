@@ -1,7 +1,7 @@
 import { leerSesion } from './sesion';
 
 /** URL base del backend de la aplicación. @type {string} */
-export const API_URL = 'http://localhost:8080';
+export const API_URL = 'https://tvsjdlg5v47fniy7m75j4wfjba0aoqcv.lambda-url.us-east-1.on.aws';
 
 // todos los fetch usan estos headers, si entra un procurador el backend lo identifica por su id
 /**
