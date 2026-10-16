@@ -1,5 +1,7 @@
 /**
  * Componente de chips de selección para catálogos cerrados organizado en flujo adaptable.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -17,7 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Grupo de chips de selección para opciones discretas. */
+/**
+ * Grupo de chips de selección para opciones discretas.
+ * @param T Tipo de dato de las opciones.
+ * @param options Lista de opciones disponibles.
+ * @param selectedOption Opción actualmente seleccionada.
+ * @param onOptionSelected Se invoca al pulsar una opción, pasando el elemento seleccionado.
+ * @param labelProvider Función composable que provee el texto etiqueta de cada opción.
+ * @param modifier Modificador de diseño opcional.
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun <T> SelectionChips(

@@ -1,5 +1,7 @@
 /**
  * Grafo central de navegación para conectar las pantallas de la aplicación.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.navigation
 
@@ -21,7 +23,11 @@ import mx.joshh.appsipinna.viewmodel.ReportViewModel
 import mx.joshh.appsipinna.view.screens.report.ReviewRoute
 import mx.joshh.appsipinna.viewmodel.UbicacionVM
 
-/** Configura los destinos y transiciones de navegación del NavHost. */
+/**
+ * Configura los destinos, subgrafos y transiciones de navegación del NavHost.
+ * @param navController Controlador de navegación de Compose.
+ * @param ubicacionVM ViewModel de ubicación compartido.
+ */
 @Composable
 fun RietiNavGraph(navController: NavHostController, ubicacionVM: UbicacionVM) {
     NavHost(

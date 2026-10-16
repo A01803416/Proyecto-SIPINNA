@@ -1,5 +1,7 @@
 /**
  * Configuración del tema visual y esquema de colores de la aplicación.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.theme
 
@@ -52,7 +54,11 @@ object RietiTheme {
         )
 }
 
-/** Tema principal de Material 3 para RIETI. */
+/**
+ * Tema principal de Material 3 para la aplicación RIETI.
+ * Nota de diseño: Se fuerza exclusivamente el modo claro y se desactiva el color dinámico de Material You para mantener una estricta consistencia de identidad institucional de marca en cualquier dispositivo, evitando cambios imprevistos de contraste por el fondo de pantalla del usuario.
+ * @param content Contenido composable de la interfaz al que se aplicará el tema.
+ */
 @Composable
 fun RietiTheme(
     content: @Composable () -> Unit

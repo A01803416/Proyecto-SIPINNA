@@ -1,11 +1,14 @@
 /**
  * Pantalla del Paso 2 (Detalles) para capturar la descripción, edad, horario, frecuencia, riesgo y peligro.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,12 +17,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
-import mx.joshh.appsipinna.model.Horario
-import mx.joshh.appsipinna.model.NivelRiesgo
 import mx.joshh.appsipinna.view.components.RietiButton
 import mx.joshh.appsipinna.view.components.RietiTextField
 import mx.joshh.appsipinna.view.components.RietiTopAppBar
@@ -34,22 +39,25 @@ fun DetailsStepScreen(
     descripcion: String,
     numeroMenores: Int,
     edadAproximada: String,
-    horario: Horario?,
+    horario: String,
     frecuencia: String,
-    nivelRiesgo: NivelRiesgo?,
+    nivelRiesgo: String,
     peligroInmediato: Boolean?,
     isStepValid: Boolean,
     onDescripcionChange: (String) -> Unit,
     onNumeroMenoresChange: (Int) -> Unit,
     onEdadAproximadaChange: (String) -> Unit,
-    onHorarioChange: (Horario) -> Unit,
+    onHorarioChange: (String) -> Unit,
     onFrecuenciaChange: (String) -> Unit,
-    onNivelRiesgoChange: (NivelRiesgo) -> Unit,
+    onNivelRiesgoChange: (String) -> Unit,
     onPeligroInmediatoChange: (Boolean) -> Unit,
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Scaffold(
         topBar = {
             RietiTopAppBar(
@@ -74,8 +82,9 @@ fun DetailsStepScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = RietiTheme.spacing.screenHorizontal)
-                .verticalScroll(rememberScrollState()),
+                .imePadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = RietiTheme.spacing.screenHorizontal),
             verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xl)
         ) {
             StepIndicator(currentStep = 2)
@@ -87,12 +96,14 @@ fun DetailsStepScreen(
 
             RietiTextField(
                 value = descripcion,
-                onValueChange = { if (it.length <= 255) onDescripcionChange(it) },
+                onValueChange = onDescripcionChange,
                 label = stringResource(R.string.label_descripcion),
                 placeholder = stringResource(R.string.placeholder_descripcion),
                 singleLine = false,
                 minLines = 4,
+                maxLength = 255,
                 fieldTag = "campo_descripcion"
+                // Sin imeAction por ser multilínea
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)) {
@@ -111,7 +122,10 @@ fun DetailsStepScreen(
                 onValueChange = onEdadAproximadaChange,
                 label = stringResource(R.string.label_edad_aproximada),
                 placeholder = stringResource(R.string.placeholder_edad_aproximada),
-                fieldTag = "campo_edad"
+                maxLength = 50,
+                fieldTag = "campo_edad",
+                imeAction = ImeAction.Next,
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)) {
@@ -120,19 +134,25 @@ fun DetailsStepScreen(
                     style = MaterialTheme.typography.titleSmall
                 )
                 SelectionChips(
-                    options = Horario.entries,
+                    options = listOf("Matutino", "Vespertino", "Nocturno", "Variable"),
                     selectedOption = horario,
                     onOptionSelected = onHorarioChange,
-                    labelProvider = { stringResource(it.labelRes) }
+                    labelProvider = { it }
                 )
             }
 
             RietiTextField(
                 value = frecuencia,
-                onValueChange = { if (it.length <= 50) onFrecuenciaChange(it) },
+                onValueChange = onFrecuenciaChange,
                 label = stringResource(R.string.label_frecuencia_texto),
                 placeholder = stringResource(R.string.placeholder_frecuencia_texto),
-                fieldTag = "campo_frecuencia"
+                maxLength = 50,
+                fieldTag = "campo_frecuencia",
+                imeAction = ImeAction.Done,
+                onImeAction = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)) {
@@ -141,10 +161,10 @@ fun DetailsStepScreen(
                     style = MaterialTheme.typography.titleSmall
                 )
                 SelectionChips(
-                    options = NivelRiesgo.entries,
+                    options = listOf("Bajo", "Medio", "Alto"),
                     selectedOption = nivelRiesgo,
                     onOptionSelected = onNivelRiesgoChange,
-                    labelProvider = { stringResource(it.labelRes) }
+                    labelProvider = { it }
                 )
             }
 
@@ -172,9 +192,9 @@ private fun DetailsStepScreenPreview() {
             descripcion = "",
             numeroMenores = 1,
             edadAproximada = "",
-            horario = null,
+            horario = "Matutino",
             frecuencia = "",
-            nivelRiesgo = null,
+            nivelRiesgo = "Medio",
             peligroInmediato = null,
             isStepValid = false,
             onDescripcionChange = {},

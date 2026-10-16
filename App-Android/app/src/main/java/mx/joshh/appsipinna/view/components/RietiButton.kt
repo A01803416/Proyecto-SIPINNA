@@ -1,5 +1,7 @@
 /**
  * Botones personalizados y reutilizables basados en el sistema de diseño de la aplicación.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.components
 
@@ -16,7 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.view.theme.PillShape
 import mx.joshh.appsipinna.view.theme.RietiTheme
 
-/** Botón principal de acción con fondo sólido y esquinas redondeadas. */
+/**
+ * Botón principal de acción con fondo sólido y esquinas redondeadas.
+ * Se utiliza en diversas pantallas para acciones primarias (ej. Continuar, Enviar, Consultar).
+ * @param text Texto que muestra el botón.
+ * @param onClick Se invoca al pulsar el botón, siempre que esté habilitado.
+ * @param modifier Modificador de diseño opcional.
+ * @param enabled Controla si el botón está activo o deshabilitado.
+ */
 @Composable
 fun RietiButton(
     text: String,
@@ -43,7 +52,15 @@ fun RietiButton(
     }
 }
 
-/** Botón secundario con borde delimitado para acciones alternativas. */
+/**
+ * Botón secundario con borde delimitado para acciones alternativas.
+ * Se utiliza en pantallas como la bienvenida o pasos del reporte para acciones secundarias.
+ * @param text Texto que muestra el botón.
+ * @param onClick Se invoca al pulsar el botón.
+ * @param modifier Modificador de diseño opcional.
+ * @param enabled Controla si el botón está activo.
+ * @param content Contenido composable personalizado opcional dentro del botón.
+ */
 @Composable
 fun RietiSecondaryButton(
     text: String,

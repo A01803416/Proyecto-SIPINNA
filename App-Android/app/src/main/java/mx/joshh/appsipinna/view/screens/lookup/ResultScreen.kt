@@ -1,5 +1,7 @@
 /**
  * Pantalla de resultados de consulta que muestra el estatus, fecha de registro y última nota pública.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.lookup
 
@@ -17,23 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
-import mx.joshh.appsipinna.model.EstatusReporte
-import mx.joshh.appsipinna.model.Horario
-import mx.joshh.appsipinna.model.NivelRiesgo
-import mx.joshh.appsipinna.model.Reporte
-import mx.joshh.appsipinna.model.TipoActividad
-import mx.joshh.appsipinna.model.TipoEnvio
+import mx.joshh.appsipinna.ReporteConsultaResponse
 import mx.joshh.appsipinna.view.components.RietiButton
 import mx.joshh.appsipinna.view.components.RietiTopAppBar
-import mx.joshh.appsipinna.view.components.StatusChip
 import mx.joshh.appsipinna.view.theme.FolioTextStyle
 import mx.joshh.appsipinna.view.theme.RietiTheme
-import java.time.format.DateTimeFormatter
 
 /** Pantalla de estatus del reporte consultado. */
 @Composable
 fun ResultScreen(
-    reporte: Reporte,
+    reporte: ReporteConsultaResponse,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,36 +60,41 @@ fun ResultScreen(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xs)) {
                 Text(
-                    text = reporte.folio ?: "",
+                    text = reporte.idFolioReporte ?: "",
                     style = FolioTextStyle,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Text(
-                    text = stringResource(
-                        R.string.lookup_label_fecha,
-                        reporte.fechaRegistro.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                    ),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                if (!reporte.fechaRegistro.isNullOrBlank()) {
+                    Text(
+                        text = stringResource(R.string.lookup_label_fecha, reporte.fechaRegistro),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
 
-            Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.md)) {
-                Text(
-                    text = stringResource(R.string.lookup_label_estatus),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                StatusChip(estatus = reporte.estatus)
+            if (!reporte.estatus.isNullOrBlank()) {
+                Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.md)) {
+                    Text(
+                        text = stringResource(R.string.lookup_label_estatus),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = reporte.estatus,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
 
-            reporte.ultimaNotaPublica?.let { nota ->
+            if (!reporte.ultimaNotaPublica.isNullOrBlank()) {
                 Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xs)) {
                     Text(
                         text = stringResource(R.string.lookup_label_ultima_nota),
                         style = MaterialTheme.typography.titleMedium
                     )
                     Text(
-                        text = nota,
+                        text = reporte.ultimaNotaPublica,
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -109,26 +109,12 @@ fun ResultScreen(
 private fun ResultScreenPreview() {
     RietiTheme {
         ResultScreen(
-            reporte = Reporte(
-                folio = "RIETI-ATZ-000001",
-                idMunicipio = 1,
-                colonia = "Centro",
-                tipoActividad = TipoActividad.OTRO,
-                latitud = 0.0,
-                longitud = 0.0,
-                nombreLugar = "",
-                descripcion = "",
-                numeroMenores = 0,
-                edadAproximada = "",
-                horario = Horario.MATUTINO,
-                frecuencia = "Diario",
-                nivelRiesgo = NivelRiesgo.MEDIO,
-                peligroInmediato = false,
-                tipoEnvio = TipoEnvio.CON_SEGUIMIENTO,
-                evidenciaUri = null,
-                correo = "ciudadano@correo.com",
-                estatus = EstatusReporte.EN_SEGUIMIENTO,
-                ultimaNotaPublica = "Se realizó una visita al lugar."
+            reporte = ReporteConsultaResponse(
+                idFolioReporte = "RIETI-ATZ-000001",
+                estatus = "En seguimiento",
+                fechaRegistro = "2026-10-15 16:07:00",
+                ultimaNotaPublica = "Se realizó una visita al lugar.",
+                message = null
             ),
             onBackClick = {}
         )

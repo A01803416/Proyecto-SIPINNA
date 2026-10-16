@@ -1,13 +1,19 @@
 /**
  * Definición de formas, espaciados y estilos reutilizables de componentes.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
+/** Forma de píldora redondeada utilizada en botones de acción principal y secundaria. */
 val PillShape = RoundedCornerShape(50)
 
+/**
+ * Sistema de espaciados estandarizados para la interfaz de la aplicación.
+ */
 data class RietiSpacing(
     val xxs: androidx.compose.ui.unit.Dp = 2.dp,
     val xs: androidx.compose.ui.unit.Dp = 4.dp,
@@ -21,6 +27,9 @@ data class RietiSpacing(
     val minTouchTarget: androidx.compose.ui.unit.Dp = 48.dp
 )
 
+/**
+ * Esquema de colores contenedores y de texto para los diversos estatus de los reportes.
+ */
 data class StatusColors(
     val recibidoContainer: androidx.compose.ui.graphics.Color,
     val onRecibidoContainer: androidx.compose.ui.graphics.Color,

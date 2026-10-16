@@ -6,6 +6,7 @@ package mx.joshh.appsipinna.view.screens.lookup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,7 +19,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import mx.joshh.appsipinna.R
@@ -36,6 +41,9 @@ fun LookupScreen(
 ) {
     var folio by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -59,8 +67,9 @@ fun LookupScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = RietiTheme.spacing.screenHorizontal)
+                .imePadding()
                 .verticalScroll(rememberScrollState())
+                .padding(horizontal = RietiTheme.spacing.screenHorizontal)
                 .padding(top = RietiTheme.spacing.xl),
             verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xl)
         ) {
@@ -73,7 +82,9 @@ fun LookupScreen(
                 value = folio,
                 onValueChange = { folio = it.uppercase() },
                 label = stringResource(R.string.lookup_label_folio),
-                placeholder = stringResource(R.string.lookup_placeholder_folio)
+                placeholder = stringResource(R.string.lookup_placeholder_folio),
+                imeAction = ImeAction.Next,
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
 
             RietiTextField(
@@ -81,7 +92,13 @@ fun LookupScreen(
                 onValueChange = { correo = it },
                 label = stringResource(R.string.lookup_label_correo),
                 placeholder = stringResource(R.string.lookup_placeholder_correo),
-                keyboardType = KeyboardType.Email
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Done,
+                onImeAction = {
+                    onConsultarClick(folio, correo)
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
             )
         }
     }

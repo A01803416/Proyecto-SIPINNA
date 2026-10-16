@@ -1,9 +1,12 @@
 /**
  * Modelos de datos y catálogos oficiales para los reportes de trabajo infantil.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.model
 
 import androidx.annotation.StringRes
+import com.google.gson.annotations.SerializedName
 import mx.joshh.appsipinna.R
 import java.time.LocalDate
 
@@ -32,11 +35,16 @@ data class Reporte(
     val ultimaNotaPublica: String? = null
 )
 
-/** Representación de un municipio del Estado de México con su clave oficial. */
+/**
+ * Representación de un municipio del Estado de México con su clave oficial.
+ * @property idMunicipio Identificador numérico del municipio (`id_municipio`).
+ * @property nombreMunicipio Nombre oficial del municipio (`nombre_municipio`).
+ * @property claveMunicipio Clave alfanumérica corta asignada (`clave_municipio`).
+ */
 data class Municipio(
-    val idMunicipio: Int,
-    val nombreMunicipio: String,
-    val claveMunicipio: String
+    @SerializedName("id_municipio") val idMunicipio: Int,
+    @SerializedName("nombre_municipio") val nombreMunicipio: String,
+    @SerializedName("clave_municipio") val claveMunicipio: String
 )
 
 /** Lista oficial de los 15 municipios predefinidos para la app de RIETI. */

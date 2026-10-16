@@ -1,5 +1,8 @@
 /**
  * Definición de la paleta de colores oficial de la aplicación RIETI.
+ * Nota de diseño: Los colores del tema son tonos derivados y extendidos de la paleta oficial de RIETI y no únicamente los cuatro códigos hexadecimales originales para cumplir con los roles de color de Material 3 (contenedores, superficies variantes, estados interactivos y contraste accesible).
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.theme
 

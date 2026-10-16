@@ -1,5 +1,7 @@
 /**
  * Administrador de geolocalización utilizando FusedLocationProviderClient y permisos del sistema.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.model
 
@@ -17,6 +19,11 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import mx.joshh.appsipinna.viewmodel.UbicacionVM
 
+/**
+ * Clase encargada de gestionar la obtención de coordenadas GPS y la solicitud de permisos de ubicación del dispositivo.
+ * @property activity Actividad contenedora del ciclo de vida.
+ * @property viewModel ViewModel de ubicación donde se publican las actualizaciones.
+ */
 class Ubicacion(
     private val activity: ComponentActivity,
     private val viewModel: UbicacionVM
@@ -48,7 +55,10 @@ class Ubicacion(
         }
     }
 
-    /** Verifica si el usuario ha concedido permisos de ubicación. */
+    /**
+     * Verifica si el usuario ha concedido permisos de ubicación.
+     * @return `true` si cuenta con permisos de precisión fina o gruesa, `false` en caso contrario.
+     */
     private fun tienePermisoUbicacion(): Boolean {
         return ContextCompat.checkSelfPermission(
             activity,
@@ -89,7 +99,7 @@ class Ubicacion(
         }
     }
 
-    /** Detiene el consumo de actualizaciones de ubicación. */
+    /** Detiene el consumo de actualizaciones de ubicación para optimizar batería. */
     fun detenerActualizaciones() {
         try {
             fusedLocationClient.removeLocationUpdates(locationCallback)

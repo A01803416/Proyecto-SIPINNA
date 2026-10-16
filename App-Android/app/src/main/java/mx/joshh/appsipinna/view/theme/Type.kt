@@ -1,5 +1,7 @@
 /**
  * Definición de fuentes, estilos de texto y tipografía tipográfica de la aplicación.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.theme
 
@@ -78,6 +80,10 @@ val RietiTypography = Typography(
     )
 )
 
+/**
+ * Estilo exclusivo del folio de seguimiento.
+ * Nota de diseño: Se muestra en tipografía monoespaciada (Monospace) por una razón estrictamente funcional y no estética: el ciudadano necesita leer y transcribir códigos alfanuméricos y la tipografía monoespaciada facilita distinguir inequívocamente caracteres similares como el número 0 de la letra O y el número 1 de la letra I.
+ */
 val FolioTextStyle = TextStyle(
     fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold,
     fontSize = 26.sp, lineHeight = 34.sp, letterSpacing = 2.sp

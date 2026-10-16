@@ -1,5 +1,7 @@
 /**
  * Pantalla del Paso 1 para la selección de municipio, mapa interactivo con pin y captura de colonia y referencia.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
@@ -8,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -30,19 +33,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import mx.joshh.appsipinna.R
-import mx.joshh.appsipinna.model.TipoActividad
+import mx.joshh.appsipinna.model.Municipio
 import mx.joshh.appsipinna.model.municipiosPrueba
 import mx.joshh.appsipinna.view.components.MapaUbicacion
 import mx.joshh.appsipinna.view.components.RietiButton
 import mx.joshh.appsipinna.view.components.RietiSecondaryButton
 import mx.joshh.appsipinna.view.components.RietiTextField
 import mx.joshh.appsipinna.view.components.RietiTopAppBar
-import mx.joshh.appsipinna.view.components.SelectionChips
 import mx.joshh.appsipinna.view.components.StepIndicator
 import mx.joshh.appsipinna.view.theme.RietiTheme
 import org.osmdroid.util.GeoPoint
@@ -54,10 +60,11 @@ fun LocationStepScreen(
     centro: GeoPoint,
     direccion: String?,
     idMunicipio: Int,
+    municipios: List<Municipio>,
+    errorMunicipio: Int?,
     colonia: String,
     nombreLugar: String,
-    tipoActividad: TipoActividad?,
-    otroTipoActividad: String,
+    tipoActividad: String,
     isStepValid: Boolean,
     esperandoUbicacion: Boolean,
     errorUbicacion: Int?,
@@ -65,15 +72,19 @@ fun LocationStepScreen(
     onIdMunicipioChange: (Int) -> Unit,
     onColoniaChange: (String) -> Unit,
     onNombreLugarChange: (String) -> Unit,
-    onTipoActividadChange: (TipoActividad) -> Unit,
-    onOtroTipoActividadChange: (String) -> Unit,
+    onTipoActividadChange: (String) -> Unit,
     onUseMyLocationClick: () -> Unit,
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var municipioExpanded by remember { mutableStateOf(false) }
-    val municipioSeleccionado = municipiosPrueba.find { it.idMunicipio == idMunicipio }?.let { "${it.nombreMunicipio} (${it.claveMunicipio})" } ?: ""
+    val listaMunicipios = municipios.ifEmpty { municipiosPrueba }
+    val municipioSeleccionado = listaMunicipios.find { it.idMunicipio == idMunicipio }?.let { "${it.nombreMunicipio} (${it.claveMunicipio})" } ?: ""
+
+    val scrollState = rememberScrollState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         topBar = {
@@ -99,8 +110,9 @@ fun LocationStepScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = RietiTheme.spacing.screenHorizontal)
-                .verticalScroll(rememberScrollState()),
+                .imePadding()
+                .verticalScroll(scrollState)
+                .padding(horizontal = RietiTheme.spacing.screenHorizontal),
             verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.xl)
         ) {
             StepIndicator(currentStep = 1)
@@ -123,6 +135,7 @@ fun LocationStepScreen(
                         value = municipioSeleccionado,
                         onValueChange = {},
                         readOnly = true,
+                        isError = errorMunicipio != null,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = municipioExpanded) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -137,7 +150,7 @@ fun LocationStepScreen(
                         expanded = municipioExpanded,
                         onDismissRequest = { municipioExpanded = false }
                     ) {
-                        municipiosPrueba.forEach { municipio ->
+                        listaMunicipios.forEach { municipio ->
                             DropdownMenuItem(
                                 text = { Text(text = "${municipio.nombreMunicipio} (${municipio.claveMunicipio})") },
                                 onClick = {
@@ -147,6 +160,13 @@ fun LocationStepScreen(
                             )
                         }
                     }
+                }
+                if (errorMunicipio != null) {
+                    Text(
+                        text = stringResource(errorMunicipio),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
 
@@ -210,7 +230,10 @@ fun LocationStepScreen(
                 onValueChange = onColoniaChange,
                 label = stringResource(R.string.label_colonia),
                 placeholder = stringResource(R.string.placeholder_colonia),
-                fieldTag = "campo_colonia"
+                maxLength = 100,
+                fieldTag = "campo_colonia",
+                imeAction = ImeAction.Next,
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
 
             RietiTextField(
@@ -218,31 +241,25 @@ fun LocationStepScreen(
                 onValueChange = onNombreLugarChange,
                 label = stringResource(R.string.label_referencia_lugar),
                 placeholder = stringResource(R.string.placeholder_referencia_lugar),
-                fieldTag = "campo_referencia"
+                maxLength = 100,
+                fieldTag = "campo_referencia",
+                imeAction = ImeAction.Next,
+                onImeAction = { focusManager.moveFocus(FocusDirection.Down) }
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(RietiTheme.spacing.sm)) {
-                Text(
-                    text = stringResource(R.string.label_tipo_actividad),
-                    style = MaterialTheme.typography.titleSmall
-                )
-                SelectionChips(
-                    options = TipoActividad.entries,
-                    selectedOption = tipoActividad,
-                    onOptionSelected = onTipoActividadChange,
-                    labelProvider = { stringResource(it.labelRes) }
-                )
-            }
-
-            if (tipoActividad == TipoActividad.OTRO) {
-                RietiTextField(
-                    value = otroTipoActividad,
-                    onValueChange = onOtroTipoActividadChange,
-                    label = stringResource(R.string.label_otro_tipo_actividad),
-                    placeholder = stringResource(R.string.placeholder_otro_tipo_actividad),
-                    fieldTag = "campo_otro_tipo_actividad"
-                )
-            }
+            RietiTextField(
+                value = tipoActividad,
+                onValueChange = onTipoActividadChange,
+                label = stringResource(R.string.label_tipo_actividad),
+                placeholder = "Ej. Venta ambulante, recolección...",
+                maxLength = 100,
+                fieldTag = "campo_tipo_actividad",
+                imeAction = ImeAction.Done,
+                onImeAction = {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            )
         }
     }
 }
@@ -255,10 +272,11 @@ private fun LocationStepScreenPreview() {
             centro = GeoPoint(19.5546, -99.2476),
             direccion = "Atizapán de Zaragoza, Estado de México",
             idMunicipio = 1,
+            municipios = municipiosPrueba,
+            errorMunicipio = null,
             colonia = "Centro",
             nombreLugar = "",
-            tipoActividad = TipoActividad.OTRO,
-            otroTipoActividad = "Venta ambulante",
+            tipoActividad = "Venta ambulante",
             isStepValid = true,
             esperandoUbicacion = false,
             errorUbicacion = null,
@@ -267,7 +285,6 @@ private fun LocationStepScreenPreview() {
             onColoniaChange = {},
             onNombreLugarChange = {},
             onTipoActividadChange = {},
-            onOtroTipoActividadChange = {},
             onUseMyLocationClick = {},
             onNextClick = {},
             onBackClick = {}

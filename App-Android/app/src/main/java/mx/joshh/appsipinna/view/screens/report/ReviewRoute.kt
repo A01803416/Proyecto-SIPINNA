@@ -1,11 +1,14 @@
 /**
  * Ruta para la pantalla de revisión general del reporte antes de enviarlo.
+ * @author Joshua Martínez, Lian Soto, Diego Sánchez, Maximiliano Arriaga,
+ *         Carlos González, Gilberto Marcos
  */
 package mx.joshh.appsipinna.view.screens.report
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import mx.joshh.appsipinna.view.navigation.Routes
 import mx.joshh.appsipinna.viewmodel.ReportViewModel
@@ -17,6 +20,7 @@ fun ReviewRoute(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     ReviewScreen(
         state = uiState,
@@ -32,9 +36,9 @@ fun ReviewRoute(
             }
         },
         onSubmit = {
-            viewModel.enviarReporte { _ ->
+            viewModel.enviarReporte(context) { _ ->
                 navController.navigate(Routes.REPORT_CONFIRMATION) {
-                    popUpTo(Routes.REPORT_GRAPH) { inclusive = true }
+                    popUpTo(Routes.REPORT_REVIEW) { inclusive = true }
                 }
             }
         },
