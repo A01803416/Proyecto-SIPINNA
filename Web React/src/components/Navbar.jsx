@@ -14,7 +14,7 @@ export default function Navbar() {
             <span className="logo">RIETI</span>
         </a>
         <a href="/quienes-somos" className="btn-nav">
-            ¿Quiénes Somos?
+            ¿Quiénes somos?
         </a>
         </div>
 

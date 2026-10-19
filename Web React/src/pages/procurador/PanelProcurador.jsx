@@ -69,7 +69,7 @@ export default function PanelProcurador() {
 
       {/* Main Content Area */}
       <main className="dashboard-main">
-        <h1 className="dashboard-title">Panel de Procurador</h1>
+        <h1 className="dashboard-title">Panel de procurador</h1>
         {activeTab === 'tablero' && <TableroProcurador />}
         {activeTab === 'mapa' && <MapaProcurador />}
         {activeTab === 'reportes' && <ReportesProcurador />}

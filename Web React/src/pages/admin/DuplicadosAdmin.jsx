@@ -102,14 +102,14 @@ export default function DuplicadosAdmin() {
         className="report-filters-header"
         style={{ display: "flex", justifyContent: "space-between" }}
       >
-        <h2>Posibles Duplicados</h2>
+        <h2>Posibles duplicados</h2>
         {seleccionados.length === 2 && (
           <button
             className="btn-black"
             style={{ background: "#dc3545" }}
             onClick={solicitarFusion}
           >
-            Fusionar {seleccionados.length} Reportes
+            Fusionar {seleccionados.length} reportes
           </button>
         )}
       </div>
@@ -173,7 +173,7 @@ export default function DuplicadosAdmin() {
       {/* Modal de Fusión */}
       <Dialogos
         isOpen={modalFusionAbierto}
-        title="Confirmar Fusión"
+        title="Confirmar fusión"
         message={`¿Estás seguro de fusionar los reportes ${seleccionados[0]} y ${seleccionados[1]} en un mismo caso?`}
         type="confirm"
         onConfirm={ejecutarFusion}

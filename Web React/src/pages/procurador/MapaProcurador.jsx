@@ -14,7 +14,7 @@ export default function MapaProcurador() {
   // el municipio viene en la sesion desde el login
   const sesion = leerSesion();
   const textoMunicipio = sesion && sesion.municipio
-    ? `Mi Municipio (${sesion.municipio.nombre_municipio})`
+    ? `Mi municipio (${sesion.municipio.nombre_municipio})`
     : 'Sin municipio asignado';
 
   // Estados para filtrar por riesgo y estatus
@@ -60,7 +60,7 @@ export default function MapaProcurador() {
 
         {/* Filtro Nivel de Riesgo */}
         <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
-          <option value="">Nivel de Riesgo</option>
+          <option value="">Nivel de riesgo</option>
           <option value="Bajo">Bajo</option>
           <option value="Medio">Medio</option>
           <option value="Alto">Alto</option>
@@ -68,7 +68,7 @@ export default function MapaProcurador() {
 
         {/* Filtro Estatus Actualizado */}
         <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
-          <option value="">Estatus (Todos)</option>
+          <option value="">Estatus (todos)</option>
           <option value="Registrado">Registrado</option>
           <option value="En revisión">En revisión</option>
           <option value="En seguimiento">En seguimiento</option>
@@ -81,7 +81,7 @@ export default function MapaProcurador() {
 
         {/* Botón Aplicar Filtros */}
         <button className="btn-black" onClick={cargarPuntosProcurador}>
-          Aplicar Filtros
+          Aplicar filtros
         </button>
       </div>
 

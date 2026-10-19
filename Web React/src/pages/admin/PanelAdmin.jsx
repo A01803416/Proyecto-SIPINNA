@@ -84,7 +84,7 @@ export default function PanelAdmin() {
 
       {/* Main Content Area */}
       <main className="dashboard-main">
-        <h1 className="dashboard-title">Panel de Administrador Municipal</h1>
+        <h1 className="dashboard-title">Panel de administrador municipal</h1>
         {activeTab === 'tablero' && <TableroAdmin />}
         {activeTab === 'mapa' && <MapaAdmin />}
         {activeTab === 'reportes' && <ReportesAdmin />}

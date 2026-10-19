@@ -80,19 +80,19 @@ export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, most
           <body>
             <div class="header">
               <h2 class="title">EXPEDIENTE RIETI: ${r.id_folio_reporte}</h2>
-              <p class="subtitle">Sistema de Protección de Menores - Documento Oficial</p>
+              <p class="subtitle">RIETI · SIPINNA Atizapán</p>
             </div>
-            <div class="row"><strong>Fecha de Registro:</strong> <div class="val">${r.fecha_registro}</div></div>
+            <div class="row"><strong>Fecha de registro:</strong> <div class="val">${r.fecha_registro}</div></div>
             <div class="row"><strong>Municipio:</strong> <div class="val">${r.nombre_municipio}</div></div>
             <div class="row"><strong>Procurador:</strong> <div class="val">${r.correo_procurador || 'Sin procurador'}</div></div>
             <div class="row"><strong>Colonia:</strong> <div class="val">${r.colonia || 'No especificada'}</div></div>
             <div class="row"><strong>Lugar:</strong> <div class="val">${r.nombre_lugar || 'N/A'}</div></div>
-            <div class="row"><strong>Actividad Detectada:</strong> <div class="val">${r.tipo_actividad}</div></div>
-            <div class="row"><strong>Descripción de los Hechos:</strong> <div class="val">${r.descripcion}</div></div>
-            <div class="row"><strong>Edad Aproximada:</strong> <div class="val">${r.edad_aproximada}</div></div>
-            <div class="row"><strong>No. de Menores:</strong> <div class="val">${r.numero_menores}</div></div>
-            <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
-            <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
+            <div class="row"><strong>Actividad detectada:</strong> <div class="val">${r.tipo_actividad}</div></div>
+            <div class="row"><strong>Descripción de los hechos:</strong> <div class="val">${r.descripcion}</div></div>
+            <div class="row"><strong>Edad aproximada:</strong> <div class="val">${r.edad_aproximada}</div></div>
+            <div class="row"><strong>Número de niñas, niños o adolescentes:</strong> <div class="val">${r.numero_menores}</div></div>
+            <div class="row"><strong>Nivel de riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
+            <div class="row"><strong>Estatus actual:</strong> <div class="val">${r.estatus}</div></div>
 
             <div class="pie-pagina-limpio">
               <div>Generado: ${fechaActual} - Folio: ${r.id_folio_reporte}</div>
@@ -123,7 +123,7 @@ export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, most
           <th>Municipio</th>
           <th>Procurador</th>
           <th>Actividad</th>
-          <th>Nivel de Riesgo</th>
+          <th>Nivel de riesgo</th>
           <th>Estatus</th>
           <th>Alertas</th>
           <th>Acción</th>
@@ -153,8 +153,8 @@ export default function TablaReportesAdmin({ reportes, onVer, mostrarTodos, most
             <td><span className={`badge ${claseEstatus(r.estatus)}`}>{r.estatus}</span></td>
             <td>
               <div style={{display:'flex', flexDirection:'column', gap:'4px'}}>
-                {r.peligro_inmediato && <span style={{background:'#dc3545', color:'white', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px', whiteSpace:'nowrap', textAlign:'center'}}>Peligro Inmediato</span>}
-                {r.posible_duplicado && <span style={{background:'#ffc107', color:'black', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px', whiteSpace:'nowrap', textAlign:'center'}}>Posible Duplicado</span>}
+                {r.peligro_inmediato && <span style={{background:'#dc3545', color:'white', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px', whiteSpace:'nowrap', textAlign:'center'}}>Peligro inmediato</span>}
+                {r.posible_duplicado && <span style={{background:'#ffc107', color:'black', fontSize:'0.7rem', padding:'2px 6px', borderRadius:'12px', whiteSpace:'nowrap', textAlign:'center'}}>Posible duplicado</span>}
                 {!r.peligro_inmediato && !r.posible_duplicado && <span style={{color:'#aaa', fontSize:'0.8rem', textAlign:'center'}}>-</span>}
               </div>
             </td>

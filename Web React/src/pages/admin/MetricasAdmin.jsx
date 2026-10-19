@@ -135,7 +135,7 @@ export default function MetricasAdmin() {
   return (
     <div className="metricas-widget" id="metricas-report">
       <div className="metricas-header">
-        <h2>Métricas Globales (Todos los Municipios)</h2>
+        <h2>Métricas globales (todos los municipios)</h2>
         <button className="btn-black" onClick={handleExportPDF}>
           Exportar a PDF
         </button>
@@ -143,7 +143,7 @@ export default function MetricasAdmin() {
 
       <div className="metricas-grid">
         <div className="metricas-card">
-          <h3>Tiempos Promedio de Atención</h3>
+          <h3>Tiempos promedio de atención</h3>
           {metricas.tiempo_promedio_atencion_por_municipio.map(fila => (
             <div className="time-stat" key={fila.nombre_municipio}>
               <p className="time-desc">{fila.nombre_municipio}</p>
@@ -163,7 +163,7 @@ export default function MetricasAdmin() {
         </div>
 
         <div className="metricas-card">
-          <h3>Reportes por Estatus ({nombreSel})</h3>
+          <h3>Reportes por estatus ({nombreSel})</h3>
           <select value={municipioSel} onChange={cambiarMunicipio} style={{ padding: '4px', marginBottom: '12px' }}>
             <option value="">Todos los municipios</option>
             {municipios.map((m) => (
@@ -188,7 +188,7 @@ export default function MetricasAdmin() {
       </div>
 
       <div className="metricas-card full-width">
-        <h3>Reportes por Municipio</h3>
+        <h3>Reportes por municipio</h3>
         <div className="bar-chart" style={{maxHeight: '300px', overflowY: 'auto', paddingRight: '10px'}}>
           {metricas.reportes_por_municipio.map(fila => (
             <div className="bar-row" key={fila.nombre_municipio} style={{marginBottom: '10px'}}>

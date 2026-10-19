@@ -57,7 +57,7 @@ export default function MetricasProcurador() {
   return (
     <div className="metricas-widget" id="metricas-report">
       <div className="metricas-header">
-        <h2>Métricas del Municipio</h2>
+        <h2>Métricas del municipio</h2>
         <button className="btn-black" onClick={handleExportPDF}>
           Exportar a PDF
         </button>
@@ -65,7 +65,7 @@ export default function MetricasProcurador() {
 
       <div className="metricas-grid">
         <div className="metricas-card">
-          <h3>Tiempos Promedio de Atención</h3>
+          <h3>Tiempos promedio de atención</h3>
           {tiempo.promedio_horas === null ? (
             <div className="time-stat">
               <p className="time-desc">Sin reportes cerrados</p>
@@ -82,7 +82,7 @@ export default function MetricasProcurador() {
         </div>
 
         <div className="metricas-card">
-          <h3>Reportes por Estatus</h3>
+          <h3>Reportes por estatus</h3>
           <div className="bar-chart">
             {metricas.reportes_por_estatus.map((fila) => (
               <div className="bar-row" key={fila.estatus}>
