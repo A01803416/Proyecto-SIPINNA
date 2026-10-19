@@ -31,9 +31,10 @@ function CapaHeatmap({ puntos }) {
         maxZoom: 14,       // Nivel de zoom donde los puntos alcanzan su máxima separación
         max: 1.0,          // Umbral máximo de suma de intensidades
         minOpacity: 0.5,   // Opacidad base para que el azul sea visible
-        gradient: {        // Gradiente estricto de dos tonos
-            0.5: '#0055ff',  // Azul: para un solo reporte aislado
-            1.0: '#ff00a0'   // Rosa: cuando dos o más reportes se traslapan (0.5 + 0.5 = 1.0)
+        gradient: {        // de amarillo a rojo segun que tanto se enciman las manchas
+            0.5: '#ffd000',  // amarillo: un reporte solo y las orillas de cualquier mancha
+            0.75: '#ff7a00', // naranja: dos reportes cercanos con sus manchas encimadas
+            1.0: '#e00000'   // rojo: unos cuatro reportes cercanos, con tres ya se ve casi rojo
         }
     }).addTo(map);
 
