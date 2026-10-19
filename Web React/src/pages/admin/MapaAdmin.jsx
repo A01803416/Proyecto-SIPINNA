@@ -59,7 +59,7 @@ export default function MapaAdmin() {
       <div className="map-filters-full">
         {/* Filtro Municipio */}
         <select value={municipioSel} onChange={(e) => setMunicipioSel(e.target.value)}>
-          <option value="">Todos los Municipios</option>
+          <option value="">Todos los municipios</option>
           {municipios.map((m) => (
             <option key={m.id_municipio} value={m.id_municipio}>
               {m.nombre_municipio}
@@ -69,7 +69,7 @@ export default function MapaAdmin() {
 
         {/* Filtro Nivel de Riesgo */}
         <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
-          <option value="">Nivel de Riesgo</option>
+          <option value="">Nivel de riesgo</option>
           <option value="Bajo">Bajo</option>
           <option value="Medio">Medio</option>
           <option value="Alto">Alto</option>
@@ -77,7 +77,7 @@ export default function MapaAdmin() {
 
         {/* Filtro Estatus Actualizado */}
         <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
-          <option value="">Estatus (Todos)</option>
+          <option value="">Estatus (todos)</option>
           <option value="Registrado">Registrado</option>
           <option value="En revisión">En revisión</option>
           <option value="En seguimiento">En seguimiento</option>
@@ -90,7 +90,7 @@ export default function MapaAdmin() {
 
         {/* Botón Aplicar Filtros */}
         <button className="btn-black" onClick={cargarDatos}>
-          Aplicar Filtros
+          Aplicar filtros
         </button>
       </div>
 

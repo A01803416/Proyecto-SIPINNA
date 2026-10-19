@@ -268,7 +268,7 @@ export default function UsuariosAdmin() {
     <div className="users-widget-container" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
       <div className="users-widget" style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #eee' }}>
-        <h2>Registrar Nuevo Usuario Oficial</h2>
+        <h2>Registrar nuevo usuario oficial</h2>
         <form className="users-form">
           <div className="form-row">
             <div className="input-group">
@@ -276,16 +276,16 @@ export default function UsuariosAdmin() {
               <input type="email" className="input-box-clean" value={correo} onChange={(e) => setCorreo(e.target.value)} />
             </div>
             <div className="input-group">
-              <label>Rol del Usuario</label>
+              <label>Rol del usuario</label>
               <select className="input-box-clean" value={rolUsuario} onChange={(e) => setRolUsuario(e.target.value)}>
-                <option value="Administrador Regional">Administrador Regional</option>
-                <option value="Procurador Municipal">Procurador Municipal</option>
+                <option value="Administrador Regional">Administrador regional</option>
+                <option value="Procurador Municipal">Procurador municipal</option>
               </select>
             </div>
           </div>
           <div className="form-row">
             <div className="input-group">
-              <label>Municipio Asignado (solo Procurador)</label>
+              <label>Municipio asignado (solo procurador)</label>
               <select className="input-box-clean" value={municipioAsignado} onChange={(e) => setMunicipioAsignado(e.target.value)} disabled={rolUsuario === 'Administrador Regional'}>
                 <option value="">Sin municipio por ahora</option>
                 {municipios.map((m) => <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>)}
@@ -296,31 +296,31 @@ export default function UsuariosAdmin() {
               <input type="password" className="input-box-clean" value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
             </div>
           </div>
-          <button type="button" className="btn-black btn-large" onClick={solicitarCrearUsuario}>Crear Usuario</button>
+          <button type="button" className="btn-black btn-large" onClick={solicitarCrearUsuario}>Crear usuario</button>
         </form>
       </div>
 
       <div className="usuarios-fila">
         <div className="users-widget" style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #eee' }}>
-          <h2>Dar de alta Nuevo Municipio</h2>
+          <h2>Dar de alta nuevo municipio</h2>
           <form className="users-form">
             <div className="input-group" style={{ marginBottom: '12px' }}>
-              <label>Nombre del Municipio</label>
+              <label>Nombre del municipio</label>
               <input type="text" className="input-box-clean" placeholder="Ej. Tultitlán" value={nombreMunicipio} onChange={(e) => setNombreMunicipio(e.target.value)} />
             </div>
             <div className="input-group">
-              <label>Clave del Municipio</label>
+              <label>Clave del municipio</label>
               <input type="text" className="input-box-clean" placeholder="Ej. TUL" value={claveMunicipio} onChange={(e) => setClaveMunicipio(e.target.value)} />
             </div>
-            <button type="button" className="btn-black" style={{ marginTop: '12px' }} onClick={crearMunicipio}>Registrar Municipio</button>
+            <button type="button" className="btn-black" style={{ marginTop: '12px' }} onClick={crearMunicipio}>Registrar municipio</button>
           </form>
         </div>
 
         <div className="users-widget" style={{ background: 'white', padding: '24px', borderRadius: '8px', border: '1px solid #eee' }}>
-          <h2>Reasignar Procurador</h2>
+          <h2>Reasignar procurador</h2>
           <form className="users-form">
             <div className="input-group" style={{ marginBottom: '12px' }}>
-              <label>Procurador Actual</label>
+              <label>Procurador actual</label>
               <select className="input-box-clean" value={procuradorElegido} onChange={(e) => setProcuradorElegido(e.target.value)}>
                 <option value="">Selecciona procurador...</option>
                 {procuradores.map((p) => (
@@ -331,13 +331,13 @@ export default function UsuariosAdmin() {
               </select>
             </div>
             <div className="input-group" style={{ marginBottom: '12px' }}>
-              <label>Nuevo Municipio</label>
+              <label>Nuevo municipio</label>
               <select className="input-box-clean" value={municipioNuevo} onChange={(e) => setMunicipioNuevo(e.target.value)}>
                 <option value="">Selecciona municipio...</option>
                 {municipios.map((m) => <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>)}
               </select>
             </div>
-            <button type="button" className="btn-black" onClick={solicitarReasignacion}>Aplicar Reasignación</button>
+            <button type="button" className="btn-black" onClick={solicitarReasignacion}>Aplicar reasignación</button>
           </form>
         </div>
       </div>
@@ -407,7 +407,7 @@ export default function UsuariosAdmin() {
       {/* Confirmar reemplazo al crear un procurador */}
       <Dialogos
         isOpen={modalCrearAbierto}
-        title="Reemplazar Procurador"
+        title="Reemplazar procurador"
         message={preguntaReemplazo}
         type="confirm"
         onConfirm={ejecutarCrearUsuario}
@@ -417,7 +417,7 @@ export default function UsuariosAdmin() {
       {/* Confirmar reemplazo al reasignar un procurador */}
       <Dialogos
         isOpen={modalReasignarAbierto}
-        title="Reemplazar Procurador"
+        title="Reemplazar procurador"
         message={preguntaReemplazo}
         type="confirm"
         onConfirm={ejecutarReasignacion}

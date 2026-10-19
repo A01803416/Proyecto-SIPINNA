@@ -67,7 +67,7 @@ export default function ReportesProcurador() {
   return (
     <div className="full-table-widget">
       <div className="report-filters-header" style={{display: 'flex', justifyContent: 'space-between'}}>
-        <h2>Todos los Reportes</h2>
+        <h2>Todos los reportes</h2>
       </div>
 
       <div className="report-filters-controls" style={{marginBottom: '16px', flexWrap: 'wrap', gap: '8px'}}>
@@ -75,12 +75,12 @@ export default function ReportesProcurador() {
           <label style={{display: 'flex', gap: '4px', alignItems: 'center'}}>Hasta: <input type="date" value={filterHasta} onChange={(e) => setFilterHasta(e.target.value)} style={{padding:'4px'}} /></label>
 
           <select value={filterEstatus} onChange={(e) => setFilterEstatus(e.target.value)} style={{padding:'4px'}}>
-            <option value="">Estatus (Todos)</option>
+            <option value="">Estatus (todos)</option>
             {ESTATUS.map((e) => <option key={e} value={e}>{e}</option>)}
           </select>
 
           <select value={filterRiesgo} onChange={(e) => setFilterRiesgo(e.target.value)} style={{padding:'4px'}}>
-            <option value="">Riesgo (Todos)</option>
+            <option value="">Riesgo (todos)</option>
             <option value="Bajo">Bajo</option>
             <option value="Medio">Medio</option>
             <option value="Alto">Alto</option>
@@ -88,7 +88,7 @@ export default function ReportesProcurador() {
 
           <label style={{display:'flex', alignItems:'center', gap:'4px', cursor:'pointer', padding:'4px', background:'#fff5f5', borderRadius:'4px'}}>
             <input type="checkbox" checked={filterPeligro} onChange={(e) => setFilterPeligro(e.target.checked)} />
-            Solo Peligro Inmediato
+            Solo peligro inmediato
           </label>
 
           <button className="btn-black" style={{padding:'4px 12px'}} onClick={limpiarFiltros}>Limpiar</button>

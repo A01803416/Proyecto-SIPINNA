@@ -41,16 +41,16 @@ export default function CasosProcurador() {
   return (
     <div className="tablero-content">
       <div className="header-actions">
-        <h2>Reportes Fusionados</h2>
+        <h2>Reportes fusionados</h2>
       </div>
       <div className="table-container">
         <table className="reports-table data-table">
           <thead>
             <tr>
-              <th>ID Caso</th>
-              <th>Fecha Creación</th>
+              <th>ID caso</th>
+              <th>Fecha creación</th>
               <th>Estatus</th>
-              <th>Reportes Asociados</th>
+              <th>Reportes asociados</th>
               <th>Acción</th>
             </tr>
           </thead>

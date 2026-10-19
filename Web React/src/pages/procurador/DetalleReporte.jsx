@@ -229,9 +229,9 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
       <div className="modal-content report-print-area" onClick={(e) => e.stopPropagation()} style={{maxWidth: '850px', width: '95%'}}>
         <div className="modal-header">
           <h2 style={{display:'flex', alignItems:'center', gap:'8px', flexWrap:'wrap'}}>
-             Detalle de Reporte: {reporte.id_folio_reporte}
-             {reporte.peligro_inmediato && <span style={{background:'#dc3545', color:'white', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'12px'}}>Peligro Inmediato</span>}
-             {reporte.posible_duplicado && <span style={{background:'#ffc107', color:'#000', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'12px'}}>Posible Duplicado</span>}
+             Detalle de reporte: {reporte.id_folio_reporte}
+             {reporte.peligro_inmediato && <span style={{background:'#dc3545', color:'white', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'12px'}}>Peligro inmediato</span>}
+             {reporte.posible_duplicado && <span style={{background:'#ffc107', color:'#000', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'12px'}}>Posible duplicado</span>}
              {reporte.id_caso && <span style={{background:'#17a2b8', color:'white', fontSize:'0.75rem', padding:'4px 8px', borderRadius:'12px'}}>Fusionado en {reporte.id_caso}</span>}
           </h2>
           <div>
@@ -241,33 +241,33 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
         <div className="modal-body modal-body-detalle">
 
           <div className="modal-section left-col">
-             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', marginBottom:'12px'}}>Datos Generales</h3>
-             <p style={{margin:'4px 0'}}><strong>Fecha de Registro:</strong> {reporte.fecha_registro}</p>
+             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', marginBottom:'12px'}}>Datos generales</h3>
+             <p style={{margin:'4px 0'}}><strong>Fecha de registro:</strong> {reporte.fecha_registro}</p>
              <p style={{margin:'4px 0'}}><strong>Municipio:</strong> {reporte.nombre_municipio}</p>
              <p style={{margin:'4px 0'}}><strong>Colonia:</strong> {reporte.colonia || 'No especificada'}</p>
-             <p style={{margin:'4px 0'}}><strong>Lugar (Referencia):</strong> {reporte.nombre_lugar || 'N/A'}</p>
+             <p style={{margin:'4px 0'}}><strong>Lugar (referencia):</strong> {reporte.nombre_lugar || 'N/A'}</p>
              <p style={{margin:'4px 0'}}><strong>Descripción:</strong> {reporte.descripcion}</p>
 
-             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', margin:'20px 0 12px'}}>Detalles de la Situación</h3>
-             <p style={{margin:'4px 0'}}><strong>Tipo de Actividad:</strong> {reporte.tipo_actividad}</p>
-             <p style={{margin:'4px 0'}}><strong>Edad Aproximada:</strong> {reporte.edad_aproximada}</p>
-             <p style={{margin:'4px 0'}}><strong>No. de Menores:</strong> {reporte.numero_menores}</p>
+             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', margin:'20px 0 12px'}}>Detalles de la situación</h3>
+             <p style={{margin:'4px 0'}}><strong>Tipo de actividad:</strong> {reporte.tipo_actividad}</p>
+             <p style={{margin:'4px 0'}}><strong>Edad aproximada:</strong> {reporte.edad_aproximada}</p>
+             <p style={{margin:'4px 0'}}><strong>Número de niñas, niños o adolescentes:</strong> {reporte.numero_menores}</p>
              <p style={{margin:'4px 0'}}><strong>Horario:</strong> {reporte.horario}</p>
              <p style={{margin:'4px 0'}}><strong>Frecuencia:</strong> {reporte.frecuencia}</p>
-             <p style={{margin:'4px 0'}}><strong>Nivel de Riesgo:</strong> {reporte.nivel_riesgo}</p>
+             <p style={{margin:'4px 0'}}><strong>Nivel de riesgo:</strong> {reporte.nivel_riesgo}</p>
 
              {reporte.evidencia_fotografica && (
                <div style={{marginTop:'15px'}}>
-                 <strong>Evidencia Fotográfica:</strong><br/>
+                 <strong>Evidencia fotográfica:</strong><br/>
                  <img src={reporte.evidencia_fotografica} alt="Evidencia" style={{maxWidth: '100%', marginTop: '10px', borderRadius: '8px', border:'1px solid #ddd'}} />
                </div>
              )}
           </div>
 
           <div className="modal-section right-col">
-             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', marginBottom:'12px'}}>Gestión del Caso</h3>
+             <h3 style={{borderBottom:'1px solid #eee', paddingBottom:'8px', marginBottom:'12px'}}>Gestión del caso</h3>
              <div className="form-group" style={{marginBottom:'15px'}}>
-                <label>Estatus Actual:</label>
+                <label>Estatus actual:</label>
                 <select value={reporte.estatus} onChange={cambiarEstatus} style={{width:'100%', padding:'8px', borderRadius:'4px'}}>
                   {ESTATUS.map((e) => <option key={e} value={e}>{e}</option>)}
                 </select>
@@ -278,18 +278,18 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
 
              <div className="form-group" style={{marginBottom:'15px', display:'flex', flexDirection:'row', alignItems:'center', gap:'10px', background:'#fff3cd', padding:'10px', borderRadius:'4px'}}>
                 <input type="checkbox" id="dupCheck" checked={reporte.posible_duplicado} onChange={marcarDuplicado} disabled={reporte.id_caso !== null} style={{width:'auto'}} />
-                <label htmlFor="dupCheck" style={{margin:0, fontWeight:'bold', color:'#856404'}}>Marcar como Posible Duplicado</label>
+                <label htmlFor="dupCheck" style={{margin:0, fontWeight:'bold', color:'#856404'}}>Marcar como posible duplicado</label>
              </div>
 
              <div className="form-group" style={{marginBottom:'15px'}}>
-               <label>Corregir Municipio (Transferir):</label>
+               <label>Corregir municipio (transferir):</label>
                <select value={reporte.id_municipio} onChange={solicitarTransferencia} disabled={reporte.id_caso !== null} style={{width:'100%', padding:'8px', borderRadius:'4px'}}>
                  {municipios.map((m) => <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>)}
                </select>
              </div>
 
              <div className="notas-container" style={{marginTop: '20px'}}>
-               <h4>Bitácora de Notas</h4>
+               <h4>Bitácora de notas</h4>
                <div className="notas-list" style={{maxHeight:'150px', overflowY:'auto', background:'#f8f9fa', padding:'10px', borderRadius:'8px', marginBottom:'10px'}}>
                   {reporte.notas.length === 0 && <p style={{fontSize:'0.85rem', color:'#666', fontStyle:'italic'}}>No hay notas registradas.</p>}
                   {reporte.notas.map((n) => (
@@ -314,7 +314,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
                    placeholder="Mensaje al ciudadano (público, opcional)"
                    style={{width:'100%', minHeight:'60px', padding:'8px', borderRadius:'4px', border:'1px solid #ccc', resize:'vertical', marginTop:'8px'}}
                  ></textarea>
-                 <button onClick={agregarNota} className="btn-save" style={{marginTop:'8px', width:'100%', background:'#28a745', color:'white', border:'none', padding:'10px', borderRadius:'4px', cursor:'pointer'}}>Agregar Nota</button>
+                 <button onClick={agregarNota} className="btn-save" style={{marginTop:'8px', width:'100%', background:'#28a745', color:'white', border:'none', padding:'10px', borderRadius:'4px', cursor:'pointer'}}>Agregar nota</button>
                </div>
              </div>
           </div>
@@ -325,7 +325,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
       {/* Modal para el Motivo de Cierre */}
       <Dialogos
         isOpen={modalCierreAbierto}
-        title="Motivo de Cierre"
+        title="Motivo de cierre"
         message="Escribe detalladamente el motivo por el cual se cierra el reporte:"
         type="prompt"
         inputValue={motivoCierre}
@@ -338,7 +338,7 @@ export default function DetalleReporte({ folio, onClose, onCambio }) {
       {/* Modal para Transferencia de Municipio */}
       <Dialogos
         isOpen={modalTransferirAbierto}
-        title="Transferir Reporte"
+        title="Transferir reporte"
         message={`El reporte pasará a ${nombreMunicipioDestino} y ya no podrás verlo en tu panel. ¿Continuar con la transferencia?`}
         type="confirm"
         onConfirm={ejecutarTransferencia}

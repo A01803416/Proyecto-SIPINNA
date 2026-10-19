@@ -9,7 +9,7 @@ export default function Hero() {
     <main className="hero-section">
       <div className="content-left">
         <div className="text-wrapper">
-          <h1>Registrar<br />Trabajo Infantil</h1>
+          <h1>Registrar<br />trabajo infantil</h1>
           <p>
             ¿Viste un caso de trabajo infantil? Descarga la app para reportarlo de forma segura y anónima.
           </p>

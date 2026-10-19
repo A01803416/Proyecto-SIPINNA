@@ -89,7 +89,7 @@ export default function TableroProcurador() {
         <div className="top-left-widget">
           <div className="procurador-alerts-widget">
             <div className="alert-box danger-alert">
-              <h3>Alerta Peligro Inmediato</h3>
+              <h3>Alerta peligro inmediato</h3>
               <p>
                 {conPeligro === 1
                   ? '1 reporte indica una situación de peligro inmediato.'
@@ -97,7 +97,7 @@ export default function TableroProcurador() {
               </p>
             </div>
             <div className="alert-box warning-alert">
-              <h3>Posible Duplicidad</h3>
+              <h3>Posible duplicidad</h3>
               <p>
                 {metricas.posibles_duplicados === 1
                   ? '1 reporte marcado como posible duplicado.'
@@ -109,11 +109,11 @@ export default function TableroProcurador() {
 
         <div className="kpi-grid">
           <div className="kpi-card">
-            <span className="kpi-label">Reportes Nuevos</span>
+            <span className="kpi-label">Reportes nuevos</span>
             <span className="kpi-value">{metricas.reportes_nuevos}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Posibles Duplicados</span>
+            <span className="kpi-label">Posibles duplicados</span>
             <span className="kpi-value">{metricas.posibles_duplicados}</span>
           </div>
           <div className="kpi-card">
@@ -121,18 +121,18 @@ export default function TableroProcurador() {
             <span className="kpi-value">{metricas.ninos_identificados}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Riesgo Alto</span>
+            <span className="kpi-label">Riesgo alto</span>
             <span className="kpi-value">{metricas.riesgo_alto}</span>
           </div>
           <div className="kpi-card" style={{gridColumn: 'span 2'}}>
-            <span className="kpi-label">Total de Reportes</span>
+            <span className="kpi-label">Total de reportes</span>
             <span className="kpi-value">{metricas.total_reportes}</span>
           </div>
         </div>
       </div>
 
       <div className="table-widget">
-        <h2>Seguimiento de Casos Recientes</h2>
+        <h2>Seguimiento de casos recientes</h2>
         <TablaReportes reportes={reportes} onVer={setFolioAbierto} mostrarTodos={false} />
       </div>
 

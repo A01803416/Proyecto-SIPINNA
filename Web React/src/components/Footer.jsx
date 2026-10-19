@@ -11,7 +11,7 @@ const municipios = Array.from({ length: 15 }, (_, i) => i + 1);
 
     return (
     <footer className="footer">
-        <p className="footer-title">Alianza con 15 Municipios</p>
+        <p className="footer-title">Alianza con 15 municipios</p>
     
         <div className="carousel-container">
         <div className="carousel-track">

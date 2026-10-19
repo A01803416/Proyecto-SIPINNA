@@ -155,9 +155,9 @@ export default function ReportesAdmin() {
   return (
     <div className="full-table-widget">
       <div className="report-filters-header" style={{display: 'flex', justifyContent: 'space-between'}}>
-        <h2>Todos los Reportes</h2>
+        <h2>Todos los reportes</h2>
         {seleccionados.length === 2 && (
-           <button className="btn-black" style={{background: '#dc3545'}} onClick={solicitarFusion}>Fusionar {seleccionados.length} Reportes</button>
+           <button className="btn-black" style={{background: '#dc3545'}} onClick={solicitarFusion}>Fusionar {seleccionados.length} reportes</button>
         )}
       </div>
 
@@ -166,17 +166,17 @@ export default function ReportesAdmin() {
           <label style={{display: 'flex', gap: '4px', alignItems: 'center'}}>Hasta: <input type="date" value={filterHasta} onChange={(e) => setFilterHasta(e.target.value)} style={{padding:'4px'}} /></label>
 
           <select value={filterMunicipio} onChange={(e) => setFilterMunicipio(e.target.value)} style={{padding:'4px'}}>
-            <option value="">Municipio (Todos)</option>
+            <option value="">Municipio (todos)</option>
             {municipios.map((m) => <option key={m.id_municipio} value={m.id_municipio}>{m.nombre_municipio}</option>)}
           </select>
 
           <select value={filterEstatus} onChange={(e) => setFilterEstatus(e.target.value)} style={{padding:'4px'}}>
-            <option value="">Estatus (Todos)</option>
+            <option value="">Estatus (todos)</option>
             {ESTATUS.map((e) => <option key={e} value={e}>{e}</option>)}
           </select>
 
           <select value={filterRiesgo} onChange={(e) => setFilterRiesgo(e.target.value)} style={{padding:'4px'}}>
-            <option value="">Riesgo (Todos)</option>
+            <option value="">Riesgo (todos)</option>
             <option value="Bajo">Bajo</option>
             <option value="Medio">Medio</option>
             <option value="Alto">Alto</option>
@@ -184,7 +184,7 @@ export default function ReportesAdmin() {
 
           <label style={{display:'flex', alignItems:'center', gap:'4px', cursor:'pointer', padding:'4px', background:'#fff5f5', borderRadius:'4px'}}>
             <input type="checkbox" checked={filterPeligro} onChange={(e) => setFilterPeligro(e.target.checked)} />
-            Solo Peligro Inmediato
+            Solo peligro inmediato
           </label>
 
           <button className="btn-black" style={{padding:'4px 12px'}} onClick={limpiarFiltros}>Limpiar</button>
@@ -206,7 +206,7 @@ export default function ReportesAdmin() {
       {/* Modal de Fusión */}
       <Dialogos
         isOpen={modalFusionAbierto}
-        title="Confirmar Fusión"
+        title="Confirmar fusión"
         message={`¿Estás seguro de fusionar los reportes ${seleccionados[0]} y ${seleccionados[1]} en un mismo caso?`}
         type="confirm"
         onConfirm={ejecutarFusion}

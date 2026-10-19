@@ -22,8 +22,8 @@ export default function Login({ role }) {
 
   const title = isAdmin ? 'Admin RIETI' : 'Procurador RIETI';
   const subtitle = isAdmin
-    ? 'Panel de Administración Municipal RIETI.'
-    : 'Panel de Procuraduría RIETI.';
+    ? 'Panel de administración municipal RIETI.'
+    : 'Panel de procuraduría RIETI.';
 
   /**
    * Envía las credenciales, guarda la sesión y redirige al panel autorizado.
@@ -68,7 +68,7 @@ export default function Login({ role }) {
       <header className="navbar-login">
         <div className="nav-left">
           <span className="logo">RIETI</span>
-          <a href="/" className="btn-animated">← Regresar al Inicio</a>
+          <a href="/" className="btn-animated">← Regresar al inicio</a>
         </div>
       </header>
 

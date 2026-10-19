@@ -104,7 +104,7 @@ export default function TableroAdmin() {
             <div className="map-filters">
               {/* Filtro Municipio */}
               <select value={municipioSel} onChange={(e) => setMunicipioSel(e.target.value)}>
-                <option value="">Todos los Municipios</option>
+                <option value="">Todos los municipios</option>
                 {municipios.map((m) => (
                   <option key={m.id_municipio} value={m.id_municipio}>
                     {m.nombre_municipio}
@@ -114,7 +114,7 @@ export default function TableroAdmin() {
 
               {/* Filtro Nivel de Riesgo */}
               <select value={riesgoSel} onChange={(e) => setRiesgoSel(e.target.value)}>
-                <option value="">Nivel de Riesgo</option>
+                <option value="">Nivel de riesgo</option>
                 <option value="Bajo">Bajo</option>
                 <option value="Medio">Medio</option>
                 <option value="Alto">Alto</option>
@@ -122,7 +122,7 @@ export default function TableroAdmin() {
 
               {/* Filtro Estatus Actualizado */}
               <select value={estatusSel} onChange={(e) => setEstatusSel(e.target.value)}>
-                <option value="">Estatus (Todos)</option>
+                <option value="">Estatus (todos)</option>
                 <option value="Registrado">Registrado</option>
                 <option value="En revisión">En revisión</option>
                 <option value="En seguimiento">En seguimiento</option>
@@ -135,7 +135,7 @@ export default function TableroAdmin() {
 
               {/* Botón Aplicar Filtros */}
               <button className="btn-black" onClick={aplicarFiltrosMapa}>
-                Aplicar Filtros
+                Aplicar filtros
               </button>
             </div>
             <div className="map-iframe-container">
@@ -148,11 +148,11 @@ export default function TableroAdmin() {
 
         <div className="kpi-grid">
           <div className="kpi-card">
-            <span className="kpi-label">Reportes Nuevos</span>
+            <span className="kpi-label">Reportes nuevos</span>
             <span className="kpi-value">{metricas.reportes_nuevos}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Posibles Duplicados</span>
+            <span className="kpi-label">Posibles duplicados</span>
             <span className="kpi-value">{metricas.posibles_duplicados}</span>
           </div>
           <div className="kpi-card">
@@ -160,18 +160,18 @@ export default function TableroAdmin() {
             <span className="kpi-value">{metricas.ninos_identificados}</span>
           </div>
           <div className="kpi-card">
-            <span className="kpi-label">Riesgo Alto</span>
+            <span className="kpi-label">Riesgo alto</span>
             <span className="kpi-value">{metricas.riesgo_alto}</span>
           </div>
           <div className="kpi-card" style={{ gridColumn: 'span 2' }}>
-            <span className="kpi-label">Total de Reportes</span>
+            <span className="kpi-label">Total de reportes</span>
             <span className="kpi-value">{metricas.total_reportes}</span>
           </div>
         </div>
       </div>
 
       <div className="table-widget">
-        <h2>Últimos Reportes Registrados</h2>
+        <h2>Últimos reportes registrados</h2>
         <TablaReportesAdmin
           reportes={reportes}
           onVer={setFolioAbierto}

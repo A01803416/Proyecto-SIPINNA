@@ -202,19 +202,19 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
           <body>
             <div class="header">
               <h2 class="title">EXPEDIENTE RIETI: ${r.id_folio_reporte}</h2>
-              <p class="subtitle">Sistema de Protección de Menores - Documento Oficial</p>
+              <p class="subtitle">RIETI · SIPINNA Atizapán</p>
             </div>
-            <div class="row"><strong>Fecha de Registro:</strong> <div class="val">${r.fecha_registro}</div></div>
+            <div class="row"><strong>Fecha de registro:</strong> <div class="val">${r.fecha_registro}</div></div>
             <div class="row"><strong>Municipio:</strong> <div class="val">${r.nombre_municipio}</div></div>
             <div class="row"><strong>Procurador:</strong> <div class="val">${r.correo_procurador || 'Sin procurador'}</div></div>
             <div class="row"><strong>Colonia:</strong> <div class="val">${r.colonia || 'No especificada'}</div></div>
             <div class="row"><strong>Lugar:</strong> <div class="val">${r.nombre_lugar || 'N/A'}</div></div>
-            <div class="row"><strong>Actividad Detectada:</strong> <div class="val">${r.tipo_actividad}</div></div>
-            <div class="row"><strong>Descripción de los Hechos:</strong> <div class="val">${r.descripcion}</div></div>
-            <div class="row"><strong>Edad Aproximada:</strong> <div class="val">${r.edad_aproximada}</div></div>
-            <div class="row"><strong>No. de Menores:</strong> <div class="val">${r.numero_menores}</div></div>
-            <div class="row"><strong>Nivel de Riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
-            <div class="row"><strong>Estatus Actual:</strong> <div class="val">${r.estatus}</div></div>
+            <div class="row"><strong>Actividad detectada:</strong> <div class="val">${r.tipo_actividad}</div></div>
+            <div class="row"><strong>Descripción de los hechos:</strong> <div class="val">${r.descripcion}</div></div>
+            <div class="row"><strong>Edad aproximada:</strong> <div class="val">${r.edad_aproximada}</div></div>
+            <div class="row"><strong>Número de niñas, niños o adolescentes:</strong> <div class="val">${r.numero_menores}</div></div>
+            <div class="row"><strong>Nivel de riesgo:</strong> <div class="val">${r.nivel_riesgo}</div></div>
+            <div class="row"><strong>Estatus actual:</strong> <div class="val">${r.estatus}</div></div>
 
             <div class="pie-pagina-limpio">
               <div>Generado: ${fechaActual} - Folio: ${r.id_folio_reporte}</div>
@@ -289,16 +289,16 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
         <body>
           <div class="header">
             <h2 class="title">EXPEDIENTE DE CASO: ${caso.id_caso}</h2>
-            <p class="subtitle">Sistema de Protección de Menores - Documento Oficial</p>
+            <p class="subtitle">RIETI · SIPINNA Atizapán</p>
           </div>
           
-          <div class="section-title">Datos del Caso</div>
-          <div class="row"><strong>Estatus del Caso:</strong> <div class="val">${caso.estatus_caso || 'N/A'}</div></div>
-          <div class="row"><strong>Fecha de Creación:</strong> <div class="val">${caso.fecha_creacion}</div></div>
-          <div class="row"><strong>Fecha de Cierre:</strong> <div class="val">${caso.fecha_cierre || "Abierto"}</div></div>
-          <div class="row"><strong>Reportes Asociados:</strong> <div class="val">${caso.total_reportes}</div></div>
+          <div class="section-title">Datos del caso</div>
+          <div class="row"><strong>Estatus del caso:</strong> <div class="val">${caso.estatus_caso || 'N/A'}</div></div>
+          <div class="row"><strong>Fecha de creación:</strong> <div class="val">${caso.fecha_creacion}</div></div>
+          <div class="row"><strong>Fecha de cierre:</strong> <div class="val">${caso.fecha_cierre || "Abierto"}</div></div>
+          <div class="row"><strong>Reportes asociados:</strong> <div class="val">${caso.total_reportes}</div></div>
 
-          <div class="section-title">Reportes del Caso</div>
+          <div class="section-title">Reportes del caso</div>
           <table>
             <thead>
               <tr><th>Folio</th><th>Actividad</th><th>Riesgo</th><th>Estatus</th></tr>
@@ -315,7 +315,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
             </tbody>
           </table>
 
-          <div class="section-title">Bitácora de Notas</div>
+          <div class="section-title">Bitácora de notas</div>
           ${caso.notas.length === 0 ? '<p>No hay notas registradas.</p>' : ''}
           ${caso.notas.map(n => `
             <div class="nota">
@@ -349,13 +349,13 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
         style={{ maxWidth: "850px", width: "95%" }}
       >
         <div className="modal-header">
-          <h2>Detalle de Caso: {caso.id_caso}</h2>
+          <h2>Detalle de caso: {caso.id_caso}</h2>
           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
             <button 
               onClick={imprimirCaso}
               style={{ background: "#333", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer", fontSize: "0.9rem" }}
             >
-              Imprimir Caso
+              Imprimir caso
             </button>
             <button className="btn-close" onClick={onClose}>
               &times;
@@ -371,19 +371,19 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
                 marginBottom: "12px",
               }}
             >
-              Datos del Caso
+              Datos del caso
             </h3>
             <p style={{ margin: "4px 0" }}>
               <strong>Estatus:</strong> {caso.estatus_caso}
             </p>
             <p style={{ margin: "4px 0" }}>
-              <strong>Fecha de Creación:</strong> {caso.fecha_creacion}
+              <strong>Fecha de creación:</strong> {caso.fecha_creacion}
             </p>
             <p style={{ margin: "4px 0" }}>
-              <strong>Fecha de Cierre:</strong> {caso.fecha_cierre || "Abierto"}
+              <strong>Fecha de cierre:</strong> {caso.fecha_cierre || "Abierto"}
             </p>
             <p style={{ margin: "4px 0" }}>
-              <strong>Reportes Asociados:</strong> {caso.total_reportes}
+              <strong>Reportes asociados:</strong> {caso.total_reportes}
             </p>
 
             <h3
@@ -393,7 +393,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
                 margin: "20px 0 12px",
               }}
             >
-              Reportes del Caso
+              Reportes del caso
             </h3>
             <table className="data-table">
               <thead>
@@ -479,7 +479,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
 
           <div className="modal-section right-col">
             <div className="notas-container">
-              <h4>Bitácora de Notas</h4>
+              <h4>Bitácora de notas</h4>
               <div
                 className="notas-list"
                 style={{
@@ -523,7 +523,7 @@ export default function DetalleCasoAdmin({ idCaso, onClose, onCambio, onVerRepor
     {/* Dialogo personalizado para confirmación de fusión */}
     <Dialogos
       isOpen={modalConfirmAbierto}
-      title="Confirmar Fusión"
+      title="Confirmar fusión"
       message={`¿Deseas agregar el reporte ${folioAObtener} al caso ${caso.id_caso}?`}
       type="confirm"
       onConfirm={ejecutarAgregarReporte}
